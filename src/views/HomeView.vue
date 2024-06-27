@@ -1,13 +1,7 @@
-<template>
-  <div>
+<script setup lang="ts"></script>
 
-  </div>
+<template>
+  <div class="text-blue-700 text-3xl">테스트</div>
 </template>
 
-<script setup>
-
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
