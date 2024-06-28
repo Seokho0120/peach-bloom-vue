@@ -1,4 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue';
+// import useAuth from '../../composables/useAuth';
+import { watch } from 'vue';
+import { signInWithGoogle } from '../../composables/useAuth';
+
+// const { error, login, logout, user } = useAuth();
+
+const email = ref('');
+const password = ref('');
+
+async function handleSignInGoogle() {
+  console.log('????');
+  await signInWithGoogle();
+}
+</script>
 
 <template>
   <div class="mt-4">
@@ -18,7 +33,22 @@
       />
     </div>
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded-md">회원가입</button>
+    <button @click="handleSignInGoogle" class="bg-blue-500 text-white px-4 py-2 rounded-md">회원가입</button>
+
+    <!-- <form @submit="login">
+      <label>
+        Email:
+        <input v-model="email" type="email" required />
+      </label>
+      <label>
+        Password:
+        <input v-model="password" type="password" required />
+      </label>
+      <button type="submit">Login</button>
+    </form>
+    <p v-if="error">{{ error }}</p>
+    <button @click="logout" v-if="user">Logout</button> -->
+
     <p class="mt-4">
       <RouterLink
         :to="{

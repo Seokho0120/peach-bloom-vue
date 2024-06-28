@@ -1,4 +1,11 @@
-<script setup lang="ts"></script>
+<!-- <script setup lang="ts">
+import { signInWithGoogle } from '@/composables/useAuth';
+
+async function handleSignInGoogle() {
+  console.log('????');
+  await signInWithGoogle();
+}
+</script>
 
 <template>
   <div class="mt-4">
@@ -18,7 +25,7 @@
       />
     </div>
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded-md">로그인</button>
+    <button @click="handleSignInGoogle" class="bg-blue-500 text-white px-4 py-2 rounded-md">로그인</button>
     <p class="mt-4">
       만약 계정이 없다면,
       <RouterLink
@@ -31,4 +38,91 @@
       >을 먼저 진행해주세요!
     </p>
   </div>
+</template> -->
+
+<template>
+  <div>
+    <h1>Authentication</h1>
+    <div v-if="!user">
+      <h2>Login</h2>
+      <form @submit.prevent="login">
+        <label>
+          Email:
+          <input v-model="email" type="email" required />
+        </label>
+        <label>
+          Password:
+          <input v-model="password" type="password" required />
+        </label>
+        <button type="submit">Login</button>
+      </form>
+      <h2>Sign Up</h2>
+      <form @submit.prevent="signup">
+        <label>
+          Email:
+          <input v-model="signupEmail" type="email" required />
+        </label>
+        <label>
+          Password:
+          <input v-model="signupPassword" type="password" required />
+        </label>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+    <div v-else>
+      <h2>Welcome, {{ user.email }}!</h2>
+      <button @click="logout">Logout</button>
+    </div>
+    <p v-if="error" class="error">{{ error }}</p>
+  </div>
 </template>
+
+<script setup>
+import { ref } from 'vue';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+
+const user = ref(null);
+const error = ref(null);
+const email = ref('');
+const password = ref('');
+const signupEmail = ref('');
+const signupPassword = ref('');
+
+const login = async () => {
+  try {
+    const auth = getAuth();
+    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+    user.value = userCredential.user;
+    error.value = null;
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
+const signup = async () => {
+  try {
+    const auth = getAuth();
+    const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
+    user.value = userCredential.user;
+    error.value = null;
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
+const logout = async () => {
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+    user.value = null;
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+</script>
+
+<style scoped>
+.error {
+  color: red;
+}
+</style>
