@@ -19,6 +19,16 @@
     </div>
 
     <button class="bg-blue-500 text-white px-4 py-2 rounded-md">로그인</button>
-    <p class="mt-4">만약 계정이 없다면, 회원가입을 먼저 진행해주세요!</p>
+    <p class="mt-4">
+      만약 계정이 없다면,
+      <RouterLink
+        :to="{
+          name: 'signup',
+        }"
+        class="font-bold underline"
+      >
+        회원가입</RouterLink
+      >을 먼저 진행해주세요!
+    </p>
   </div>
 </template>

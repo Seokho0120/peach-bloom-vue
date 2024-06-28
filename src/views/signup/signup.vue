@@ -19,6 +19,15 @@
     </div>
 
     <button class="bg-blue-500 text-white px-4 py-2 rounded-md">회원가입</button>
-    <p class="mt-4">로그인 페이지로 돌아가기</p>
+    <p class="mt-4">
+      <RouterLink
+        :to="{
+          name: 'login',
+        }"
+        class="font-bold underline"
+      >
+        로그인 페이지</RouterLink
+      >로 돌아가기
+    </p>
   </div>
 </template>
