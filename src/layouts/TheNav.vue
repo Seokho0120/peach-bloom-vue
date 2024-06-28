@@ -23,6 +23,11 @@ const userMenu = [
     name: 'login',
     icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
   },
+  {
+    label: 'SIGNUP',
+    name: 'signup',
+    icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
+  },
 ];
 </script>
 
@@ -34,11 +39,7 @@ const userMenu = [
           name: 'home',
         }"
       >
-        <img
-          :src="peachbloom"
-          class="w-36 mb-4"
-          alt="peachbloom logo"
-        />
+        <img :src="peachbloom" class="w-36 mb-4" alt="peachbloom logo" />
       </RouterLink>
     </h1>
 
