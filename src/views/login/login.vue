@@ -44,7 +44,7 @@ async function handleSignInGoogle() {
   <div>
     <h1>Authentication</h1>
     <div v-if="!user">
-      <!-- <h2>Login</h2>
+      <h2>Login</h2>
       <form @submit.prevent="login">
         <label>
           Email:
@@ -55,7 +55,7 @@ async function handleSignInGoogle() {
           <input v-model="password" type="password" required />
         </label>
         <button type="submit">Login</button>
-      </form> -->
+      </form>
 
       <h2>Sign Up</h2>
       <form @submit.prevent="signup">
@@ -70,6 +70,7 @@ async function handleSignInGoogle() {
         <button type="submit">Sign Up</button>
       </form>
     </div>
+
     <div v-else>
       <h2>Welcome, {{ user.email }}!</h2>
       <button @click="logout">Logout</button>
@@ -80,7 +81,13 @@ async function handleSignInGoogle() {
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  type User,
+} from 'firebase/auth';
 import type { FirebaseError } from 'firebase/app';
 
 const user = ref<User | null>(null);
@@ -93,7 +100,11 @@ const signupPassword = ref('');
 const login = async () => {
   try {
     const auth = getAuth();
-    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email.value,
+      password.value,
+    );
     user.value = userCredential.user;
   } catch (err) {
     alert(err);
@@ -103,7 +114,11 @@ const login = async () => {
 const signup = async () => {
   try {
     const auth = getAuth();
-    const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      signupEmail.value,
+      signupPassword.value,
+    );
     user.value = userCredential.user;
   } catch (err) {
     alert(err);

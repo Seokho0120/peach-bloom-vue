@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { getAuth, onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { Icon } from '@iconify/vue';
 import peachbloom from '../assets/images/peachbloom-logo.png';
 
-const userMenu = [
+const user = ref<User | null>(null);
+const router = useRouter();
+
+const userMenu = computed(() => [
   {
     label: 'MY PAGE',
     name: 'mypage',
@@ -19,8 +25,8 @@ const userMenu = [
     icon: 'heroicons:shopping-cart-solid',
   },
   {
-    label: 'LOGIN',
-    name: 'login',
+    label: user.value ? 'LOGOUT' : 'LOGIN',
+    name: user.value ? 'home' : 'login',
     icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
   },
   {
@@ -28,7 +34,27 @@ const userMenu = [
     name: 'signup',
     icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
   },
-];
+]);
+
+const logout = async () => {
+  console.log('로그아웃');
+  try {
+    const auth = getAuth();
+    await signOut(auth);
+    user.value = null;
+
+    router.push({ name: 'home' });
+  } catch (err) {
+    alert(err);
+  }
+};
+
+onMounted(() => {
+  const auth = getAuth();
+  onAuthStateChanged(auth, (currentUser) => {
+    user.value = currentUser;
+  });
+});
 </script>
 
 <template>
@@ -49,6 +75,7 @@ const userMenu = [
           :to="{
             name: item.name,
           }"
+          @click.prevent="item.name === 'home' ? logout() : null"
         >
           <div class="flex items-center gap-1">
             <Icon :icon="item.icon" />
