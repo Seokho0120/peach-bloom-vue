@@ -44,7 +44,7 @@ async function handleSignInGoogle() {
   <div>
     <h1>Authentication</h1>
     <div v-if="!user">
-      <h2>Login</h2>
+      <!-- <h2>Login</h2>
       <form @submit.prevent="login">
         <label>
           Email:
@@ -55,7 +55,8 @@ async function handleSignInGoogle() {
           <input v-model="password" type="password" required />
         </label>
         <button type="submit">Login</button>
-      </form>
+      </form> -->
+
       <h2>Sign Up</h2>
       <form @submit.prevent="signup">
         <label>
@@ -73,16 +74,17 @@ async function handleSignInGoogle() {
       <h2>Welcome, {{ user.email }}!</h2>
       <button @click="logout">Logout</button>
     </div>
-    <p v-if="error" class="error">{{ error }}</p>
+    <!-- <p v-if="error" class="error">{{ error }}</p> -->
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth';
+import type { FirebaseError } from 'firebase/app';
 
-const user = ref(null);
-const error = ref(null);
+const user = ref<User | null>(null);
+// const error = ref(null);
 const email = ref('');
 const password = ref('');
 const signupEmail = ref('');
@@ -93,9 +95,8 @@ const login = async () => {
     const auth = getAuth();
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
     user.value = userCredential.user;
-    error.value = null;
   } catch (err) {
-    error.value = err.message;
+    alert(err);
   }
 };
 
@@ -104,9 +105,8 @@ const signup = async () => {
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
     user.value = userCredential.user;
-    error.value = null;
   } catch (err) {
-    error.value = err.message;
+    alert(err);
   }
 };
 
@@ -116,7 +116,7 @@ const logout = async () => {
     await signOut(auth);
     user.value = null;
   } catch (err) {
-    error.value = err.message;
+    alert(err);
   }
 };
 </script>

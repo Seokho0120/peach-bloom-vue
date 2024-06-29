@@ -1,60 +1,90 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-// import useAuth from '../../composables/useAuth';
-import { watch } from 'vue';
-import { signInWithGoogle } from '../../composables/useAuth';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  type User,
+} from 'firebase/auth';
+import { useRouter } from 'vue-router';
 
-// const { error, login, logout, user } = useAuth();
+const router = useRouter();
+const user = ref<User | null>(null);
+const emailValue = ref<string>('');
+const passwordValue = ref<string>('');
+const isLoading = ref<boolean>(false);
 
-const email = ref('');
-const password = ref('');
+const signup = async () => {
+  try {
+    isLoading.value = true;
+    const auth = getAuth();
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      emailValue.value,
+      passwordValue.value,
+    );
+    user.value = userCredential.user;
+    console.log('user.value', user.value);
 
-async function handleSignInGoogle() {
-  console.log('????');
-  await signInWithGoogle();
-}
+    router.push({ name: 'home' });
+  } catch (err) {
+    alert(err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 </script>
 
 <template>
-  <div class="mt-4">
-    <h2 class="text-3xl mb-8">SIGN UP</h2>
-
-    <div class="mb-4">
-      <label for="email" class="block mb-1 font-medium">이메일(아이디)</label>
-      <input id="email" type="text" placeholder="email" class="w-full border border-gray-300 rounded-md p-2" />
+  <div class="mt-24 flex flex-col items-center">
+    <div class="flex w-96">
+      <h2 class="font-bold text-3xl mb-16">
+        이메일로 <br />
+        로그인/회원가입 하기
+      </h2>
     </div>
-    <div class="mb-4">
-      <label for="password" class="block mb-1 font-medium">비밀번호</label>
+
+    <div class="mb-4 w-96">
+      <label for="email" class="block mb-1 text-sm font-medium"
+        >이메일(아이디)</label
+      >
       <input
+        v-model="emailValue"
+        id="email"
+        type="text"
+        placeholder="abc@email.com"
+        class="w-full border border-gray-200 rounded-md p-2 placeholder:text-sm focus:border-gray-900 focus:outline-none"
+        required
+      />
+    </div>
+    <div class="mb-4 w-96">
+      <label for="password" class="block mb-1 text-sm font-medium"
+        >비밀번호</label
+      >
+      <input
+        v-model="passwordValue"
         id="password"
         type="password"
-        placeholder="password"
-        class="w-full border border-gray-300 rounded-md p-2"
+        placeholder="6자 이상의 비밀번호"
+        class="w-full border border-gray-200 rounded-md p-2 placeholder:text-sm focus:border-gray-900 focus:outline-none"
+        required
       />
     </div>
 
-    <button @click="handleSignInGoogle" class="bg-blue-500 text-white px-4 py-2 rounded-md">회원가입</button>
+    <button
+      @click.prevent="signup"
+      :disabled="isLoading"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md w-96 mt-10"
+    >
+      <div v-if="isLoading">Loading...</div>
+      <div v-else>회원가입</div>
+    </button>
 
-    <!-- <form @submit="login">
-      <label>
-        Email:
-        <input v-model="email" type="email" required />
-      </label>
-      <label>
-        Password:
-        <input v-model="password" type="password" required />
-      </label>
-      <button type="submit">Login</button>
-    </form>
-    <p v-if="error">{{ error }}</p>
-    <button @click="logout" v-if="user">Logout</button> -->
-
-    <p class="mt-4">
+    <p class="mt-4 text-xs">
       <RouterLink
         :to="{
           name: 'login',
         }"
-        class="font-bold underline"
+        class="underline"
       >
         로그인 페이지</RouterLink
       >로 돌아가기
