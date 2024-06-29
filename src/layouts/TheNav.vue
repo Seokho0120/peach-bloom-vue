@@ -29,11 +29,21 @@ const userMenu = computed(() => [
     name: user.value ? 'home' : 'login',
     icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
   },
-  {
-    label: 'SIGNUP',
-    name: 'signup',
-    icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
-  },
+  ...(user.value
+    ? []
+    : [
+        {
+          label: 'SIGNUP',
+          name: 'signup',
+          icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
+        },
+      ]),
+
+  // {
+  //   label: 'SIGNUP',
+  //   name: 'signup',
+  //   icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
+  // },
 ]);
 
 const logout = async () => {
