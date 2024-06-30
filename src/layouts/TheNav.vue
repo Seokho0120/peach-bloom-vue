@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { Icon } from '@iconify/vue';
@@ -8,7 +8,7 @@ import peachbloom from '../assets/images/peachbloom-logo.png';
 const user = ref<User | null>(null);
 const router = useRouter();
 
-const userMenu = computed(() => [
+const userMenu = [
   {
     label: 'MY PAGE',
     name: 'mypage',
@@ -24,27 +24,7 @@ const userMenu = computed(() => [
     name: 'carts',
     icon: 'heroicons:shopping-cart-solid',
   },
-  {
-    label: user.value ? 'LOGOUT' : 'LOGIN',
-    name: user.value ? 'home' : 'login',
-    icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
-  },
-  ...(user.value
-    ? []
-    : [
-        {
-          label: 'SIGNUP',
-          name: 'signup',
-          icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
-        },
-      ]),
-
-  // {
-  //   label: 'SIGNUP',
-  //   name: 'signup',
-  //   icon: 'heroicons:arrow-right-end-on-rectangle-16-solid',
-  // },
-]);
+];
 
 const logout = async () => {
   console.log('로그아웃');
@@ -75,7 +55,7 @@ onMounted(() => {
           name: 'home',
         }"
       >
-        <img :src="peachbloom" class="w-36 mb-4" alt="peachbloom logo" />
+        <img :src="peachbloom" class="mb-4 w-36" alt="peachbloom logo" />
       </RouterLink>
     </h1>
 
@@ -85,13 +65,44 @@ onMounted(() => {
           :to="{
             name: item.name,
           }"
-          @click.prevent="item.name === 'home' ? logout() : null"
         >
           <div class="flex items-center gap-1">
             <Icon :icon="item.icon" />
             <span>{{ item.label }}</span>
           </div>
         </RouterLink>
+      </li>
+      <li v-if="!user">
+        <RouterLink
+          :to="{
+            name: 'signup'
+          }"
+          class="flex items-center gap-1"
+        >
+          <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
+          SIGNUP
+        </RouterLink>
+      </li>
+      <li v-if="!user">
+        <RouterLink
+          :to="{
+            name: 'login'
+          }"
+          class="flex items-center gap-1"
+        >
+          <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
+          LOGIN
+        </RouterLink>
+      </li>
+      <li v-else>
+        <button
+          type="button"
+          @click="() => logout()"
+          class="flex items-center gap-1"
+        >
+        <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
+          LOGOUT
+        </button>
       </li>
     </ul>
   </nav>

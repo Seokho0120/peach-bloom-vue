@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 const user = ref<User | null>(null);
 const emailValue = ref<string>('');
 const passwordValue = ref<string>('');
@@ -35,49 +36,53 @@ const signup = async () => {
 </script>
 
 <template>
-  <div class="mt-24 flex flex-col items-center">
+  <div class="flex flex-col items-center mt-24">
     <div class="flex w-96">
-      <h2 class="font-bold text-3xl mb-16">
+      <h2 class="mb-16 text-3xl font-bold">
         이메일로 <br />
         로그인/회원가입 하기
       </h2>
     </div>
 
-    <div class="mb-4 w-96">
-      <label for="email" class="block mb-1 text-sm font-medium"
-        >이메일(아이디)</label
-      >
-      <input
-        v-model="emailValue"
-        id="email"
-        type="text"
-        placeholder="abc@email.com"
-        class="w-full border border-gray-200 rounded-md p-2 placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        required
-      />
-    </div>
-    <div class="mb-4 w-96">
-      <label for="password" class="block mb-1 text-sm font-medium"
-        >비밀번호</label
-      >
-      <input
-        v-model="passwordValue"
-        id="password"
-        type="password"
-        placeholder="6자 이상의 비밀번호"
-        class="w-full border border-gray-200 rounded-md p-2 placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        required
-      />
-    </div>
-
-    <button
-      @click.prevent="signup"
-      :disabled="isLoading"
-      class="bg-blue-500 text-white px-4 py-2 rounded-md w-96 mt-10"
+    <form
+      @submit.prevent="() => signup()"
     >
-      <div v-if="isLoading">Loading...</div>
-      <div v-else>회원가입</div>
-    </button>
+      <div class="mb-4 w-96">
+        <label for="email" class="block mb-1 text-sm font-medium"
+          >이메일(아이디)</label
+        >
+        <input
+          v-model="emailValue"
+          id="email"
+          type="email"
+          placeholder="abc@email.com"
+          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          required
+        />
+      </div>
+      <div class="mb-4 w-96">
+        <label for="password" class="block mb-1 text-sm font-medium"
+          >비밀번호</label
+        >
+        <input
+          v-model="passwordValue"
+          id="password"
+          type="password"
+          placeholder="6자 이상의 비밀번호"
+          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        :disabled="isLoading"
+        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-md w-96"
+      >
+        <span v-if="isLoading">Loading...</span>
+        <span v-else>회원가입</span>
+      </button>
+    </form>
 
     <p class="mt-4 text-xs">
       <RouterLink
