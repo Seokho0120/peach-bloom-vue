@@ -1,38 +1,75 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   getAuth,
   createUserWithEmailAndPassword,
   type User,
 } from 'firebase/auth';
-import { useRouter } from 'vue-router';
+import { z } from 'zod';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as yup from 'yup';
 
 const router = useRouter();
+
+const { defineField, errors, handleSubmit, isSubmitting } = useForm({
+  validationSchema: toTypedSchema(
+    z.object({
+      email: z.string().min(1, 'required'),
+      password: z.string().min(1, 'required'),
+    }),
+  ),
+});
+
+const [email, emailAttrs] = defineField('email');
+const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
 const emailValue = ref<string>('');
 const passwordValue = ref<string>('');
+
 const isLoading = ref<boolean>(false);
 
-const signup = async () => {
-  try {
-    isLoading.value = true;
+const signup = handleSubmit(
+  async (values) => {
+    values.email;
+    // isLoading.value = true;
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      emailValue.value,
-      passwordValue.value,
+      values.email,
+      values.password,
     );
-    user.value = userCredential.user;
-    console.log('user.value', user.value);
 
+    user.value = userCredential.user;
     router.push({ name: 'home' });
-  } catch (err) {
-    alert(err);
-  } finally {
-    isLoading.value = false;
-  }
-};
+  },
+  ({ errors }) => {
+    alert(errors);
+  },
+);
+
+// const signup = async () => {
+//   try {
+//     isLoading.value = true;
+//     const auth = getAuth();
+//     const userCredential = await createUserWithEmailAndPassword(
+//       auth,
+//       emailValue.value,
+//       passwordValue.value,
+//     );
+//     // FIXME: user에 왜 null을?
+//     user.value = userCredential.user;
+//     console.log('user.value', user.value);
+
+//     router.push({ name: 'home' });
+//   } catch (err) {
+//     alert(err);
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
 </script>
 
 <template>
@@ -44,10 +81,9 @@ const signup = async () => {
       </h2>
     </div>
 
-    <form
-      @submit.prevent="() => signup()"
-    >
-      <div class="mb-4 w-96">
+    <!-- TODO: 인자에 뭐가 들어갈지 모르니 현식님이 얘기한거 정리하기 -->
+    <form @submit.prevent="() => signup()">
+      <!-- <div class="mb-4 w-96">
         <label for="email" class="block mb-1 text-sm font-medium"
           >이메일(아이디)</label
         >
@@ -72,16 +108,54 @@ const signup = async () => {
           class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
           required
         />
+      </div> -->
+
+      <div class="mb-4 w-96">
+        <label for="email" class="block mb-1 text-sm font-medium"
+          >이메일(아이디)</label
+        >
+
+        <input
+          v-model="email"
+          v-bind="emailAttrs"
+          id="email"
+          type="email"
+          placeholder="abc@email.com"
+          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          required
+        />
+      </div>
+      <div class="mb-4 w-96">
+        <label for="password" class="block mb-1 text-sm font-medium"
+          >비밀번호</label
+        >
+        <input
+          v-model="password"
+          v-bind="passwordAttrs"
+          id="password"
+          type="password"
+          placeholder="6자 이상의 비밀번호"
+          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          required
+        />
       </div>
 
       <button
+        type="submit"
+        :disabled="isSubmitting"
+        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-md w-96"
+      >
+        <span v-if="isSubmitting">Loading...</span>
+        <span v-else>회원가입</span>
+      </button>
+      <!-- <button
         type="submit"
         :disabled="isLoading"
         class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-md w-96"
       >
         <span v-if="isLoading">Loading...</span>
         <span v-else>회원가입</span>
-      </button>
+      </button> -->
     </form>
 
     <p class="mt-4 text-xs">
