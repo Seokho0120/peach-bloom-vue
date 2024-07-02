@@ -5,40 +5,57 @@ import { getAuth, createUserWithEmailAndPassword, type User } from 'firebase/aut
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
+import { watch } from 'vue';
+import { computed } from 'vue';
 
 const router = useRouter();
 
-const { defineField, errors, handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(
-    z.object({
-      email: z.string().min(1),
-      password: z.string().min(1),
-    }),
-  ),
-});
+const validationSchema = toTypedSchema(
+  z.object({
+    email: z.string().min(1).email(),
+    password: z
+      .string()
+      .min(6, '비밀번호는 6-10자 이내로 설정해야 합니다.')
+      .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.',
+      ),
+  }),
+);
+
+const { defineField, errors, handleSubmit, isSubmitting } = useForm({ validationSchema });
 
 const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
+const loginError = ref<Record<string, string | null>>({
+  email: null,
+  password: null,
+});
 
 const signup = handleSubmit(
   async (values) => {
-    values.email;
-    const auth = getAuth();
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      values.email,
-      values.password,
-    );
+    if (values.email && values.password) {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password,
+      );
 
-    user.value = userCredential.user;
-    router.push({ name: 'home' });
+      user.value = userCredential.user;
+      router.push({ name: 'home' });
+    }
   },
   ({ errors }) => {
-    alert(errors);
+    loginError.value = errors;
+    console.log('loginError.value', loginError.value);
   },
 );
+// TODO: 동일한 계정 에러 처리 필요
+// 동일한 이메일 주소로 가입된 계정이 있습니다. 기존 계정으로 로그인해주세요.
 </script>
 
 <template>
@@ -60,10 +77,13 @@ const signup = handleSubmit(
           type="email"
           placeholder="abc@email.com"
           class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
-          required
         />
-        <div v-if="errors.email" class="text-red-500 text-sm mt-1">
-          {{ errors.email }}
+
+        <div
+          v-if="(errors.email && email !== '') || loginError.email === 'Required'"
+          class="text-red-500 text-sm mt-1"
+        >
+          이메일 형식이 올바르지 않습니다.
         </div>
       </div>
 
@@ -76,10 +96,12 @@ const signup = handleSubmit(
           type="password"
           placeholder="6자 이상의 비밀번호"
           class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
-          required
         />
-        <div v-if="errors.password" class="text-red-500 text-sm mt-1">
-          {{ errors.password }}
+        <div
+          v-if="(errors.password && password !== '') || loginError.password === 'Required'"
+          class="text-red-500 text-sm mt-1"
+        >
+          비밀번호 형식이 올바르지 않습니다.
         </div>
       </div>
 
