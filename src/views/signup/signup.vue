@@ -1,23 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  type User,
-} from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, type User } from 'firebase/auth';
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
-import * as yup from 'yup';
 
 const router = useRouter();
 
 const { defineField, errors, handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(
     z.object({
-      email: z.string().min(1, 'required'),
-      password: z.string().min(1, 'required'),
+      email: z.string().min(1),
+      password: z.string().min(1),
     }),
   ),
 });
@@ -26,15 +21,10 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
-const emailValue = ref<string>('');
-const passwordValue = ref<string>('');
-
-const isLoading = ref<boolean>(false);
 
 const signup = handleSubmit(
   async (values) => {
     values.email;
-    // isLoading.value = true;
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -49,27 +39,6 @@ const signup = handleSubmit(
     alert(errors);
   },
 );
-
-// const signup = async () => {
-//   try {
-//     isLoading.value = true;
-//     const auth = getAuth();
-//     const userCredential = await createUserWithEmailAndPassword(
-//       auth,
-//       emailValue.value,
-//       passwordValue.value,
-//     );
-//     // FIXME: user에 왜 null을?
-//     user.value = userCredential.user;
-//     console.log('user.value', user.value);
-
-//     router.push({ name: 'home' });
-//   } catch (err) {
-//     alert(err);
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
 </script>
 
 <template>
@@ -81,40 +50,9 @@ const signup = handleSubmit(
       </h2>
     </div>
 
-    <!-- TODO: 인자에 뭐가 들어갈지 모르니 현식님이 얘기한거 정리하기 -->
     <form @submit.prevent="() => signup()">
-      <!-- <div class="mb-4 w-96">
-        <label for="email" class="block mb-1 text-sm font-medium"
-          >이메일(아이디)</label
-        >
-        <input
-          v-model="emailValue"
-          id="email"
-          type="email"
-          placeholder="abc@email.com"
-          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
-          required
-        />
-      </div>
       <div class="mb-4 w-96">
-        <label for="password" class="block mb-1 text-sm font-medium"
-          >비밀번호</label
-        >
-        <input
-          v-model="passwordValue"
-          id="password"
-          type="password"
-          placeholder="6자 이상의 비밀번호"
-          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
-          required
-        />
-      </div> -->
-
-      <div class="mb-4 w-96">
-        <label for="email" class="block mb-1 text-sm font-medium"
-          >이메일(아이디)</label
-        >
-
+        <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
         <input
           v-model="email"
           v-bind="emailAttrs"
@@ -124,11 +62,13 @@ const signup = handleSubmit(
           class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
           required
         />
+        <div v-if="errors.email" class="text-red-500 text-sm mt-1">
+          {{ errors.email }}
+        </div>
       </div>
+
       <div class="mb-4 w-96">
-        <label for="password" class="block mb-1 text-sm font-medium"
-          >비밀번호</label
-        >
+        <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
         <input
           v-model="password"
           v-bind="passwordAttrs"
@@ -138,6 +78,9 @@ const signup = handleSubmit(
           class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
           required
         />
+        <div v-if="errors.password" class="text-red-500 text-sm mt-1">
+          {{ errors.password }}
+        </div>
       </div>
 
       <button
@@ -148,14 +91,6 @@ const signup = handleSubmit(
         <span v-if="isSubmitting">Loading...</span>
         <span v-else>회원가입</span>
       </button>
-      <!-- <button
-        type="submit"
-        :disabled="isLoading"
-        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-md w-96"
-      >
-        <span v-if="isLoading">Loading...</span>
-        <span v-else>회원가입</span>
-      </button> -->
     </form>
 
     <p class="mt-4 text-xs">
