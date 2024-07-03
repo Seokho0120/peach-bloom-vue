@@ -76,7 +76,7 @@ const signup = handleSubmit(
           id="email"
           type="email"
           placeholder="abc@email.com"
-          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
         />
 
         <div
@@ -95,7 +95,7 @@ const signup = handleSubmit(
           id="password"
           type="password"
           placeholder="6자 이상의 비밀번호"
-          class="w-full p-2 border border-gray-200 rounded-md placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
         />
         <div
           v-if="(errors.password && password !== '') || loginError.password === 'Required'"
@@ -108,7 +108,7 @@ const signup = handleSubmit(
       <button
         type="submit"
         :disabled="isSubmitting"
-        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-md w-96"
+        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-sm w-96"
       >
         <span v-if="isSubmitting">Loading...</span>
         <span v-else>회원가입</span>

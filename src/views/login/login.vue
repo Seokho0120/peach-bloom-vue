@@ -1,143 +1,94 @@
-<!-- <script setup lang="ts">
-import { signInWithGoogle } from '@/composables/useAuth';
-
-async function handleSignInGoogle() {
-  console.log('????');
-  await signInWithGoogle();
-}
-</script>
-
-<template>
-  <div class="mt-4">
-    <h2 class="text-3xl mb-8">LOGIN</h2>
-
-    <div class="mb-4">
-      <label for="email" class="block mb-1 font-medium">이메일(아이디)</label>
-      <input id="email" type="text" placeholder="email" class="w-full border border-gray-300 rounded-md p-2" />
-    </div>
-    <div class="mb-4">
-      <label for="password" class="block mb-1 font-medium">비밀번호</label>
-      <input
-        id="password"
-        type="password"
-        placeholder="password"
-        class="w-full border border-gray-300 rounded-md p-2"
-      />
-    </div>
-
-    <button @click="handleSignInGoogle" class="bg-blue-500 text-white px-4 py-2 rounded-md">로그인</button>
-    <p class="mt-4">
-      만약 계정이 없다면,
-      <RouterLink
-        :to="{
-          name: 'signup',
-        }"
-        class="font-bold underline"
-      >
-        회원가입</RouterLink
-      >을 먼저 진행해주세요!
-    </p>
-  </div>
-</template> -->
-
-<template>
-  <div>
-    <h1>Authentication</h1>
-    <div v-if="!user">
-      <h2>Login</h2>
-      <form @submit.prevent="login">
-        <label>
-          Email:
-          <input v-model="email" type="email" required />
-        </label>
-        <label>
-          Password:
-          <input v-model="password" type="password" required />
-        </label>
-        <button type="submit">Login</button>
-      </form>
-
-      <h2>Sign Up</h2>
-      <form @submit.prevent="signup">
-        <label>
-          Email:
-          <input v-model="signupEmail" type="email" required />
-        </label>
-        <label>
-          Password:
-          <input v-model="signupPassword" type="password" required />
-        </label>
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
-
-    <div v-else>
-      <h2>Welcome, {{ user.email }}!</h2>
-      <button @click="logout">Logout</button>
-    </div>
-    <!-- <p v-if="error" class="error">{{ error }}</p> -->
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  type User,
-} from 'firebase/auth';
-import type { FirebaseError } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, type User } from 'firebase/auth';
+import { z } from 'zod';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+
+const validationSchema = toTypedSchema(
+  z.object({
+    email: z.string().min(1).email(),
+    password: z
+      .string()
+      .min(6, '비밀번호는 6-10자 이내로 설정해야 합니다.')
+      .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.',
+      ),
+  }),
+);
+
+const { defineField, errors, handleSubmit, isSubmitting } = useForm({ validationSchema });
+
+const [email, emailAttrs] = defineField('email');
+const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
-// const error = ref(null);
-const email = ref('');
-const password = ref('');
-const signupEmail = ref('');
-const signupPassword = ref('');
 
-const login = async () => {
-  try {
-    const auth = getAuth();
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value,
-    );
-    user.value = userCredential.user;
-  } catch (err) {
-    alert(err);
-  }
-};
-
-const signup = async () => {
-  try {
-    const auth = getAuth();
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      signupEmail.value,
-      signupPassword.value,
-    );
-    user.value = userCredential.user;
-  } catch (err) {
-    alert(err);
-  }
-};
-
-const logout = async () => {
-  try {
-    const auth = getAuth();
-    await signOut(auth);
-    user.value = null;
-  } catch (err) {
-    alert(err);
-  }
-};
+const login = handleSubmit(
+  async (loginData: { email: string; password: string }) => {
+    if (loginData.email && loginData.password) {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        loginData.email,
+        loginData.password,
+      );
+      user.value = userCredential.user;
+    }
+  },
+  ({ errors }) => {
+    console.log('errors', errors);
+  },
+);
 </script>
 
-<style scoped>
-.error {
-  color: red;
-}
-</style>
+<template>
+  <div class="flex flex-col items-center mt-24">
+    <div class="flex w-96">
+      <h2 class="mb-16 text-3xl font-bold">로그인</h2>
+    </div>
+
+    <form @submit="() => login()">
+      <div class="mb-4 w-96">
+        <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="abc@email.com"
+          v-model="email"
+          v-bind="emailAttrs"
+          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+        />
+        <div v-if="errors.email && email !== ''" class="text-red-500 text-sm mt-1">
+          이메일 형식이 올바르지 않습니다.
+        </div>
+      </div>
+
+      <div class="mb-4 w-96">
+        <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="6자 이상의 비밀번호"
+          v-model="password"
+          v-bind="passwordAttrs"
+          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+        />
+        <div v-if="errors.password && password !== ''" class="text-red-500 text-sm mt-1">
+          비밀번호 형식이 올바르지 않습니다.
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        :disabled="isSubmitting"
+        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-sm w-96"
+      >
+        <span v-if="isSubmitting">Loading...</span>
+        <span v-else>로그인</span>
+      </button>
+    </form>
+  </div>
+</template>
