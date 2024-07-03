@@ -79,6 +79,11 @@ const signup = handleSubmit(
           class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
         />
 
+        <!-- <div>
+          TODO: 유효성검사 UI 추가하기
+          <Icon icon="heroicons:check" />
+        </div> -->
+
         <div
           v-if="(errors.email && email !== '') || loginError.email === 'Required'"
           class="text-red-500 text-sm mt-1"
