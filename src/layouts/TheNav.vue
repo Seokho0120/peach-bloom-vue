@@ -75,17 +75,6 @@ onMounted(() => {
       <li v-if="!user">
         <RouterLink
           :to="{
-            name: 'signup',
-          }"
-          class="flex items-center gap-1"
-        >
-          <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
-          SIGNUP
-        </RouterLink>
-      </li>
-      <li v-if="!user">
-        <RouterLink
-          :to="{
             name: 'login',
           }"
           class="flex items-center gap-1"
@@ -95,11 +84,7 @@ onMounted(() => {
         </RouterLink>
       </li>
       <li v-else>
-        <button
-          type="button"
-          @click="() => logout()"
-          class="flex items-center gap-1"
-        >
+        <button type="button" @click="() => logout()" class="flex items-center gap-1">
           <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
           LOGOUT
         </button>

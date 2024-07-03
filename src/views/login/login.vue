@@ -77,9 +77,7 @@ watch(
 
 <template>
   <div class="flex flex-col items-center mt-24">
-    <div class="flex w-96">
-      <h2 class="mb-16 text-3xl font-bold">로그인</h2>
-    </div>
+    <h2 class="mb-16 text-5xl border-b-4 border-black pb-8 w-96 text-center">로그인</h2>
 
     <form @submit.prevent="() => login()">
       <div class="mb-4 w-96">
@@ -122,5 +120,14 @@ watch(
         <span v-else>로그인</span>
       </button>
     </form>
+
+    <RouterLink
+      :to="{
+        name: 'signup',
+      }"
+      class="text-center px-4 py-4 mt-10 border-[1px] border-black rounded-full w-96 hover:cursor-pointer"
+    >
+      <span>간편 회원가입</span>
+    </RouterLink>
   </div>
 </template>
