@@ -5,6 +5,7 @@ import { getAuth, signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
+import type { FirebaseError } from 'firebase/app';
 
 const router = useRouter();
 
@@ -28,93 +29,108 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
+const errorMessage = ref('');
+
+// TODO: 유효성검사 추가해야됨
+//  errors.email === 'Required' 면 필수값이라고 표시 - 빈값일때 로그인 버튼 클릭
+//  errors.email === 'Invalid email' 면 유효성검사 실패 - 빈값일때 로그인 버튼 클릭
+//  errors.mail === 'Invalid Required' 면 필수값이라고 표시 - 빈값일때 로그인 버튼 클릭
+
+//  errors.email === 'Required' ? 이메일(아이디)를 입력하세요.
+//  errors.email === 'Invalid email' ? 이메일 형식이 올바르지 않습니다.
+//  errors.mail === 'Invalid Required' ? 비밀번호를 입력하세요.
 
 const login = handleSubmit(
   async (loginData) => {
-    if (loginData.email === '' && loginData.password === '') return;
+    try {
+      if (loginData.email === '' && loginData.password === '') return;
 
-    if (hasError.value) {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(
         auth,
         loginData.email,
         loginData.password,
       );
-      user.value = userCredential.user;
 
-      console.log('success');
+      user.value = userCredential.user;
       router.push({ name: 'home' });
+      console.log('로그인 성공');
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      if (firebaseError.code === 'auth/invalid-credential') {
+        errorMessage.value = '존재하지 않는 계정입니다.';
+      }
+
+      // TODO: 에러 처리 추가해야됨
+      // switch (firebaseError.code) {
+      //   case 'auth/user-not-found' || 'auth/wrong-password':
+      //     return '이메일 혹은 비밀번호가 일치하지 않습니다.';
+      //   case 'auth/email-already-in-use':
+      //     return '이미 사용 중인 이메일입니다.';
+      //   case 'auth/weak-password':
+      //     return '비밀번호는 6글자 이상이어야 합니다.';
+      //   case 'auth/network-request-failed':
+      //     return '네트워크 연결에 실패 하였습니다.';
+      //   case 'auth/invalid-email':
+      //     return '잘못된 이메일 형식입니다.';
+      //   case 'auth/internal-error':
+      //     return '잘못된 요청입니다.';
+      //   default:
+      //     return '로그인에 실패 하였습니다.';
+      // }
     }
   },
   ({ errors }) => {
     console.log('login errors', errors);
   },
 );
-
-const hasError = ref(false);
-// const hasError = computed(() => (Object.keys(errors.value).length > 0 ? true : false));
-// 이메일&&비번이 '' 이 아니고, 유효성 검사 통과해야함 -> 그냥 유효성 검사 통과하게 만들면됨
-// false - 오류 / true - 성공
-
-watch(
-  [email, password, hasError],
-  ([newEmail, newPassword]) => {
-    console.log('hasError.value', hasError.value);
-
-    if (newEmail === '' || newPassword === '') {
-      return (hasError.value = true);
-    }
-
-    if (Object.keys(errors.value).length > 0) {
-      return (hasError.value = true);
-    }
-
-    hasError.value = false;
-  },
-  { immediate: true },
-);
 </script>
 
 <template>
-  <div class="flex flex-col items-center mt-24">
-    <h2 class="mb-16 text-5xl border-b-4 border-black pb-8 w-96 text-center">로그인</h2>
+  <div class="flex flex-col items-center max-w-[400px] m-auto pt-11">
+    <h2 class="text-3xl font-bold">로그인</h2>
 
-    <form @submit.prevent="() => login()">
-      <div class="mb-4 w-96">
-        <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
-        <input
-          id="email"
-          type="email"
-          placeholder="abc@email.com"
-          v-model="email"
-          v-bind="emailAttrs"
-          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        />
+    <form @submit.prevent="() => login()" class="w-full">
+      <div class="flex flex-col h-[310px] pt-[60px]">
+        <div class="mb-5">
+          <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="abc@email.com"
+            v-model="email"
+            v-bind="emailAttrs"
+            class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          />
 
-        <div v-if="errors.email && email !== ''" class="text-red-500 text-sm mt-1">
-          이메일 형식이 올바르지 않습니다.
+          <div v-if="errors.email && email !== ''" class="text-red-500 text-sm mt-1">
+            이메일(아이디)를 입력하세요.
+          </div>
+          <div v-if="errorMessage !== ''" class="text-red-500 text-sm mt-1">
+            {{ errorMessage }}
+          </div>
         </div>
-      </div>
 
-      <div class="mb-4 w-96">
-        <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="6자 이상의 비밀번호"
-          v-model="password"
-          v-bind="passwordAttrs"
-          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        />
-        <div v-if="errors.password && password !== ''" class="text-red-500 text-sm mt-1">
-          비밀번호 형식이 올바르지 않습니다.
+        <div class="mb-5">
+          <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="6자 이상의 비밀번호"
+            v-model="password"
+            v-bind="passwordAttrs"
+            class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          />
+          <div v-if="errors.password && password !== ''" class="text-red-500 text-sm mt-1">
+            비밀번호를 입력하세요.
+          </div>
         </div>
       </div>
 
       <button
         type="submit"
-        :disabled="isSubmitting || !hasError"
-        :class="`px-4 py-2 mt-10 text-white ${!hasError ? 'bg-blue-200' : 'bg-blue-500'} rounded-sm w-96 hover:cursor-pointer`"
+        :disabled="isSubmitting"
+        :class="`px-4 py-2 text-white font-semibold text-sm bg-black rounded w-full min-w-[88px] h-12 hover:cursor-pointer`"
       >
         <span v-if="isSubmitting">Loading...</span>
         <span v-else>로그인</span>
@@ -125,7 +141,7 @@ watch(
       :to="{
         name: 'signup',
       }"
-      class="text-center px-4 py-4 mt-10 border-[1px] border-black rounded-full w-96 hover:cursor-pointer"
+      :class="`flex items-center justify-center mt-2 px-4 py-2 font-semibold text-sm bg-white border-[1px] rounded w-full min-w-[88px] h-12 hover:cursor-pointer`"
     >
       <span>간편 회원가입</span>
     </RouterLink>
