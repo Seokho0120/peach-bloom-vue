@@ -34,8 +34,6 @@ const loginErrorMessage = ref<string>('');
 
 const login = handleSubmit(async (loginData) => {
   try {
-    if (loginData.email === '' && loginData.password === '') return;
-
     const auth = getAuth();
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -48,6 +46,7 @@ const login = handleSubmit(async (loginData) => {
     console.log('로그인 성공');
   } catch (error) {
     const firebaseError = error as FirebaseError;
+    console.log('firebaseError', firebaseError);
     loginErrorMessage.value = firebaseErrorTypeValidation(firebaseError) || '';
   }
 });
