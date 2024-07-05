@@ -6,37 +6,44 @@ import { z } from 'zod';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { watch } from 'vue';
-import { computed } from 'vue';
+import type { FirebaseError } from 'firebase/app';
+import { firebaseErrorTypeValidation } from '@/composables/useLoginValidation';
 
 const router = useRouter();
+const test = ref('');
 
-const validationSchema = toTypedSchema(
-  z.object({
-    email: z.string().min(1).email(),
-    password: z
-      .string()
-      .min(6, '비밀번호는 6-10자 이내로 설정해야 합니다.')
-      .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
-      .regex(
-        /[!@#$%^&*(),.?":{}|<>]/,
-        '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.',
-      ),
-  }),
-);
+const { defineField, errors, handleSubmit, isSubmitting } = useForm({
+  validationSchema: toTypedSchema(
+    z.object({
+      email: z.string().min(1).email(),
+      password: z
+        .string()
+        .min(6, '비밀번호는 6-10자 이내로 설정해야 합니다.')
+        .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
+        .regex(
+          /[!@#$%^&*(),.?":{}|<>]/,
+          '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.',
+        ),
+    }),
+  ),
+});
 
-const { defineField, errors, handleSubmit, isSubmitting } = useForm({ validationSchema });
+// watch(
+//   test,
+//   () => {
+//     console.log('test.value', test.value);
+//   },
+//   { immediate: true, deep: true },
+// );
 
 const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 const user = ref<User | null>(null);
-const loginError = ref<Record<string, string | null>>({
-  email: null,
-  password: null,
-});
+const signupErrorMessage = ref<string>('');
 
-const signup = handleSubmit(
-  async (values) => {
+const signup = handleSubmit(async (values) => {
+  try {
     if (values.email && values.password) {
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(
@@ -47,73 +54,73 @@ const signup = handleSubmit(
 
       user.value = userCredential.user;
       router.push({ name: 'home' });
+      console.log('회원가입 성공');
     }
-  },
-  ({ errors }) => {
-    loginError.value = errors;
-    console.log('loginError.value', loginError.value);
-  },
-);
-// TODO: 동일한 계정 에러 처리 필요
-// 동일한 이메일 주소로 가입된 계정이 있습니다. 기존 계정으로 로그인해주세요.
+  } catch (error) {
+    const firebaseError = error as FirebaseError;
+    signupErrorMessage.value = firebaseErrorTypeValidation(firebaseError) || '';
+  }
+});
 </script>
 
 <template>
-  <div class="flex flex-col items-center mt-24">
-    <div class="flex w-96">
-      <h2 class="mb-16 text-3xl font-bold">
-        이메일로 <br />
-        로그인/회원가입 하기
-      </h2>
-    </div>
+  <div class="flex flex-col items-center max-w-[400px] m-auto pt-11">
+    <h2 class="text-3xl font-bold">간편가입</h2>
 
-    <form @submit.prevent="() => signup()">
-      <div class="mb-4 w-96">
-        <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
-        <input
-          v-model="email"
-          v-bind="emailAttrs"
-          id="email"
-          type="email"
-          placeholder="abc@email.com"
-          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        />
+    <form @submit.prevent="() => signup()" class="w-full">
+      <div class="flex flex-col h-[310px] pt-[60px]">
+        <div class="mb-8">
+          <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="abc@email.com"
+            v-model="email"
+            v-bind="emailAttrs"
+            class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          />
 
-        <!-- <div>
+          <!-- <div>
           TODO: 유효성검사 UI 추가하기
           <Icon icon="heroicons:check" />
         </div> -->
 
-        <div
-          v-if="(errors.email && email !== '') || loginError.email === 'Required'"
-          class="text-red-500 text-sm mt-1"
-        >
-          이메일 형식이 올바르지 않습니다.
+          <div v-if="errors.email" class="text-red-500 text-sm mt-1 absolute">
+            {{
+              errors.email === 'Required'
+                ? '이메일(아이디)를 입력하세요.'
+                : 'Invalid email'
+                  ? '이메일 형식이 올바르지 않습니다.'
+                  : ''
+            }}
+          </div>
         </div>
-      </div>
 
-      <div class="mb-4 w-96">
-        <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
-        <input
-          v-model="password"
-          v-bind="passwordAttrs"
-          id="password"
-          type="password"
-          placeholder="6자 이상의 비밀번호"
-          class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
-        />
-        <div
-          v-if="(errors.password && password !== '') || loginError.password === 'Required'"
-          class="text-red-500 text-sm mt-1"
-        >
-          비밀번호 형식이 올바르지 않습니다.
+        <div class="mb-8">
+          <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="6자 이상의 비밀번호"
+            v-model="password"
+            v-bind="passwordAttrs"
+            class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
+          />
+
+          <div v-if="errors.password" class="text-red-500 text-sm mt-1">
+            {{ errors.password === 'Required' ? '비밀번호를 입력하세요.' : errors.password }}
+          </div>
+
+          <div v-if="signupErrorMessage" class="text-red-500 text-sm mt-1">
+            {{ signupErrorMessage }}
+          </div>
         </div>
       </div>
 
       <button
         type="submit"
         :disabled="isSubmitting"
-        class="px-4 py-2 mt-10 text-white bg-blue-500 rounded-sm w-96"
+        :class="`px-4 py-2 text-white font-semibold text-sm bg-black rounded w-full min-w-[88px] h-12 hover:cursor-pointer`"
       >
         <span v-if="isSubmitting">Loading...</span>
         <span v-else>회원가입</span>
