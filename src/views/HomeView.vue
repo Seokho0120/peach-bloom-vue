@@ -6,15 +6,15 @@ const user = ref<User | null>(null);
 
 onAuthStateChanged(getAuth(), (currentUser) => {
   user.value = currentUser;
+
+  console.log('user.value', user.value);
 });
 </script>
 <template>
   <div>
     <h1 class="text-xl">Welcome to Peachbloom!</h1>
     <div v-if="user">
-      <h2 class="font-bold text-2xl text-blue-500">
-        Welcome, {{ user.email }}!
-      </h2>
+      <h2 class="font-bold text-2xl text-blue-500">Welcome, {{ user.email }}!</h2>
     </div>
   </div>
 </template>

@@ -46,19 +46,29 @@ const login = handleSubmit(async (loginData) => {
     console.log('로그인 성공');
   } catch (error) {
     const firebaseError = error as FirebaseError;
-    console.log('firebaseError', firebaseError);
     loginErrorMessage.value = firebaseErrorTypeValidation(firebaseError) || '';
   }
 });
+
+watch(
+  [email, password],
+  ([newEmail, newPassword]) => {
+    if (newEmail !== '' || newPassword !== '') {
+      loginErrorMessage.value = '';
+    }
+  },
+  { immediate: true, deep: true },
+);
 </script>
 
+<!-- TODO: 에러메세지는 absolute로 만들어서 UI 흔들리는 현상 없게 -->
 <template>
   <div class="flex flex-col items-center max-w-[400px] m-auto pt-11">
     <h2 class="text-3xl font-bold">로그인</h2>
 
     <form @submit.prevent="() => login()" class="w-full">
       <div class="flex flex-col h-[310px] pt-[60px]">
-        <div class="mb-5">
+        <div class="mb-8">
           <label for="email" class="block mb-1 text-sm font-medium">이메일(아이디)</label>
           <input
             id="email"
@@ -69,7 +79,7 @@ const login = handleSubmit(async (loginData) => {
             class="w-full p-2 border border-gray-200 rounded-sm placeholder:text-sm focus:border-gray-900 focus:outline-none"
           />
 
-          <div v-if="errors.email" class="text-red-500 text-sm mt-1">
+          <div v-if="errors.email" class="text-red-500 text-sm mt-1 absolute">
             {{
               errors.email === 'Required'
                 ? '이메일(아이디)를 입력하세요.'
@@ -78,7 +88,7 @@ const login = handleSubmit(async (loginData) => {
           </div>
         </div>
 
-        <div class="mb-5">
+        <div class="mb-8">
           <label for="password" class="block mb-1 text-sm font-medium">비밀번호</label>
           <input
             id="password"
