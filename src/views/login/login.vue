@@ -61,7 +61,6 @@ watch(
 );
 </script>
 
-<!-- TODO: 에러메세지는 absolute로 만들어서 UI 흔들리는 현상 없게 -->
 <template>
   <div class="flex flex-col items-center max-w-[400px] m-auto pt-11">
     <h2 class="text-3xl font-bold">로그인</h2>
@@ -83,7 +82,9 @@ watch(
             {{
               errors.email === 'Required'
                 ? '이메일(아이디)를 입력하세요.'
-                : '이메일 형식이 올바르지 않습니다.'
+                : 'Invalid email'
+                  ? '이메일 형식이 올바르지 않습니다.'
+                  : ''
             }}
           </div>
         </div>
