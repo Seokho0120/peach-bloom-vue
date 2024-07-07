@@ -1,34 +1,39 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
+import { watch, ref } from 'vue';
+import { createReusableTemplate } from '@vueuse/core';
+import BrandForm from '@/components/BrandForm.vue';
 
-const selectedCity = ref();
-const cities = ref([
-  { name: 'New York', code: 'NY' },
-  { name: 'Rome', code: 'RM' },
-  { name: 'London', code: 'LDN' },
-  { name: 'Istanbul', code: 'IST' },
-  { name: 'Paris', code: 'PRS' },
-]);
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{ label: string }>();
+
+const brandFormRef = ref<InstanceType<typeof BrandForm> | undefined>(undefined);
+
+watch(
+  () => brandFormRef.value?.text,
+  (newVal) => {
+    console.log('테스트', newVal);
+  },
+  { immediate: true, deep: true },
+);
 </script>
 
 <template>
-  <div class="flex flex-col items-center max-w-[400px] m-auto pt-11">
-    <h2 class="text-3xl font-bold">상품 등록</h2>
-  </div>
+  <DefineTemplate v-slot="{ label, $slots }">
+    <div class="w-full mb-10 border py-6 px-8 rounded-xl overflow-x-auto whitespace-nowrap">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold">{{ label }}</h2>
+      </div>
+      <component :is="$slots.default"></component>
+    </div>
+  </DefineTemplate>
 
-  <div class="card flex justify-center">
-    <Dropdown
-      v-model="selectedCity"
-      :options="cities"
-      optionLabel="name"
-      placeholder="Select a City"
-      class="w-full md:w-[14rem]"
-    />
-  </div>
+  <!-- <div class="flex flex-col items-center max-w-[400px] m-auto pt-11"> -->
+  <!-- <div class="flex flex-col items-center p-12"> -->
 
-  <Button label="Submit" />
+  <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6">
+    <h2 class="text-3xl font-bold mb-10">상품 등록</h2>
+
+    <ReuseTemplate label="브랜드명">
+      <BrandForm ref="brandFormRef" />
+    </ReuseTemplate>
+  </div>
 </template>
-
-<style scoped></style>

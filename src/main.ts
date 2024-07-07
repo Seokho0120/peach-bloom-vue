@@ -7,9 +7,9 @@ import { Icon } from '@iconify/vue';
 import firebaseApp from '@/api/firebasedb';
 
 import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/aura-light-green/theme.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css'; // PrimeVue의 기본 CSS 파일 추가
-import 'primeicons/primeicons.css'; // PrimeIcons 추가
+import 'primeicons/primeicons.css';
 
 const app = createApp(App);
 

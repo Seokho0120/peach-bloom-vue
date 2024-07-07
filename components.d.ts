@@ -7,8 +7,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Brand: typeof import('./src/components/brand.vue')['default']
+    BrandForm: typeof import('./src/components/brandForm.vue')['default']
     Button: typeof import('primevue/button')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
+    InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheNav: typeof import('./src/layouts/TheNav.vue')['default']
