@@ -16,7 +16,8 @@ const { defineField, errors, handleSubmit, isSubmitting } = useForm({
       email: z.string().min(1).email(),
       password: z
         .string()
-        .min(6, '비밀번호는 6-10자 이내로 설정해야 합니다.')
+        .min(6, '비밀번호는 6-20자 이내로 설정해야 합니다.')
+        .max(20)
         .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
         .regex(
           /[!@#$%^&*(),.?":{}|<>]/,
@@ -50,15 +51,12 @@ const login = handleSubmit(async (loginData) => {
   }
 });
 
-watch(
-  [email, password],
-  ([newEmail, newPassword]) => {
-    if (newEmail !== '' || newPassword !== '') {
-      loginErrorMessage.value = '';
-    }
-  },
-  { immediate: true, deep: true },
-);
+watch([email, password], ([newEmail, newPassword]) => {
+  if (newEmail !== '' || newPassword !== '') {
+    // 로그인 실패 후 에러메세지 삭제
+    loginErrorMessage.value = '';
+  }
+});
 </script>
 
 <template>
