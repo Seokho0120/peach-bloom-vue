@@ -7,7 +7,7 @@ const user = ref<User | null>(null);
 onAuthStateChanged(getAuth(), (currentUser) => {
   user.value = currentUser;
 
-  console.log('user.value', user.value);
+  console.log('user 정보', user.value);
 });
 </script>
 <template>

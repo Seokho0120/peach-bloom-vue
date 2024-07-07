@@ -27,12 +27,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
+      // import로 화면 보여주면 필요할때 다운받아서 보여주기 때문에 성능최적화 방법 중 하나
       component: () => import('@/views/login/login.vue'),
     },
     {
       path: '/signup',
       name: 'signup',
       component: () => import('@/views/signup/signup.vue'),
+    },
+    {
+      path: '/upload',
+      name: 'upload',
+      component: () => import('@/views/upload/upload.vue'),
     },
   ],
 });

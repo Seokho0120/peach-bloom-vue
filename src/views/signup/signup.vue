@@ -56,7 +56,7 @@ const signup = handleSubmit(async (values) => {
 
     user.value = userCredential.user;
     router.push({ name: 'home' });
-    console.log('회원가입 성공');
+    // 회원가입 성공 시 local에 사용자 정보 저장됨
   } catch (error) {
     const firebaseError = error as FirebaseError;
     signupErrorMessage.value = firebaseErrorTypeValidation(firebaseError) || '';

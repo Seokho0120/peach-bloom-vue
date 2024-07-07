@@ -4,7 +4,7 @@ import './index.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { Icon } from '@iconify/vue';
-import { firebaseApp } from '@/api/initApp';
+import firebaseApp from '@/api/firebasedb';
 
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';

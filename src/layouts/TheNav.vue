@@ -24,10 +24,13 @@ const userMenu = [
     name: 'carts',
     icon: 'heroicons:shopping-cart-solid',
   },
+  {
+    label: 'UPLOAD',
+    name: 'upload',
+    icon: 'heroicons:arrow-up-tray-16-solid',
+  },
 ];
-
 const logout = async () => {
-  console.log('로그아웃');
   try {
     const auth = getAuth();
     await signOut(auth);
@@ -48,7 +51,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <nav class="flex justify-between">
+  <nav class="flex justify-between p-12">
     <h1>
       <RouterLink
         :to="{
