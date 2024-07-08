@@ -7,7 +7,11 @@ import { Icon } from '@iconify/vue';
 import firebaseApp from '@/api/firebasedb';
 
 import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/saga-blue/theme.css';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
+import ConfirmDialog from 'primevue/confirmdialog';
+
+import 'primevue/resources/themes/lara-light-green/theme.css';
 import 'primevue/resources/primevue.min.css'; // PrimeVue의 기본 CSS 파일 추가
 import 'primeicons/primeicons.css';
 
@@ -18,5 +22,8 @@ app.use(router);
 app.component('Icon', Icon);
 
 app.use(PrimeVue);
+app.use(ConfirmationService);
+app.use(ToastService);
+app.component('ConfirmDialog', ConfirmDialog);
 
 app.mount('#app');
