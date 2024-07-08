@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { createReusableTemplate } from '@vueuse/core';
-import { watch } from 'vue';
 import { ref } from 'vue';
+import { createReusableTemplate } from '@vueuse/core';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
 
@@ -10,7 +9,7 @@ const productDescription = ref('');
 const errorMessage = ref('');
 
 function getFormData() {
-  if (productName && productDescription) {
+  if (productName.value && productDescription.value) {
     return { productName, productDescription };
   }
   // else {

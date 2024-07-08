@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { GoogleAuthProvider } from 'firebase/auth/web-extension';
-import { auth } from '@/api/initApp';
+// import { auth } from '@/api/initApp';
 
 // export const useAuth = () => {
 //   const user = ref<any>(null);
@@ -31,9 +31,9 @@ import { auth } from '@/api/initApp';
 //   return { user, error, login, logout };
 // };
 
-export async function signInWithGoogle() {
-  const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(auth, provider);
+// export async function signInWithGoogle() {
+//   const provider = new GoogleAuthProvider();
+//   const result = await signInWithPopup(auth, provider);
 
-  console.log('user: ', result.user);
-}
+//   console.log('user: ', result.user);
+// }
