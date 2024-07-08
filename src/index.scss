@@ -1,0 +1,30 @@
+@layer tailwind-base, primevue, tailwind-utilities;
+
+@import './assets/styles/fonts.scss';
+
+:root {
+  font-family: 'Noto Sans KR', sans-serif;
+  --font-family: 'Noto Sans KR', sans-serif;
+}
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer tailwind-utilities {
+  @tailwind utilities;
+  @tailwind variants;
+  @tailwind components;
+}
+
+@layer base {
+  html {
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  body {
+    line-height: 1.2; // primevue 설정과 맞추기 위함
+    letter-spacing: normal; // primevue 설정과 맞추기 위함
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+}

@@ -8,7 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Brand: typeof import('./src/components/brand.vue')['default']
-    BrandForm: typeof import('./src/components/brandForm.vue')['default']
+    BrandForm: typeof import('./src/components/BrandForm.vue')['default']
     Button: typeof import('primevue/button')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
     InputText: typeof import('primevue/inputtext')['default']
