@@ -4,7 +4,6 @@
 
 :root {
   font-family: 'Noto Sans KR', sans-serif;
-  --font-family: 'Noto Sans KR', sans-serif;
 }
 
 @layer tailwind-base {
@@ -19,7 +18,7 @@
 
 @layer base {
   html {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 90%;
   }
 
   body {
