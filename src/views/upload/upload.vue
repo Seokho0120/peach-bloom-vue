@@ -42,7 +42,7 @@ function showTemplate() {
 
 <template>
   <DefineTemplate v-slot="{ label, $slots }">
-    <div class="mb-4">
+    <div class="mb-3">
       <h2 class="text-xl font-semibold">{{ label }}</h2>
     </div>
     <div class="mb-10 border py-6 px-8 rounded-xl overflow-x-auto whitespace-nowrap">
@@ -50,20 +50,30 @@ function showTemplate() {
     </div>
   </DefineTemplate>
 
-  <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6">
+  <!-- <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6"> -->
+  <div class="flex flex-col w-4/5 mx-auto py-6 px-6">
     <h2 class="text-3xl font-bold mb-10">상품 등록</h2>
 
-    <ReuseTemplate label="상품 설명">
-      <UploadProductInfo ref="uploadProductInfoFormRef" />
-    </ReuseTemplate>
+    <div class="flex gap-8">
+      <div class="w-full">
+        <ReuseTemplate label="상품 설명">
+          <UploadProductInfo ref="uploadProductInfoFormRef" />
+        </ReuseTemplate>
 
-    <ReuseTemplate label="카테고리">
-      <UploadProductCategory />
-    </ReuseTemplate>
+        <ReuseTemplate label="카테고리">
+          <UploadProductCategory />
+        </ReuseTemplate>
 
-    <ReuseTemplate label="판매 유형">
-      <UploadProductSellingType />
-    </ReuseTemplate>
+        <ReuseTemplate label="판매 유형">
+          <UploadProductSellingType />
+        </ReuseTemplate>
+      </div>
+      <div class="w-full">
+        <ReuseTemplate label="상품 이미지">
+          <UploadProductImage />
+        </ReuseTemplate>
+      </div>
+    </div>
   </div>
 
   <div>
