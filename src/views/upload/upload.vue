@@ -76,6 +76,10 @@ function showTemplate() {
         <ReuseTemplate label="배송 정보">
           <UploadProductDeliveryOption />
         </ReuseTemplate>
+
+        <ReuseTemplate label="상품 가격">
+          <UploadProductPrice />
+        </ReuseTemplate>
       </div>
     </div>
   </div>

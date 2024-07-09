@@ -16,6 +16,7 @@ declare module 'vue' {
     FileUpload: typeof import('primevue/fileupload')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
+    InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -27,6 +28,7 @@ declare module 'vue' {
     UploadProductDeliveryOption: typeof import('./src/components/upload/UploadProductDeliveryOption.vue')['default']
     UploadProductImage: typeof import('./src/components/upload/UploadProductImage.vue')['default']
     UploadProductInfo: typeof import('./src/components/upload/UploadProductInfo.vue')['default']
+    UploadProductPrice: typeof import('./src/components/upload/UploadProductPrice.vue')['default']
     UploadProductSellingType: typeof import('./src/components/upload/UploadProductSellingType.vue')['default']
     UploadProductShippingOption: typeof import('./src/components/upload/UploadProductShippingOption.vue')['default']
   }
