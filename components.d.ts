@@ -10,6 +10,7 @@ declare module 'vue' {
     Brand: typeof import('./src/components/brand.vue')['default']
     BrandForm: typeof import('./src/components/BrandForm.vue')['default']
     Button: typeof import('primevue/button')['default']
+    Checkbox: typeof import('primevue/checkbox')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
     InputText: typeof import('primevue/inputtext')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -19,5 +20,6 @@ declare module 'vue' {
     UploadProductCategory: typeof import('./src/components/upload/UploadProductCategory.vue')['default']
     UploadProductCatgegory: typeof import('./src/components/upload/UploadProductCatgegory.vue')['default']
     UploadProductInfo: typeof import('./src/components/upload/UploadProductInfo.vue')['default']
+    UploadProductSellingType: typeof import('./src/components/upload/UploadProductSellingType.vue')['default']
   }
 }

@@ -60,6 +60,10 @@ function showTemplate() {
     <ReuseTemplate label="카테고리">
       <UploadProductCategory />
     </ReuseTemplate>
+
+    <ReuseTemplate label="판매 유형">
+      <UploadProductSellingType />
+    </ReuseTemplate>
   </div>
 
   <div>
