@@ -42,10 +42,10 @@ function showTemplate() {
 
 <template>
   <DefineTemplate v-slot="{ label, $slots }">
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold">{{ label }}</h2>
+    </div>
     <div class="mb-10 border py-6 px-8 rounded-xl overflow-x-auto whitespace-nowrap">
-      <div class="mb-6">
-        <h2 class="text-xl font-semibold">{{ label }}</h2>
-      </div>
       <component :is="$slots.default"></component>
     </div>
   </DefineTemplate>
@@ -53,13 +53,13 @@ function showTemplate() {
   <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6">
     <h2 class="text-3xl font-bold mb-10">상품 등록</h2>
 
-    <ReuseTemplate label="상품 기본정보">
+    <ReuseTemplate label="상품 설명">
       <UploadProductInfo ref="uploadProductInfoFormRef" />
     </ReuseTemplate>
 
-    <!-- <ReuseTemplate label="브랜드명">
-      <BrandForm ref="brandFormRef" />
-    </ReuseTemplate> -->
+    <ReuseTemplate label="카테고리">
+      <UploadProductCategory />
+    </ReuseTemplate>
   </div>
 
   <div>
@@ -86,7 +86,7 @@ function showTemplate() {
     <template #container="{ message, acceptCallback, rejectCallback }">
       <div class="p-6">
         <div class="flex flex-col items-center w-full gap-6 border-b p-6">
-          <i class="pi pi-exclamation-circle text-5xl text-[--primary-color]"></i>
+          <i class="pi pi-exclamation-circle text-5xl" />
           <p class="text-lg" v-html="message.message"></p>
         </div>
         <div class="flex items-center justify-center gap-3 p-3">

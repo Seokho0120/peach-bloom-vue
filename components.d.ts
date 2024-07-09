@@ -16,6 +16,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Textarea: typeof import('primevue/textarea')['default']
     TheNav: typeof import('./src/layouts/TheNav.vue')['default']
+    UploadProductCategory: typeof import('./src/components/upload/UploadProductCategory.vue')['default']
+    UploadProductCatgegory: typeof import('./src/components/upload/UploadProductCatgegory.vue')['default']
     UploadProductInfo: typeof import('./src/components/upload/UploadProductInfo.vue')['default']
   }
 }

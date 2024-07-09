@@ -23,7 +23,7 @@ defineExpose({ getFormData });
 
 <template>
   <DefineFormField v-slot="{ label, $slots }">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-3">
       <h2>{{ label }}</h2>
       <component :is="$slots.default" />
     </div>
