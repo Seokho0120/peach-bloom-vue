@@ -14,6 +14,8 @@ declare module 'vue' {
     Checkbox: typeof import('primevue/checkbox')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
+    InputGroup: typeof import('primevue/inputgroup')['default']
+    InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputText: typeof import('primevue/inputtext')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -22,8 +24,10 @@ declare module 'vue' {
     TheNav: typeof import('./src/layouts/TheNav.vue')['default']
     UploadProductCategory: typeof import('./src/components/upload/UploadProductCategory.vue')['default']
     UploadProductCatgegory: typeof import('./src/components/upload/UploadProductCatgegory.vue')['default']
+    UploadProductDeliveryOption: typeof import('./src/components/upload/UploadProductDeliveryOption.vue')['default']
     UploadProductImage: typeof import('./src/components/upload/UploadProductImage.vue')['default']
     UploadProductInfo: typeof import('./src/components/upload/UploadProductInfo.vue')['default']
     UploadProductSellingType: typeof import('./src/components/upload/UploadProductSellingType.vue')['default']
+    UploadProductShippingOption: typeof import('./src/components/upload/UploadProductShippingOption.vue')['default']
   }
 }
