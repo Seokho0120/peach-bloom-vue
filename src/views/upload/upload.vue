@@ -15,7 +15,6 @@ const router = useRouter();
 const confirm = useConfirm();
 const toast = useToast();
 
-// const brandFormRef = ref<InstanceType<typeof BrandForm> | undefined>(undefined);
 const uploadProductInfoFormRef = ref<InstanceType<typeof UploadProductInfo> | undefined>(undefined);
 
 function showTemplate() {
@@ -97,26 +96,13 @@ function cancel() {
         <ReuseTemplate label="상품 가격">
           <UploadProductPrice />
         </ReuseTemplate>
+
+        <div class="flex justify-end">
+          <Button type="button" label="취소" class="mr-2" size="small" severity="secondary" />
+          <Button type="button" label="상품 등록" size="small" @click="() => showTemplate()" />
+        </div>
       </div>
     </div>
-  </div>
-
-  <div>
-    <Button
-      type="button"
-      label="취소"
-      icon="pi pi-times"
-      class="mr-2"
-      size="small"
-      severity="secondary"
-    />
-    <Button
-      type="button"
-      label="상품 업로드"
-      icon="pi pi-check"
-      size="small"
-      @click="() => showTemplate()"
-    />
   </div>
 
   <Toast />
