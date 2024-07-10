@@ -38,6 +38,10 @@ function showTemplate() {
     },
   });
 }
+
+function cancel() {
+  console.log('뒤로가기');
+}
 </script>
 
 <template>
@@ -52,7 +56,20 @@ function showTemplate() {
 
   <!-- <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6"> -->
   <div class="flex flex-col w-4/5 mx-auto py-6 px-6">
-    <h2 class="text-3xl font-bold mb-10">상품 등록</h2>
+    <div class="flex items-center mb-10 gap-4">
+      <button
+        @click="() => cancel()"
+        type="button"
+        class="border-[1px] p-3 rounded-md hover:bg-gray-100"
+      >
+        <Icon icon="heroicons:arrow-long-left-16-solid" class="w-5 h-5 text-gray-500" />
+      </button>
+
+      <div class="flex flex-col gap-1">
+        <span class="leading-none ml-1">메인 화면으로 돌아가기</span>
+        <h2 class="text-3xl font-bold">새로운 상품 등록</h2>
+      </div>
+    </div>
 
     <div class="flex gap-8">
       <div class="w-full">

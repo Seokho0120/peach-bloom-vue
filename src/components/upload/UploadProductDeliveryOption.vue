@@ -32,21 +32,21 @@ const width = ref<number>(0);
       <ReuseFormField label="길이">
         <InputGroup>
           <InputNumber v-model="length" type="number" />
-          <InputGroupAddon>in</InputGroupAddon>
+          <InputGroupAddon>cm</InputGroupAddon>
         </InputGroup>
       </ReuseFormField>
 
       <ReuseFormField label="폭">
         <InputGroup>
           <InputNumber v-model="breadth" type="number" />
-          <InputGroupAddon>in</InputGroupAddon>
+          <InputGroupAddon>cm</InputGroupAddon>
         </InputGroup>
       </ReuseFormField>
 
       <ReuseFormField label="너비">
         <InputGroup>
           <InputNumber v-model="width" type="number" />
-          <InputGroupAddon>in</InputGroupAddon>
+          <InputGroupAddon>cm</InputGroupAddon>
         </InputGroup>
       </ReuseFormField>
     </div>
