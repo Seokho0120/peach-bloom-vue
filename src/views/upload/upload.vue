@@ -54,7 +54,7 @@ function cancel() {
   </DefineTemplate>
 
   <!-- <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6"> -->
-  <div class="flex flex-col w-4/5 mx-auto py-6 px-6">
+  <div class="flex flex-col w-4/5 max-w-[80rem] min-w-[60rem] mx-auto pb-8">
     <div class="flex items-center mb-10 gap-4">
       <button
         @click="() => cancel()"
@@ -106,7 +106,6 @@ function cancel() {
   </div>
 
   <Toast />
-
   <ConfirmDialog group="confirm">
     <template #container="{ message, acceptCallback, rejectCallback }">
       <div class="p-6">

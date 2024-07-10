@@ -13,7 +13,7 @@ const width = ref<number>(0);
 
 <template>
   <DefineFormField v-slot="{ label, $slots }">
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-3 w-full">
       <h2>{{ label }}</h2>
       <component :is="$slots.default" />
     </div>
@@ -28,7 +28,7 @@ const width = ref<number>(0);
     </ReuseFormField>
 
     <span>패키지 크기(제품 배송에 사용하는 패키지)</span>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center justify-between gap-4">
       <ReuseFormField label="길이">
         <InputGroup>
           <InputNumber v-model="length" type="number" />

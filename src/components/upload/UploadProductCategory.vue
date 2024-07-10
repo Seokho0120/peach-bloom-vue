@@ -4,8 +4,17 @@ import { createReusableTemplate } from '@vueuse/core';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
 
-const selectedCity = ref();
-const cities = ref([
+const selectedCategory = ref();
+const categories = ref([
+  { name: 'New York', code: 'NY' },
+  { name: 'Rome', code: 'RM' },
+  { name: 'London', code: 'LDN' },
+  { name: 'Istanbul', code: 'IST' },
+  { name: 'Paris', code: 'PRS' },
+]);
+
+const selectedBrand = ref();
+const brands = ref([
   { name: 'New York', code: 'NY' },
   { name: 'Rome', code: 'RM' },
   { name: 'London', code: 'LDN' },
@@ -25,20 +34,20 @@ const cities = ref([
   <div class="flex flex-col gap-6">
     <ReuseFormField label="상품 카테고리" class="flex-1">
       <Dropdown
-        v-model="selectedCity"
-        :options="cities"
+        v-model="selectedCategory"
+        :options="categories"
         optionLabel="name"
-        placeholder="Select a City"
+        placeholder="Select a Category"
         class="w-full md:w-14rem"
       />
     </ReuseFormField>
 
-    <ReuseFormField label="상품 카테고리" class="flex-1">
+    <ReuseFormField label="브랜드" class="flex-1">
       <Dropdown
-        v-model="selectedCity"
-        :options="cities"
+        v-model="selectedBrand"
+        :options="brands"
         optionLabel="name"
-        placeholder="Select a City"
+        placeholder="Select a Brand"
         class="w-full md:w-14rem"
       />
     </ReuseFormField>
