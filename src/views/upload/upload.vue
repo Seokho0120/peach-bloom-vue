@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import BrandForm from '@/components/BrandForm.vue';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import { v4 as uuidv4 } from 'uuid';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{ label: string }>();
+const test = ref('');
+watch(
+  test,
+  () => {
+    test.value = uuidv4();
+    console.log('test', test.value);
+  },
+  { immediate: true, deep: true },
+);
 
 const router = useRouter();
 
