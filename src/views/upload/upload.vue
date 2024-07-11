@@ -1,23 +1,26 @@
 <script setup lang="ts">
 import { watch, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { v4 as uuidv4 } from 'uuid';
+import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
+import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 
-const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{ label: string }>();
-const test = ref('');
-watch(
-  test,
-  () => {
-    test.value = uuidv4();
-    console.log('test', test.value);
-  },
-  { immediate: true, deep: true },
-);
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
+  label: string;
+}>();
+// const test = ref('');
+// watch(
+//   test,
+//   () => {
+//     test.value = uuidv4();
+//     console.log('test', test.value);
+//   },
+//   { immediate: true, deep: true },
+// );
 
 const router = useRouter();
 
@@ -25,24 +28,37 @@ const confirm = useConfirm();
 const toast = useToast();
 
 const uploadProductInfoFormRef = ref<InstanceType<typeof UploadProductInfo> | undefined>(undefined);
+const uploadProductCategoryRef = ref<InstanceType<typeof UploadProductCategory> | undefined>(undefined);
 
 function showTemplate() {
   const productInfoData = uploadProductInfoFormRef.value?.getFormData();
+  const productCategoryData = uploadProductCategoryRef.value?.getFormData();
+
+  console.log('productInfoData', productInfoData);
+  console.log('productCategoryData', productCategoryData);
 
   confirm.require({
     group: 'confirm',
     message: '테스트',
     acceptLabel: '네',
     accept: () => {
-      if (productInfoData?.productName.value && productInfoData?.productDescription.value) {
+      if (productInfoData?.productName && productInfoData?.productDescription) {
         console.log('accept accept accept accept');
 
-        toast.add({ severity: 'success', summary: 'Confirmed', detail: 'You have accepted' });
+        toast.add({
+          severity: 'success',
+          summary: 'Confirmed',
+          detail: 'You have accepted',
+        });
         return;
       }
     },
     reject: () => {
-      toast.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected' });
+      toast.add({
+        severity: 'info',
+        summary: 'Rejected',
+        detail: 'You have rejected',
+      });
     },
   });
 }
@@ -62,14 +78,9 @@ function cancel() {
     </div>
   </DefineTemplate>
 
-  <!-- <div class="w-4/5 max-w-[65rem] min-w-[57rem] mx-auto py-6 px-6"> -->
   <div class="flex flex-col w-4/5 max-w-[80rem] min-w-[60rem] mx-auto pb-8">
     <div class="flex items-center mb-10 gap-4">
-      <button
-        @click="() => cancel()"
-        type="button"
-        class="border-[1px] p-3 rounded-md hover:bg-gray-100"
-      >
+      <button @click="() => cancel()" type="button" class="border-[1px] p-3 rounded-md hover:bg-gray-100">
         <Icon icon="heroicons:arrow-long-left-16-solid" class="w-5 h-5 text-gray-500" />
       </button>
 
@@ -86,7 +97,7 @@ function cancel() {
         </ReuseTemplate>
 
         <ReuseTemplate label="카테고리">
-          <UploadProductCategory />
+          <UploadProductCategory ref="uploadProductCategoryRef" />
         </ReuseTemplate>
 
         <ReuseTemplate label="판매 유형">

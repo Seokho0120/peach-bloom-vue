@@ -6,16 +6,16 @@ const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string
 
 const productName = ref('');
 const productDescription = ref('');
-const errorMessage = ref('');
+// const errorMessage = ref('');
 
 function getFormData() {
-  if (productName.value && productDescription.value) {
-    return { productName, productDescription };
-  }
-  // else {
-  //   TODO: '', undefined 유틸함수 만들기
-  //   errorMessage.value = '작성해주세요';
-  // }
+  // TODO: 에러검사 로직 추가 필요
+  if (!productName.value && !productDescription.value) return;
+
+  return {
+    productName: productName.value,
+    productDescription: productDescription.value,
+  };
 }
 
 defineExpose({ getFormData });
