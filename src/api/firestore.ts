@@ -16,3 +16,17 @@ export async function getCategoryList() {
     return [];
   }
 }
+
+export async function getBrandList() {
+  try {
+    const snapShot = await getDocs(collection(db, 'brandList'));
+    if (snapShot.empty) {
+      return [];
+    } else {
+      return snapShot.docs.flatMap((doc) => doc.data());
+    }
+  } catch (error) {
+    console.log('error', error);
+    return [];
+  }
+}

@@ -1,44 +1,26 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
-import { db } from '@/api/firestore';
-import { collection, getDocs } from 'firebase/firestore';
-import { useGetCategoryList } from '@/composables/useProductCategory';
+import { useGetBrandList, useGetCategoryList } from '@/composables/useProductCategory';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
 
-interface brandsType {
-  name: string;
-  id: string;
-}
+const {
+  categoryList,
+  isError: categoryListError,
+  isLoading: categoryListLoading,
+} = useGetCategoryList({ includeAsterisk: true });
 
-const { categoryList, isError, isLoading } = useGetCategoryList({ includeAsterisk: true });
+const { brandList, isError: brandListError, isLoading: brandListLoading } = useGetBrandList({ includeAsterisk: true });
 
-watch(categoryList, () => {
+watch([categoryList, brandList], () => {
   console.log('categoryList.value', categoryList.value);
+  console.log('brandList.value', brandList.value);
 });
 
-// TODO: 카테고리, 브랜드 firebase에 저장해서 api로 받아오기
 const selectedCategory = ref();
 
 const selectedBrand = ref();
-const brands = ref([
-  { name: '아로마티카', id: 'aromatica' },
-  { name: '피부피부', id: 'pibupibu' },
-  { name: '탄', id: 'tan' },
-  { name: '헤라', id: 'hera' },
-  { name: '브라운', id: 'brown' },
-  { name: '바이피토', id: 'byphyto' },
-  { name: '에스트라', id: 'estra' },
-  { name: '딥퍼랑스', id: 'deeperence' },
-  { name: '아닐로', id: 'anillo' },
-  { name: '라곰', id: 'lagom' },
-  { name: '아렌시아', id: 'arencia' },
-  { name: '한아조', id: 'hanahzo' },
-  { name: '넛세린', id: 'nutseline' },
-  { name: '지비에이치', id: 'gbh' },
-  { name: '심플리오', id: 'simplyo' },
-]);
 
 function getFormData() {
   // TODO: 에러검사 로직 추가 필요
@@ -67,7 +49,7 @@ defineExpose({ getFormData });
         filter
         showClear
         v-model="selectedCategory"
-        :options="categoryList || []"
+        :options="categoryList"
         optionLabel="name"
         optionValue="id"
         placeholder="Select a Category"
@@ -80,7 +62,7 @@ defineExpose({ getFormData });
         filter
         showClear
         v-model="selectedBrand"
-        :options="brands"
+        :options="brandList"
         optionLabel="name"
         optionValue="id"
         placeholder="Select a Brand"
