@@ -1,8 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
+import { db } from '@/api/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
+
+async function test() {
+  // return getDocs(collection(db, 'categoryList')).then((snapshot) => (snapshot.empty ? [] : snapshot.docs));
+  const querySnapshot = await getDocs(collection(db, 'categoryList'));
+  if (querySnapshot.empty) {
+    console.log('empty');
+  } else {
+    querySnapshot.forEach((doc) => console.log('data ------------->', doc.data()));
+  }
+}
+
+onMounted(() => test());
 
 // TODO: 카테고리, 브랜드 firebase에 저장해서 api로 받아오기
 const selectedCategory = ref();
