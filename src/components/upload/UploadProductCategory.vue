@@ -16,8 +16,8 @@ const {
 
 const { brandList, isError: brandListError, isLoading: brandListLoading } = useGetBrandList({ includeAsterisk: true });
 
-const categoryError = computed(() => categoryListError.value || !categoryList.value);
-const brandError = computed(() => brandListError.value || !brandList.value);
+const categoryError = computed(() => categoryListError.value || categoryList.value === null || undefined);
+const brandError = computed(() => brandListError.value || brandList.value === null || undefined);
 
 function getFormData() {
   // TODO: 에러검사 로직 추가 필요
@@ -56,7 +56,7 @@ defineExpose({ getFormData });
         placeholder="카테고리를 선택하세요."
         class="w-full md:w-14rem"
       />
-      <span v-show="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</span>
+      <span v-if="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
 
     <ReuseFormField label="브랜드" class="flex-1">
@@ -72,7 +72,7 @@ defineExpose({ getFormData });
         placeholder="브랜드를 선택하세요."
         class="w-full md:w-14rem"
       />
-      <span v-show="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</span>
+      <span v-if="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
   </div>
 </template>
