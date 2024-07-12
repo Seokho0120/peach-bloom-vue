@@ -5,6 +5,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { Icon } from '@iconify/vue';
 import firebaseApp from '@/api/firebasedb';
+import { VueQueryPlugin } from '@tanstack/vue-query';
 
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -19,6 +20,7 @@ const app = createApp(App);
 
 app.use(createPinia());
 app.use(router);
+app.use(VueQueryPlugin);
 app.component('Icon', Icon);
 
 app.use(PrimeVue);
