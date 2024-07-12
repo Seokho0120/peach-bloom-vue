@@ -6,6 +6,7 @@ export const db = getFirestore(firebaseApp);
 export async function getCategoryList() {
   try {
     const snapShot = await getDocs(collection(db, 'categoryList'));
+
     if (snapShot.empty) {
       return [];
     } else {
@@ -20,6 +21,7 @@ export async function getCategoryList() {
 export async function getBrandList() {
   try {
     const snapShot = await getDocs(collection(db, 'brandList'));
+
     if (snapShot.empty) {
       return [];
     } else {

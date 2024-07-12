@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useGetBrandList, useGetCategoryList } from '@/composables/useProductCategory';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
+
+const selectedCategory = ref();
+const selectedBrand = ref();
 
 const {
   categoryList,
@@ -13,14 +16,8 @@ const {
 
 const { brandList, isError: brandListError, isLoading: brandListLoading } = useGetBrandList({ includeAsterisk: true });
 
-watch([categoryList, brandList], () => {
-  console.log('categoryList.value', categoryList.value);
-  console.log('brandList.value', brandList.value);
-});
-
-const selectedCategory = ref();
-
-const selectedBrand = ref();
+const categoryError = computed(() => categoryListError.value || !categoryList.value);
+const brandError = computed(() => brandListError.value || !brandList.value);
 
 function getFormData() {
   // TODO: 에러검사 로직 추가 필요
@@ -33,6 +30,8 @@ function getFormData() {
 }
 
 defineExpose({ getFormData });
+
+// add 할때 id값이 아닌, name값으로 등록해야하기 때문에 optionValue="name"로 설정
 </script>
 
 <template>
@@ -50,11 +49,14 @@ defineExpose({ getFormData });
         showClear
         v-model="selectedCategory"
         :options="categoryList"
+        :loading="categoryListLoading"
+        :disabled="!categoryList"
         optionLabel="name"
-        optionValue="id"
-        placeholder="Select a Category"
+        optionValue="name"
+        placeholder="카테고리를 선택하세요."
         class="w-full md:w-14rem"
       />
+      <span v-show="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
 
     <ReuseFormField label="브랜드" class="flex-1">
@@ -63,13 +65,14 @@ defineExpose({ getFormData });
         showClear
         v-model="selectedBrand"
         :options="brandList"
+        :loading="brandListLoading"
+        :disabled="!brandList"
         optionLabel="name"
-        optionValue="id"
-        placeholder="Select a Brand"
+        optionValue="name"
+        placeholder="브랜드를 선택하세요."
         class="w-full md:w-14rem"
       />
+      <span v-show="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
   </div>
 </template>
-
-<style lang="scss" scoped></style>
