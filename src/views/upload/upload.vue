@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
+import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
@@ -32,15 +33,18 @@ const toast = useToast();
 const uploadProductInfoFormRef = ref<InstanceType<typeof UploadProductInfo> | undefined>(undefined);
 const uploadProductCategoryRef = ref<InstanceType<typeof UploadProductCategory> | undefined>(undefined);
 const uploadProductSellingTypeRef = ref<InstanceType<typeof UploadProductSellingType> | undefined>(undefined);
+const uploadProductDeliveryOptionRef = ref<InstanceType<typeof UploadProductDeliveryOption> | undefined>(undefined);
 
 function showTemplate() {
-  const productInfoData = uploadProductInfoFormRef.value?.getFormData();
-  const productCategoryData = uploadProductCategoryRef.value?.getFormData();
-  const productSellingTypeData = uploadProductSellingTypeRef.value?.getFormData();
+  const productInfo = uploadProductInfoFormRef.value?.getFormData();
+  const productCategory = uploadProductCategoryRef.value?.getFormData();
+  const productSellingType = uploadProductSellingTypeRef.value?.getFormData();
+  const productDeliveryOption = uploadProductDeliveryOptionRef.value?.getFormData();
 
-  console.log('productInfoData', productInfoData);
-  console.log('productCategoryData', productCategoryData);
-  console.log('productSellingTypeData', productSellingTypeData?.sellingType);
+  console.log('productInfo', productInfo);
+  console.log('productCategory', productCategory);
+  console.log('productSellingType', productSellingType);
+  console.log('productDeliveryOption', productDeliveryOption);
 
   confirm.require({
     group: 'confirm',
@@ -110,7 +114,7 @@ function cancel() {
         </ReuseTemplate>
 
         <ReuseTemplate label="배송 정보">
-          <UploadProductDeliveryOption />
+          <UploadProductDeliveryOption ref="uploadProductDeliveryOptionRef" />
         </ReuseTemplate>
 
         <ReuseTemplate label="상품 가격">

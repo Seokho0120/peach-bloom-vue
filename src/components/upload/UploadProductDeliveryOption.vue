@@ -9,6 +9,20 @@ const weight = ref<number>(0);
 const length = ref<number>(0);
 const breadth = ref<number>(0);
 const width = ref<number>(0);
+
+function getFormData() {
+  if (!weight.value && !length.value && !breadth.value && !width.value) return;
+
+  // TODO: 배열로 return 할지 고민하기
+  return {
+    weight: weight.value,
+    length: length.value,
+    breadth: breadth.value,
+    width: width.value,
+  };
+}
+
+defineExpose({ getFormData });
 </script>
 
 <template>
@@ -22,7 +36,7 @@ const width = ref<number>(0);
   <div class="flex flex-col gap-6">
     <ReuseFormField label="상품 무게">
       <InputGroup>
-        <InputNumber v-model="weight" type="number" />
+        <InputNumber v-model="weight" type="number" inputmode="numeric" />
         <InputGroupAddon>kg</InputGroupAddon>
       </InputGroup>
     </ReuseFormField>
@@ -52,5 +66,3 @@ const width = ref<number>(0);
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped></style>
