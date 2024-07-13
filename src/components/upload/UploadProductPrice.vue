@@ -9,6 +9,17 @@ const saleRate = ref<number>(0);
 const salePrice = ref<number>(0);
 const consumerPrice = ref<number>(0);
 // TODO: 정상가 적용 후 할인율 적용하면 자동으로 할인 가격 보여지게 만들기
+
+function getFormData() {
+  return {
+    isSale: isSale?.value,
+    saleRate: saleRate?.value,
+    salePrice: salePrice?.value,
+    consumerPrice: consumerPrice.value,
+  };
+}
+
+defineExpose({ getFormData });
 </script>
 
 <template>

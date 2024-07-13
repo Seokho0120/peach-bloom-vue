@@ -10,6 +10,7 @@ import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
 import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
+import type UploadProductPrice from '@/components/upload/UploadProductPrice.vue';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
@@ -34,17 +35,20 @@ const uploadProductInfoFormRef = ref<InstanceType<typeof UploadProductInfo> | un
 const uploadProductCategoryRef = ref<InstanceType<typeof UploadProductCategory> | undefined>(undefined);
 const uploadProductSellingTypeRef = ref<InstanceType<typeof UploadProductSellingType> | undefined>(undefined);
 const uploadProductDeliveryOptionRef = ref<InstanceType<typeof UploadProductDeliveryOption> | undefined>(undefined);
+const uploadProductPriceRef = ref<InstanceType<typeof UploadProductPrice> | undefined>(undefined);
 
 function showTemplate() {
   const productInfo = uploadProductInfoFormRef.value?.getFormData();
   const productCategory = uploadProductCategoryRef.value?.getFormData();
   const productSellingType = uploadProductSellingTypeRef.value?.getFormData();
   const productDeliveryOption = uploadProductDeliveryOptionRef.value?.getFormData();
+  const productProductPrice = uploadProductPriceRef.value?.getFormData();
 
   console.log('productInfo', productInfo);
   console.log('productCategory', productCategory);
   console.log('productSellingType', productSellingType);
   console.log('productDeliveryOption', productDeliveryOption);
+  console.log('productProductPrice', productProductPrice);
 
   confirm.require({
     group: 'confirm',
@@ -118,7 +122,7 @@ function cancel() {
         </ReuseTemplate>
 
         <ReuseTemplate label="상품 가격">
-          <UploadProductPrice />
+          <UploadProductPrice ref="uploadProductPriceRef" />
         </ReuseTemplate>
 
         <div class="flex justify-end">
