@@ -8,10 +8,13 @@ import Toast from 'primevue/toast';
 import { v4 as uuidv4 } from 'uuid';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
+import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
 }>();
+
+// TODO: 업로드할때 uuid 사용해서 고유 id만들어서 등록하기
 // const test = ref('');
 // watch(
 //   test,
@@ -23,35 +26,32 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
 // );
 
 const router = useRouter();
-
 const confirm = useConfirm();
 const toast = useToast();
 
 const uploadProductInfoFormRef = ref<InstanceType<typeof UploadProductInfo> | undefined>(undefined);
 const uploadProductCategoryRef = ref<InstanceType<typeof UploadProductCategory> | undefined>(undefined);
+const uploadProductSellingTypeRef = ref<InstanceType<typeof UploadProductSellingType> | undefined>(undefined);
 
 function showTemplate() {
   const productInfoData = uploadProductInfoFormRef.value?.getFormData();
   const productCategoryData = uploadProductCategoryRef.value?.getFormData();
+  const productSellingTypeData = uploadProductSellingTypeRef.value?.getFormData();
 
   console.log('productInfoData', productInfoData);
   console.log('productCategoryData', productCategoryData);
+  console.log('productSellingTypeData', productSellingTypeData?.sellingType);
 
   confirm.require({
     group: 'confirm',
     message: '테스트',
     acceptLabel: '네',
     accept: () => {
-      if (productInfoData?.productName && productInfoData?.productDescription) {
-        console.log('accept accept accept accept');
-
-        toast.add({
-          severity: 'success',
-          summary: 'Confirmed',
-          detail: 'You have accepted',
-        });
-        return;
-      }
+      toast.add({
+        severity: 'success',
+        summary: 'Confirmed',
+        detail: 'You have accepted',
+      });
     },
     reject: () => {
       toast.add({
@@ -101,7 +101,7 @@ function cancel() {
         </ReuseTemplate>
 
         <ReuseTemplate label="판매 유형">
-          <UploadProductSellingType />
+          <UploadProductSellingType ref="uploadProductSellingTypeRef" />
         </ReuseTemplate>
       </div>
       <div class="w-full">
@@ -128,7 +128,7 @@ function cancel() {
   <Toast />
   <ConfirmDialog group="confirm">
     <template #container="{ message, acceptCallback, rejectCallback }">
-      <div class="p-6">
+      <div class="p-6 bg-white">
         <div class="flex flex-col items-center w-full gap-6 border-b p-6">
           <i class="pi pi-exclamation-circle text-5xl" />
           <p class="text-lg" v-html="message.message"></p>
