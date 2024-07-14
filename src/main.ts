@@ -11,6 +11,7 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import ConfirmDialog from 'primevue/confirmdialog';
+import Tooltip from 'primevue/tooltip';
 
 import 'primevue/resources/themes/lara-light-green/theme.css';
 import 'primevue/resources/primevue.min.css'; // PrimeVue의 기본 CSS 파일 추가
@@ -26,6 +27,7 @@ app.component('Icon', Icon);
 app.use(PrimeVue);
 app.use(ConfirmationService);
 app.use(ToastService);
+app.directive('tooltip', Tooltip);
 app.component('ConfirmDialog', ConfirmDialog);
 
 app.mount('#app');

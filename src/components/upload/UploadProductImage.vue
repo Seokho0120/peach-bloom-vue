@@ -23,7 +23,6 @@ const onUpload = () => {
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
       <div class="card flex justify-content-center">
-        <Toast />
         <FileUpload
           mode="basic"
           name="demo[]"

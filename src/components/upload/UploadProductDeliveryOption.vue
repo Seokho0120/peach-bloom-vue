@@ -41,28 +41,30 @@ defineExpose({ getFormData });
       </InputGroup>
     </ReuseFormField>
 
-    <span>패키지 크기(제품 배송에 사용하는 패키지)</span>
-    <div class="flex items-center justify-between gap-4">
-      <ReuseFormField label="길이">
-        <InputGroup>
-          <InputNumber v-model="length" type="number" />
-          <InputGroupAddon>cm</InputGroupAddon>
-        </InputGroup>
-      </ReuseFormField>
+    <div>
+      <h2 class="mb-3">패키지 크기(제품 배송에 사용하는 패키지)</h2>
+      <div class="flex items-center justify-between gap-4">
+        <ReuseFormField label="길이">
+          <InputGroup>
+            <InputNumber v-model="length" type="number" />
+            <InputGroupAddon>cm</InputGroupAddon>
+          </InputGroup>
+        </ReuseFormField>
 
-      <ReuseFormField label="폭">
-        <InputGroup>
-          <InputNumber v-model="breadth" type="number" />
-          <InputGroupAddon>cm</InputGroupAddon>
-        </InputGroup>
-      </ReuseFormField>
+        <ReuseFormField label="폭">
+          <InputGroup>
+            <InputNumber v-model="breadth" type="number" />
+            <InputGroupAddon>cm</InputGroupAddon>
+          </InputGroup>
+        </ReuseFormField>
 
-      <ReuseFormField label="너비">
-        <InputGroup>
-          <InputNumber v-model="width" type="number" />
-          <InputGroupAddon>cm</InputGroupAddon>
-        </InputGroup>
-      </ReuseFormField>
+        <ReuseFormField label="너비">
+          <InputGroup>
+            <InputNumber v-model="width" type="number" />
+            <InputGroupAddon>cm</InputGroupAddon>
+          </InputGroup>
+        </ReuseFormField>
+      </div>
     </div>
   </div>
 </template>

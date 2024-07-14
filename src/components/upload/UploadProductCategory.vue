@@ -55,7 +55,16 @@ defineExpose({ getFormData });
         optionValue="name"
         placeholder="카테고리를 선택하세요."
         class="w-full md:w-14rem"
-      />
+      >
+        <template #value="{ value, placeholder }">
+          <template v-if="value">
+            {{ value }}
+          </template>
+          <template v-else>
+            {{ placeholder }}
+          </template>
+        </template>
+      </Dropdown>
       <span v-if="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
 
@@ -71,7 +80,16 @@ defineExpose({ getFormData });
         optionValue="name"
         placeholder="브랜드를 선택하세요."
         class="w-full md:w-14rem"
-      />
+      >
+        <template #value="{ value, placeholder }">
+          <template v-if="value">
+            {{ value }}
+          </template>
+          <template v-else>
+            {{ placeholder }}
+          </template>
+        </template>
+      </Dropdown>
       <span v-if="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</span>
     </ReuseFormField>
   </div>

@@ -13,6 +13,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
+    Editor: typeof import('primevue/editor')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
