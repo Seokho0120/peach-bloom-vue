@@ -42,10 +42,6 @@ defineExpose({ getFormData });
   </DefineFormField>
 
   <div class="flex flex-col gap-6">
-    <!-- <ReuseFormField label="할인 적용">
-      <InputSwitch v-model="isSale" />
-    </ReuseFormField> -->
-
     <ReuseFormField label="정상 가격">
       <InputGroup>
         <InputNumber v-model="consumerPrice" type="number" />
@@ -66,9 +62,19 @@ defineExpose({ getFormData });
           </InputGroup>
         </ReuseFormField>
 
-        <ReuseFormField label="할인 가격" class="w-full text-red-500">
-          <InputGroup>
-            <InputNumber v-model="salePrice" type="number" />
+        <ReuseFormField label="할인 가격" class="w-full">
+          <InputGroup class="text-red-500">
+            <InputNumber
+              v-model="salePrice"
+              type="number"
+              :pt="{
+                input: {
+                  root: {
+                    class: 'text-red-500 font-semibold',
+                  },
+                },
+              }"
+            />
             <InputGroupAddon>원</InputGroupAddon>
           </InputGroup>
         </ReuseFormField>
@@ -76,5 +82,3 @@ defineExpose({ getFormData });
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped></style>
