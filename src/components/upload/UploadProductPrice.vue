@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label?: string }>();
 
+const consumerPrice = ref<number>(0);
 const isSale = ref(false);
 const saleRate = ref<number>(0);
 const salePrice = ref<number>(0);
-const consumerPrice = ref<number>(0);
-// TODO: 정상가 적용 후 할인율 적용하면 자동으로 할인 가격 보여지게 만들기
+
+watch([consumerPrice, isSale, saleRate], ([newConsumerPrice, newIsSale, newSaleRate]) => {
+  if (newConsumerPrice > 0 && newIsSale) {
+    if (newSaleRate > 0) {
+      salePrice.value = newConsumerPrice - (newConsumerPrice * newSaleRate) / 100;
+    } else {
+      salePrice.value = 0;
+    }
+  } else {
+    salePrice.value = 0;
+  }
+});
 
 function getFormData() {
   return {
@@ -31,15 +42,19 @@ defineExpose({ getFormData });
   </DefineFormField>
 
   <div class="flex flex-col gap-6">
-    <ReuseFormField label="할인 적용">
+    <!-- <ReuseFormField label="할인 적용">
       <InputSwitch v-model="isSale" />
-    </ReuseFormField>
+    </ReuseFormField> -->
 
     <ReuseFormField label="정상 가격">
       <InputGroup>
         <InputNumber v-model="consumerPrice" type="number" />
         <InputGroupAddon>원</InputGroupAddon>
       </InputGroup>
+    </ReuseFormField>
+
+    <ReuseFormField label="할인 적용">
+      <InputSwitch v-model="isSale" />
     </ReuseFormField>
 
     <div v-if="isSale">
