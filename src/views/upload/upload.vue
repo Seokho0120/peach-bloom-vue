@@ -11,6 +11,9 @@ import UploadProductCategory from '@/components/upload/UploadProductCategory.vue
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
 import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
 import type UploadProductPrice from '@/components/upload/UploadProductPrice.vue';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
+import { addItem } from '@/api/firestore';
+import type { addItemType } from '@/types/items.types';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
@@ -50,23 +53,17 @@ function showTemplate() {
   console.log('productDeliveryOption', productDeliveryOption);
   console.log('productProductPrice', productProductPrice);
 
+  if (!productInfo || !productCategory || !productSellingType || !productDeliveryOption || !productProductPrice) {
+    toast.add({ severity: 'error', summary: 'Error Message', detail: 'Form Validation Error', life: 3000 });
+    return;
+  }
+
   confirm.require({
     group: 'confirm',
     message: '테스트',
     acceptLabel: '네',
     accept: () => {
-      toast.add({
-        severity: 'success',
-        summary: 'Confirmed',
-        detail: 'You have accepted',
-      });
-    },
-    reject: () => {
-      toast.add({
-        severity: 'info',
-        summary: 'Rejected',
-        detail: 'You have rejected',
-      });
+      console.log('zz');
     },
   });
 }
@@ -74,6 +71,25 @@ function showTemplate() {
 function cancel() {
   console.log('뒤로가기');
 }
+
+const queryClient = useQueryClient();
+const { mutate: submit, isPending } = useMutation({
+  mutationFn: async (payload: addItemType) => {
+    await addItem(payload);
+  },
+});
+
+// const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+//   e.preventDefault();
+//   if (!file) return;
+
+//   const url = await uploadImage(file);
+//   const firebaseProductId = await addNewProduct({ product, imageUrl: url });
+
+//   const data = await getProductById(firebaseProductId);
+
+//   await router.push(`/upload/${data}`); //제품 디테일 업로드로 이동
+// };
 </script>
 
 <template>
@@ -98,7 +114,7 @@ function cancel() {
       </div>
     </div>
 
-    <div class="flex gap-8">
+    <form class="flex gap-8" :on-submit="() => showTemplate()">
       <div class="w-full">
         <ReuseTemplate label="상품 설명">
           <UploadProductInfo ref="uploadProductInfoFormRef" />
@@ -130,6 +146,6 @@ function cancel() {
           <Button type="button" label="상품 등록" size="small" @click="() => showTemplate()" />
         </div>
       </div>
-    </div>
+    </form>
   </div>
 </template>

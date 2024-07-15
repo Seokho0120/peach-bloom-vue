@@ -1,5 +1,6 @@
+import type { addItemType } from '@/types/items.types';
 import firebaseApp from './firebasedb';
-import { collection, getDocs, getFirestore } from 'firebase/firestore';
+import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
 
 export const db = getFirestore(firebaseApp);
 
@@ -30,5 +31,16 @@ export async function getBrandList() {
   } catch (error) {
     console.log('error', error);
     return [];
+  }
+}
+
+export async function addItem({ item, imageUrl }: addItemType) {
+  try {
+    await addDoc(collection(db, 'items'), {
+      ...item,
+      imageUrl,
+    });
+  } catch (error) {
+    console.log('error', error);
   }
 }

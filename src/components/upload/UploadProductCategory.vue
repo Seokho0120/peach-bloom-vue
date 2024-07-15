@@ -5,8 +5,8 @@ import { useGetBrandList, useGetCategoryList } from '@/composables/useProductCat
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
 
-const selectedCategory = ref();
-const selectedBrand = ref();
+const selectedCategory = ref<string>();
+const selectedBrand = ref<string>();
 
 const {
   categoryList,
