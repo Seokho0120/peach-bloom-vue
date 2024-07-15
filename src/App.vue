@@ -8,9 +8,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
   <RouterView />
 
   <Toast />
-  <ConfirmDialog 
-    group="confirm"
-  >
+  <ConfirmDialog group="confirm">
     <template #container="{ message, acceptCallback, rejectCallback }">
       <div class="p-6 bg-white">
         <div class="flex flex-col items-center w-full gap-6 border-b p-6">
