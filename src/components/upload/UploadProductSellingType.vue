@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 
 interface SaleType {
@@ -19,16 +19,17 @@ const saleTypes = ref<SaleType[]>([
 
 const isAllSelected = computed({
   get: () => {
-    return selectedType.value.length === saleTypes.value.length
+    return selectedType.value.length === saleTypes.value.length;
   },
   set: (value) => {
+    console.log('value', value);
     if (value) {
       selectedType.value = saleTypes.value.map((saleType) => saleType.name);
     } else {
       selectedType.value = [];
     }
   },
-})
+});
 
 watch(selectedType, (newValue, oldValue) => {
   console.log('watch: selectedType.value', newValue, oldValue);
@@ -55,19 +56,11 @@ defineExpose({ getFormData });
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
       <div class="flex align-items-center gap-2">
-        <Checkbox
-          v-model="isAllSelected"
-          inputId="all"
-          binary
-        />
+        <Checkbox v-model="isAllSelected" inputId="all" binary />
         <label for="all">ALL</label>
       </div>
       <div v-for="type of saleTypes" :key="type.key" class="flex align-items-center gap-2">
-        <Checkbox
-          v-model="selectedType"
-          :inputId="type.key"
-          :value="type.name"
-        />
+        <Checkbox v-model="selectedType" :inputId="type.key" :value="type.name" />
         <label :for="type.key">{{ type.name }}</label>
       </div>
     </ReuseFormField>

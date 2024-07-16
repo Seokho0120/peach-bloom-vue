@@ -10,9 +10,9 @@ import ConfirmDialog from 'primevue/confirmdialog';
   <Toast />
   <ConfirmDialog group="confirm">
     <template #container="{ message, acceptCallback, rejectCallback }">
-      <div class="p-6 bg-white">
+      <div class="p-6 bg-white rounded-sm">
         <div class="flex flex-col items-center w-full gap-6 border-b p-6">
-          <i class="pi pi-exclamation-circle text-5xl" />
+          <i class="pi pi-exclamation-circle text-5xl text-[#23b981]" />
           <p class="text-lg" v-html="message.message"></p>
         </div>
         <div class="flex items-center justify-center gap-3 p-3">

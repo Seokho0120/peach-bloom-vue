@@ -1,4 +1,4 @@
-import type { addItemType } from '@/types/items.types';
+import type { postItemType } from '@/types/items.types';
 import firebaseApp from './firebasedb';
 import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
 
@@ -34,13 +34,13 @@ export async function getBrandList() {
   }
 }
 
-export async function addItem({ item, imageUrl }: addItemType) {
+export async function postItem({ item, imageUrl }: postItemType) {
   try {
     await addDoc(collection(db, 'items'), {
       ...item,
       imageUrl,
     });
   } catch (error) {
-    console.log('error', error);
+    console.log('postItem API error', error);
   }
 }

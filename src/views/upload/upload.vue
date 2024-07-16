@@ -1,34 +1,22 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { v4 as uuidv4 } from 'uuid';
 import { createReusableTemplate } from '@vueuse/core';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-import { v4 as uuidv4 } from 'uuid';
+import { postItem } from '@/api/firestore';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
 import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
 import type UploadProductPrice from '@/components/upload/UploadProductPrice.vue';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { addItem } from '@/api/firestore';
-import type { addItemType } from '@/types/items.types';
+import type { postItemType } from '@/types/items.types';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
 }>();
-
-// TODO: 업로드할때 uuid 사용해서 고유 id만들어서 등록하기
-// const test = ref('');
-// watch(
-//   test,
-//   () => {
-//     test.value = uuidv4();
-//     console.log('test', test.value);
-//   },
-//   { immediate: true, deep: true },
-// );
 
 const router = useRouter();
 const confirm = useConfirm();
@@ -47,23 +35,42 @@ function showTemplate() {
   const productDeliveryOption = uploadProductDeliveryOptionRef.value?.getFormData();
   const productProductPrice = uploadProductPriceRef.value?.getFormData();
 
-  console.log('productInfo', productInfo);
-  console.log('productCategory', productCategory);
-  console.log('productSellingType', productSellingType);
-  console.log('productDeliveryOption', productDeliveryOption);
-  console.log('productProductPrice', productProductPrice);
-
   if (!productInfo || !productCategory || !productSellingType || !productDeliveryOption || !productProductPrice) {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: 'Form Validation Error', life: 3000 });
+    toast.add({ severity: 'error', summary: 'Error Message', detail: '모든 내용을 작성해주세요.', life: 3000 });
     return;
   }
 
   confirm.require({
     group: 'confirm',
-    message: '테스트',
-    acceptLabel: '네',
+    message: '새로운 상품을 등록하시겠습니까?',
+    acceptLabel: '네, 새로운 상품을 등록합니다.',
+    rejectLabel: '취소',
     accept: () => {
-      console.log('zz');
+      if (isPending.value) {
+        return;
+      }
+
+      const uuidProductId = uuidv4().split('-')[0];
+
+      submit({
+        item: {
+          productId: uuidProductId,
+          productName: productInfo.productName,
+          productDescription: productInfo.productDescription,
+          categoryName: productCategory.categoryName || '',
+          brandName: productCategory.brandName || '',
+          sellingType: productSellingType.sellingType,
+          breadth: productDeliveryOption.breadth,
+          length: productDeliveryOption.length,
+          weight: productDeliveryOption.weight,
+          width: productDeliveryOption.width,
+          consumerPrice: productProductPrice.consumerPrice,
+          isSale: productProductPrice.isSale,
+          salePrice: productProductPrice.salePrice,
+          saleRate: productProductPrice.saleRate,
+        },
+        imageUrl: '',
+      });
     },
   });
 }
@@ -74,22 +81,34 @@ function cancel() {
 
 const queryClient = useQueryClient();
 const { mutate: submit, isPending } = useMutation({
-  mutationFn: async (payload: addItemType) => {
-    await addItem(payload);
+  mutationFn: async (payload: postItemType) => {
+    await postItem(payload);
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ['items'],
+    });
+
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: '새로운 상품이 등록되었습니다.',
+      life: 3000,
+    });
+
+    router.push({
+      name: 'home',
+    });
+  },
+  onError: () => {
+    toast.add({
+      severity: 'error',
+      summary: 'Error Message',
+      detail: '새로운 상품의 등록을 실패했습니다.',
+      life: 3000,
+    });
   },
 });
-
-// const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-//   e.preventDefault();
-//   if (!file) return;
-
-//   const url = await uploadImage(file);
-//   const firebaseProductId = await addNewProduct({ product, imageUrl: url });
-
-//   const data = await getProductById(firebaseProductId);
-
-//   await router.push(`/upload/${data}`); //제품 디테일 업로드로 이동
-// };
 </script>
 
 <template>
@@ -114,7 +133,7 @@ const { mutate: submit, isPending } = useMutation({
       </div>
     </div>
 
-    <form class="flex gap-8" :on-submit="() => showTemplate()">
+    <form class="flex gap-8" @submit.prevent="() => showTemplate()">
       <div class="w-full">
         <ReuseTemplate label="상품 설명">
           <UploadProductInfo ref="uploadProductInfoFormRef" />
@@ -143,7 +162,7 @@ const { mutate: submit, isPending } = useMutation({
 
         <div class="flex justify-end">
           <Button type="button" label="취소" class="mr-2" size="small" severity="secondary" />
-          <Button type="button" label="상품 등록" size="small" @click="() => showTemplate()" />
+          <Button type="submit" label="상품 등록" size="small" />
         </div>
       </div>
     </form>

@@ -1,4 +1,5 @@
 export interface ItemsType {
+  productId: string;
   productDescription: string;
   productName: string;
   brandName: string;
@@ -14,7 +15,7 @@ export interface ItemsType {
   saleRate: number;
 }
 
-export interface addItemType {
+export interface postItemType {
   item: ItemsType;
   imageUrl: string;
 }
