@@ -3,7 +3,6 @@ import { ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useToast } from 'primevue/usetoast';
 import { uploadImage } from '@/api/uploader';
-import Button from 'primevue/button';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate();
 
@@ -21,16 +20,13 @@ const onFileSelect = async (event: Event) => {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       selectedFileName.value = file.name;
-      // console.log('file', file);
 
       const url = await uploadImage(file);
       imageUrl.value.push(url);
-      toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
-
-      // console.log('이미지 URL:', url);
+      toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
     }
   } catch (error) {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'File Upload Failed', life: 3000 });
+    toast.add({ severity: 'error', summary: 'Error', detail: '이미지 업로드에 실패했습니다.', life: 3000 });
   } finally {
     loading.value = false;
   }
@@ -59,8 +55,6 @@ watch(
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
       <div class="card flex justify-content-center">
-        <!-- <p>{{ selectedFileName }}</p> -->
-
         <input
           type="file"
           accept="image/*"
@@ -82,23 +76,49 @@ watch(
       </div>
     </ReuseFormField>
 
-    <div v-if="imageUrl.length > 0" class="flex flex-wrap gap-4 justify-content-center mt-4">
-      <div v-for="(url, idx) in imageUrl" :key="idx" class="w-48 h-48 relative">
+    <div v-if="imageUrl.length > 0" class="grid grid-cols-3 gap-4 mt-4">
+      <div v-if="imageUrl.length > 0" class="col-span-3 mb-4">
+        <Image
+          preview
+          :pt="{
+            class: 'rounded',
+          }"
+        >
+          <template #indicatoricon>
+            <i class="pi pi-search"></i>
+          </template>
+          <template #image>
+            <img :src="imageUrl[0]" alt="Upload Image" class="rounded shadow w-full" />
+          </template>
+        </Image>
+      </div>
+      <div v-for="(url, idx) in imageUrl.slice(1)" :key="idx" class="relative">
         <Button
           icon="pi pi-times"
           severity="danger"
           rounded
           aria-label="Cancel"
           class="absolute top-2 right-2"
-          @click="removeImage(idx)"
+          @click="removeImage(idx + 1)"
           :pt="{
             root: {
               class: 'h-[2rem] w-[2rem]',
             },
           }"
         />
-
-        <img :src="url" alt="Uploaded Image" class="w-full h-full object-cover rounded shadow" />
+        <Image
+          preview
+          :pt="{
+            class: 'rounded',
+          }"
+        >
+          <template #indicatoricon>
+            <i class="pi pi-search"></i>
+          </template>
+          <template #image>
+            <img :src="url" alt="Upload Image" class="rounded shadow" />
+          </template>
+        </Image>
       </div>
     </div>
   </div>
