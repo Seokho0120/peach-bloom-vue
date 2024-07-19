@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useToast } from 'primevue/usetoast';
 import { uploadImage } from '@/api/uploader';
@@ -8,20 +8,18 @@ const [DefineFormField, ReuseFormField] = createReusableTemplate();
 
 const toast = useToast();
 const imageUrl = ref<string[]>([]);
-const selectedFileName = ref<string>('파일을 선택하세요');
 const fileInput = ref<HTMLInputElement | null>(null);
 const loading = ref<boolean>(false);
 
-// 파일 선택
 const onFileSelect = async (event: Event) => {
   try {
     loading.value = true;
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      selectedFileName.value = file.name;
-
       const url = await uploadImage(file);
+
       imageUrl.value.push(url);
       toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
     }
@@ -55,15 +53,8 @@ defineExpose({ getFormData });
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
       <div class="card flex justify-content-center">
-        <input
-          type="file"
-          accept="image/*"
-          name="file"
-          required
-          @change="onFileSelect"
-          style="display: none"
-          ref="fileInput"
-        />
+        <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput" />
+        <!-- required -->
         <Button
           type="button"
           icon="pi pi-upload"
@@ -91,7 +82,8 @@ defineExpose({ getFormData });
         </Image>
         <Button
           icon="pi pi-times"
-          severity="danger"
+          severity="secondary"
+          text
           rounded
           aria-label="Cancel"
           class="absolute top-2 right-2"
@@ -118,7 +110,8 @@ defineExpose({ getFormData });
         </Image>
         <Button
           icon="pi pi-times"
-          severity="danger"
+          severity="secondary"
+          text
           rounded
           aria-label="Cancel"
           class="absolute top-2 right-2"

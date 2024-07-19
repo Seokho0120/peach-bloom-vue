@@ -38,10 +38,15 @@ function showTemplate() {
   const productProductPrice = uploadProductPriceRef.value?.getFormData();
   const productProductImage = uploadProductImageRef.value?.getFormData();
 
-  console.log('productProductImage?.imageUrl', productProductImage?.imageUrl);
-
-  if (!productInfo || !productCategory || !productSellingType || !productDeliveryOption || !productProductPrice) {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: '모든 내용을 작성해주세요.', life: 3000 });
+  if (
+    !productInfo ||
+    !productCategory ||
+    !productSellingType ||
+    !productDeliveryOption ||
+    !productProductPrice ||
+    !productProductImage
+  ) {
+    toast.add({ severity: 'error', summary: 'Error Message', detail: '상품의 모든 내용을 작성해주세요.', life: 3000 });
     return;
   }
 
@@ -74,14 +79,16 @@ function showTemplate() {
           salePrice: productProductPrice.salePrice,
           saleRate: productProductPrice.saleRate,
         },
-        imageUrl: '',
+        imageUrl: productProductImage?.imageUrl || [],
       });
     },
   });
 }
 
 function cancel() {
-  console.log('뒤로가기');
+  router.push({
+    name: 'home',
+  });
 }
 
 const queryClient = useQueryClient();

@@ -17,5 +17,5 @@ export interface ItemsType {
 
 export interface postItemType {
   item: ItemsType;
-  imageUrl: string;
+  imageUrl: Array<string>;
 }
