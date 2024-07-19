@@ -13,6 +13,7 @@ import UploadProductSellingType from '@/components/upload/UploadProductSellingTy
 import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
 import type UploadProductPrice from '@/components/upload/UploadProductPrice.vue';
 import type { postItemType } from '@/types/items.types';
+import type UploadProductImage from '@/components/upload/UploadProductImage.vue';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
   label: string;
@@ -27,6 +28,7 @@ const uploadProductCategoryRef = ref<InstanceType<typeof UploadProductCategory> 
 const uploadProductSellingTypeRef = ref<InstanceType<typeof UploadProductSellingType> | undefined>(undefined);
 const uploadProductDeliveryOptionRef = ref<InstanceType<typeof UploadProductDeliveryOption> | undefined>(undefined);
 const uploadProductPriceRef = ref<InstanceType<typeof UploadProductPrice> | undefined>(undefined);
+const uploadProductImageRef = ref<InstanceType<typeof UploadProductImage> | undefined>(undefined);
 
 function showTemplate() {
   const productInfo = uploadProductInfoFormRef.value?.getFormData();
@@ -34,6 +36,9 @@ function showTemplate() {
   const productSellingType = uploadProductSellingTypeRef.value?.getFormData();
   const productDeliveryOption = uploadProductDeliveryOptionRef.value?.getFormData();
   const productProductPrice = uploadProductPriceRef.value?.getFormData();
+  const productProductImage = uploadProductImageRef.value?.getFormData();
+
+  console.log('productProductImage?.imageUrl', productProductImage?.imageUrl);
 
   if (!productInfo || !productCategory || !productSellingType || !productDeliveryOption || !productProductPrice) {
     toast.add({ severity: 'error', summary: 'Error Message', detail: '모든 내용을 작성해주세요.', life: 3000 });
@@ -149,7 +154,7 @@ const { mutate: submit, isPending } = useMutation({
       </div>
       <div class="w-full">
         <ReuseTemplate label="상품 이미지">
-          <UploadProductImage />
+          <UploadProductImage ref="uploadProductImageRef" />
         </ReuseTemplate>
 
         <ReuseTemplate label="배송 정보">

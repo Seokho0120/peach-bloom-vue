@@ -36,13 +36,13 @@ const removeImage = (index: number) => {
   imageUrl.value.splice(index, 1);
 };
 
-watch(
-  imageUrl,
-  () => {
-    console.log('imageUrl:', imageUrl.value);
-  },
-  { immediate: true, deep: true },
-);
+function getFormData() {
+  return {
+    imageUrl: imageUrl.value,
+  };
+}
+
+defineExpose({ getFormData });
 </script>
 
 <template>
@@ -77,22 +77,45 @@ watch(
     </ReuseFormField>
 
     <div v-if="imageUrl.length > 0" class="grid grid-cols-3 gap-4 mt-4">
-      <div v-if="imageUrl.length > 0" class="col-span-3 mb-4">
-        <Image
-          preview
-          :pt="{
-            class: 'rounded',
-          }"
-        >
+      <div class="col-span-3 mb-4 relative">
+        <Image preview>
           <template #indicatoricon>
             <i class="pi pi-search"></i>
           </template>
           <template #image>
             <img :src="imageUrl[0]" alt="Upload Image" class="rounded shadow w-full" />
           </template>
+          <template #preview="slotProps">
+            <img :src="imageUrl[0]" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
+          </template>
         </Image>
+        <Button
+          icon="pi pi-times"
+          severity="danger"
+          rounded
+          aria-label="Cancel"
+          class="absolute top-2 right-2"
+          @click="removeImage(0)"
+          :pt="{
+            root: {
+              class: 'h-[2rem] w-[2rem]',
+            },
+          }"
+        />
       </div>
+
       <div v-for="(url, idx) in imageUrl.slice(1)" :key="idx" class="relative">
+        <Image preview>
+          <template #indicatoricon>
+            <i class="pi pi-search"></i>
+          </template>
+          <template #image>
+            <img :src="url" alt="Upload Image" class="rounded shadow w-full" />
+          </template>
+          <template #preview="slotProps">
+            <img :src="url" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
+          </template>
+        </Image>
         <Button
           icon="pi pi-times"
           severity="danger"
@@ -106,19 +129,6 @@ watch(
             },
           }"
         />
-        <Image
-          preview
-          :pt="{
-            class: 'rounded',
-          }"
-        >
-          <template #indicatoricon>
-            <i class="pi pi-search"></i>
-          </template>
-          <template #image>
-            <img :src="url" alt="Upload Image" class="rounded shadow" />
-          </template>
-        </Image>
       </div>
     </div>
   </div>

@@ -19,7 +19,7 @@ export const uploadImage = async (file: File) => {
 
     return transformedUrl;
   } catch (error) {
-    console.error('이미지 업로드 에러 발생 🚨', error);
+    console.error('Image Upload Error', error);
     throw error;
   }
 };
