@@ -22,45 +22,25 @@ watchEffect(() => {
   }
 });
 </script>
+
 <template>
-  <div class="card">
-    <Galleria
-      :autoPlay="true"
-      :value="images"
-      :circular="true"
-      :showItemNavigators="true"
-      :showThumbnails="false"
-      :showItemNavigatorsOnHover="false"
-      :showIndicators="true"
-    >
-      <template #item="slotProps">
-        <img
-          :src="slotProps.item.imageUrl"
-          :alt="slotProps.item.imageUrl"
-          style="width: 100%; height: 680px; object-fit: cover"
-        />
-      </template>
-    </Galleria>
-  </div>
+  <MainSnb />
 
-  <!-- 예전꺼 -->
-  <!-- <div>
-    <h1 class="text-xl">Welcome to Peachbloom!</h1>
-    <div v-if="user">
-      <h2 class="font-bold text-2xl text-blue-500">Welcome, {{ user.email }}!</h2>
-    </div>
-
-    <div v-if="!isError && !isLoading">
-      <div v-for="test in data" :key="test.productId" class="flex flex-col gap-4">
-        <div>{{ test.productName }} / {{ test.brandName }}</div>
-        <div>{{ test.categoryName }}</div>
-        <div v-html="test.productDescription" />
-        <div>{{ test.consumerPrice }}</div>
-        <div>sale: {{ test.isSale }} / {{ test.saleRate }} / {{ test.salePrice }}</div>
-        <div>{{ test.imageUrl.map((t) => t) }}</div>
-        <div>{{ test.sellingType.map((y) => y) }}</div>
-        <div class="mb-20">{{ test.weight }} / {{ test.width }} / {{ test.length }}</div>
-      </div>
-    </div>
-  </div> -->
+  <Galleria
+    :autoPlay="true"
+    :value="images"
+    :circular="true"
+    :showItemNavigators="true"
+    :showThumbnails="false"
+    :showItemNavigatorsOnHover="false"
+    :showIndicators="true"
+  >
+    <template #item="slotProps">
+      <img
+        :src="slotProps.item.imageUrl"
+        :alt="slotProps.item.imageUrl"
+        style="width: 100%; height: 680px; object-fit: cover"
+      />
+    </template>
+  </Galleria>
 </template>

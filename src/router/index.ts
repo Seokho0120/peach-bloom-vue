@@ -40,6 +40,11 @@ const router = createRouter({
       name: 'upload',
       component: () => import('@/views/upload/upload.vue'),
     },
+    {
+      path: '/items/:id',
+      name: 'itemsList',
+      component: () => import('@/views/items/items.vue'),
+    },
   ],
 });
 

@@ -52,5 +52,3 @@ import ConfirmDialog from 'primevue/confirmdialog';
     </template>
   </ConfirmDialog>
 </template>
-
-<style scoped></style>

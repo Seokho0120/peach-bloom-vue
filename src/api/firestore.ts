@@ -1,6 +1,7 @@
 import type { ItemsListType, postItemType } from '@/types/items.types';
 import firebaseApp from './firebasedb';
 import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
+import type { GetProductCategoryType } from '@/types/productCategory.types';
 
 export const db = getFirestore(firebaseApp);
 
@@ -11,7 +12,7 @@ export async function getCategoryList() {
     if (snapShot.empty) {
       return [];
     } else {
-      return snapShot.docs.flatMap((doc) => doc.data());
+      return snapShot.docs.flatMap((doc) => doc.data()) as GetProductCategoryType[];
     }
   } catch (error) {
     console.log('error', error);
@@ -26,7 +27,7 @@ export async function getBrandList() {
     if (snapShot.empty) {
       return [];
     } else {
-      return snapShot.docs.flatMap((doc) => doc.data());
+      return snapShot.docs.flatMap((doc) => doc.data()) as GetProductCategoryType[];
     }
   } catch (error) {
     console.log('error', error);
