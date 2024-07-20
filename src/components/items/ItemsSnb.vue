@@ -10,7 +10,7 @@ const {
 </script>
 
 <template>
-  <ul class="w-52 z-40 left-6 bg-white flex flex-col gap-5 border-t-4 border-black">
+  <ul class="min-w-[14rem] max-w-[16rem] z-40 left-6 bg-white flex flex-col gap-5 border-t-4 border-black">
     <li
       v-for="(category, idx) in categoryList"
       :key="category.id"
