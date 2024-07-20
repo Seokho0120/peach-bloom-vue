@@ -16,6 +16,7 @@ declare module 'vue' {
     Editor: typeof import('primevue/editor')['default']
     FileUpload: typeof import('primevue/fileupload')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
+    Galleria: typeof import('primevue/galleria')['default']
     Image: typeof import('primevue/image')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']

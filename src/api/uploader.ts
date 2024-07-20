@@ -15,9 +15,8 @@ export const uploadImage = async (file: File) => {
     });
 
     const url = response.data.secure_url;
-    const transformedUrl = url.replace('/upload/', '/upload/w_500,ar_1:1,f_auto/');
 
-    return transformedUrl;
+    return url;
   } catch (error) {
     console.error('Image Upload Error', error);
     throw error;

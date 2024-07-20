@@ -4,7 +4,7 @@ export interface ItemsType {
   productName: string;
   brandName: string;
   categoryName: string;
-  sellingType: Array<string>;
+  sellingType: string[];
   breadth: number;
   length: number;
   weight: number;
@@ -17,5 +17,11 @@ export interface ItemsType {
 
 export interface postItemType {
   item: ItemsType;
-  imageUrl: Array<string>;
+  imageUrl: string[];
 }
+
+export interface ItemsListType extends ItemsType {
+  imageUrl: string[];
+}
+
+export type ImageType = Pick<postItemType, 'imageUrl'>;

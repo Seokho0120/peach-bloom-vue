@@ -1,4 +1,4 @@
-import type { postItemType } from '@/types/items.types';
+import type { ItemsListType, postItemType } from '@/types/items.types';
 import firebaseApp from './firebasedb';
 import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
 
@@ -43,4 +43,10 @@ export async function postItem({ item, imageUrl }: postItemType) {
   } catch (error) {
     console.log('postItem API error', error);
   }
+}
+
+export function getAllItemsList() {
+  return getDocs(collection(db, 'items')).then((snapshot) =>
+    snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as ItemsListType[]),
+  );
 }
