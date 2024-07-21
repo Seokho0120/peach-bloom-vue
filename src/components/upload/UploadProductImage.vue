@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useToast } from 'primevue/usetoast';
 import { uploadImage } from '@/api/uploader';
@@ -20,7 +20,7 @@ const onFileSelect = async (event: Event) => {
       const file = input.files[0];
       const url = await uploadImage(file);
 
-      imageUrl.value.push(url);
+      imageUrl.value = [...imageUrl.value, url];
       toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
     }
   } catch (error) {
@@ -31,7 +31,7 @@ const onFileSelect = async (event: Event) => {
 };
 
 const removeImage = (index: number) => {
-  imageUrl.value.splice(index, 1);
+  imageUrl.value = imageUrl.value.filter((_, idx) => idx !== index);
 };
 
 function getFormData() {
@@ -53,7 +53,7 @@ defineExpose({ getFormData });
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
       <div class="card flex justify-content-center">
-        <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput" />
+        <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput"/>
         <!-- required -->
         <Button
           type="button"
@@ -67,8 +67,8 @@ defineExpose({ getFormData });
       </div>
     </ReuseFormField>
 
-    <div v-if="imageUrl.length > 0" class="grid grid-cols-3 gap-4 mt-4">
-      <div class="col-span-3 mb-4 relative">
+    <template v-if="imageUrl.length > 0">
+      <div class="relative">
         <Image preview>
           <template #indicatoricon>
             <i class="pi pi-search"></i>
@@ -95,34 +95,35 @@ defineExpose({ getFormData });
           }"
         />
       </div>
-
-      <div v-for="(url, idx) in imageUrl.slice(1)" :key="idx" class="relative">
-        <Image preview>
-          <template #indicatoricon>
-            <i class="pi pi-search"></i>
-          </template>
-          <template #image>
-            <img :src="url" alt="Upload Image" class="rounded shadow w-full" />
-          </template>
-          <template #preview="slotProps">
-            <img :src="url" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
-          </template>
-        </Image>
-        <Button
-          icon="pi pi-times"
-          severity="secondary"
-          text
-          rounded
-          aria-label="Cancel"
-          class="absolute top-2 right-2"
-          @click="removeImage(idx + 1)"
-          :pt="{
-            root: {
-              class: 'h-[2rem] w-[2rem]',
-            },
-          }"
-        />
+      <div class="grid grid-cols-3 gap-4">
+        <div v-for="(url, idx) in imageUrl.slice(1)" :key="url" class="relative">
+          <Image preview>
+            <template #indicatoricon>
+              <i class="pi pi-search"></i>
+            </template>
+            <template #image>
+              <img :src="url" alt="Upload Image" class="rounded shadow w-full" />
+            </template>
+            <template #preview="slotProps">
+              <img :src="url" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
+            </template>
+          </Image>
+          <Button
+            icon="pi pi-times"
+            severity="secondary"
+            text
+            rounded
+            aria-label="Cancel"
+            class="absolute top-2 right-2"
+            @click="removeImage(idx + 1)"
+            :pt="{
+              root: {
+                class: 'h-[2rem] w-[2rem]',
+              },
+            }"
+          />
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
