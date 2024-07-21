@@ -74,6 +74,7 @@ defineExpose({ getFormData });
                   },
                 },
               }"
+              readonly
             />
             <InputGroupAddon>원</InputGroupAddon>
           </InputGroup>
