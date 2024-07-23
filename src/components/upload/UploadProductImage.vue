@@ -103,15 +103,21 @@ watch(
     <ReuseFormField class="flex-1 gap-4">
       <div class="card flex justify-content-center">
         <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput" />
-        <Button
-          type="button"
-          icon="pi pi-upload"
-          label="파일 선택"
-          class="mr-2"
-          size="small"
-          :loading="loading"
-          @click="fileInput?.click()"
-        />
+        <div>
+          <Button
+            type="button"
+            icon="pi pi-upload"
+            label="파일 선택"
+            class="mr-2 mb-1"
+            size="small"
+            :loading="loading"
+            @click="fileInput?.click()"
+          />
+
+          <p v-if="props.selectButtonValue.value === 1" class="flex items-center gap-1 text-xs mt-1">
+            <Message severity="warn" class="my-0">피드의 이미지는 2000x850 크기만 업로드 가능합니다.</Message>
+          </p>
+        </div>
       </div>
     </ReuseFormField>
 
