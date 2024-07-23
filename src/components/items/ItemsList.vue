@@ -39,7 +39,17 @@ watchEffect(() => {
     </div>
 
     <div class="grid grid-cols-6 gap-4 mt-10">
-      <div v-for="item in data" :key="item.productId" class="flex flex-col">
+      <ItemsListCard
+        v-for="item in data"
+        :key="item.productId"
+        :brandName="item.brandName"
+        :imageUrl="item.imageUrl"
+        :productName="item.productName"
+        :salePrice="item.salePrice"
+        :saleRate="item.saleRate"
+      />
+
+      <!-- <div v-for="item in data" :key="item.productId" class="flex flex-col">
         <img :src="item.imageUrl[0]" alt="image[0]" />
 
         <div class="pt-3.5">
@@ -51,7 +61,7 @@ watchEffect(() => {
             <div class="font-bold">{{ item.salePrice }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
