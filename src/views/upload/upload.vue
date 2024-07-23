@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
 import { createReusableTemplate } from '@vueuse/core';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import { postItem } from '@/api/firestore';
+import { postItem, postMainItem } from '@/api/firestore';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
@@ -94,7 +94,11 @@ function cancel() {
 const queryClient = useQueryClient();
 const { mutate: submit, isPending } = useMutation({
   mutationFn: async (payload: postItemType) => {
-    await postItem(payload);
+    if (selectButtonValue.value.value === 1) {
+      await postMainItem(payload);
+    } else if (selectButtonValue.value.value === 2) {
+      await postItem(payload);
+    } else return;
   },
   onSuccess: () => {
     queryClient.invalidateQueries({
@@ -121,6 +125,12 @@ const { mutate: submit, isPending } = useMutation({
     });
   },
 });
+
+const selectButtonValue = ref({ name: '피드 리스트', value: 1 });
+const selectButtonOptions = ref([
+  { name: '피드 리스트', value: 1 },
+  { name: '상품 리스트', value: 2 },
+]);
 </script>
 
 <template>
@@ -147,6 +157,18 @@ const { mutate: submit, isPending } = useMutation({
 
     <form class="flex gap-8" @submit.prevent="() => showTemplate()">
       <div class="w-full">
+        <div class="flex flex-col mb-10">
+          <h2 class="text-xl font-semibold mb-3">상품 분류</h2>
+          <div class="card flex justify-content-center">
+            <SelectButton
+              v-model="selectButtonValue"
+              :options="selectButtonOptions"
+              optionLabel="name"
+              aria-labelledby="basic"
+            />
+          </div>
+        </div>
+
         <ReuseTemplate label="상품 설명">
           <UploadProductInfo ref="uploadProductInfoFormRef" />
         </ReuseTemplate>
@@ -161,7 +183,7 @@ const { mutate: submit, isPending } = useMutation({
       </div>
       <div class="w-full">
         <ReuseTemplate label="상품 이미지">
-          <UploadProductImage ref="uploadProductImageRef" />
+          <UploadProductImage ref="uploadProductImageRef" :select-button-value="selectButtonValue" />
         </ReuseTemplate>
 
         <ReuseTemplate label="배송 정보">

@@ -13,7 +13,9 @@ import ToastService from 'primevue/toastservice';
 import ConfirmDialog from 'primevue/confirmdialog';
 import Tooltip from 'primevue/tooltip';
 
-import 'primevue/resources/themes/lara-light-green/theme.css';
+import 'primevue/resources/themes/aura-light-indigo/theme.css';
+// import 'primevue/resources/themes/aura-light-noir/theme.css';
+// import 'primevue/resources/themes/aura-light-green/theme.css';
 import 'primevue/resources/primevue.min.css'; // PrimeVue의 기본 CSS 파일 추가
 import 'primeicons/primeicons.css';
 

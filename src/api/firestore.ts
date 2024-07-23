@@ -46,6 +46,17 @@ export async function postItem({ item, imageUrl }: postItemType) {
   }
 }
 
+export async function postMainItem({ item, imageUrl }: postItemType) {
+  try {
+    await addDoc(collection(db, 'mainItems'), {
+      ...item,
+      imageUrl,
+    });
+  } catch (error) {
+    console.log('postMainItem API error', error);
+  }
+}
+
 export function getAllItemsList() {
   return getDocs(collection(db, 'items')).then((snapshot) =>
     snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as ItemsListType[]),

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
-import "quill/dist/quill.core.css";
+import 'quill/dist/quill.core.css';
 
 const [DefineFormField, ReuseFormField] = createReusableTemplate<{ label: string }>();
 
@@ -36,21 +36,21 @@ defineExpose({ getFormData });
     </ReuseFormField>
 
     <ReuseFormField label="상품 설명" class="flex-1">
-      <Editor 
-        v-model="productDescription" 
+      <Editor
+        v-model="productDescription"
         :pt="{
           content: {
-            class: 'min-h-80'
-          }
+            class: 'min-h-80',
+          },
         }"
         placeholder="상품 설명을 작성해주세요."
       >
         <template v-slot:toolbar>
           <span class="ql-formats">
-            <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
-            <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
-            <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
-            <button v-tooltip.bottom="'List'" class="ql-list" value="ordered"></button>
+            <button v-tooltip.bottom="'Bold'" class="ql-bold" />
+            <button v-tooltip.bottom="'Italic'" class="ql-italic" />
+            <button v-tooltip.bottom="'Underline'" class="ql-underline" />
+            <button v-tooltip.bottom="'List'" class="ql-list" value="ordered" />
           </span>
         </template>
       </Editor>

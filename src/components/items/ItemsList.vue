@@ -48,20 +48,6 @@ watchEffect(() => {
         :salePrice="item.salePrice"
         :saleRate="item.saleRate"
       />
-
-      <!-- <div v-for="item in data" :key="item.productId" class="flex flex-col">
-        <img :src="item.imageUrl[0]" alt="image[0]" />
-
-        <div class="pt-3.5">
-          <div class="text-xs pb-1">{{ item.brandName }}</div>
-          <div class="text-xs pb-2">{{ item.productName }}</div>
-
-          <div class="flex gap-2">
-            <div class="text-[#ff4800]">{{ item.saleRate }}%</div>
-            <div class="font-bold">{{ item.salePrice }}</div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
