@@ -14,7 +14,7 @@ const {
 </script>
 <template>
   <ul>
-    <li v-for="category in categoryList" :key="category.id" class="hover:font-bold my-5">
+    <li v-for="category in categoryList" :key="category.id" class="my-5">
       <RouterLink
         :to="{
           name: 'itemsList',
@@ -22,8 +22,17 @@ const {
           query: { filter: filterId },
         }"
       >
-        <div>{{ category.name }}</div>
+        <div class="">{{ category.name }}</div>
       </RouterLink>
     </li>
   </ul>
 </template>
+
+<style lang="scss" scoped>
+.router-link-active {
+  font-weight: 600;
+
+  /* FIXME: 컬러 생각해보기 */
+  /* color: var(--primary-color); */
+}
+</style>
