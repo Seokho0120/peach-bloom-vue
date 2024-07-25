@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { useGetMainList } from '@/composables/useItems';
-import type { ImageType, ItemsListType } from '@/types/items.types';
 import { ref, watch, watchEffect } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useGetItemsList } from '@/composables/useItems';
+import type { ImageType, ItemsListType } from '@/types/items.types';
 
-const filters = ref([
+const route = useRoute();
+const router = useRouter();
+
+const filterList = ref([
   { name: '추천순', id: 'recommend' },
   { name: '신상품순', id: 'new' },
   { name: '리뷰많은순', id: 'review' },
@@ -13,13 +17,21 @@ const filters = ref([
   { name: '좋아요많은순', id: 'like' },
 ]);
 
-const selectedFilter = ref(filters.value[0]);
+const selectedFilter = ref(filterList.value[0].id);
+watch(
+  selectedFilter,
+  () => {
+    router.replace({
+      query: {
+        ...route.query,
+        filter: selectedFilter.value,
+      },
+    });
+  },
+  { immediate: true },
+);
 
-watch(selectedFilter, () => {
-  console.log('selectedFilter.value', selectedFilter.value);
-});
-
-const { data, isError, isLoading } = useGetMainList();
+const { data, isError, isLoading } = useGetItemsList();
 
 const images = ref<ImageType[]>([]);
 
@@ -35,7 +47,7 @@ watchEffect(() => {
 <template>
   <div>
     <div class="card flex justify-content-center">
-      <Dropdown v-model="selectedFilter" :options="filters" optionLabel="name" />
+      <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
     </div>
 
     <div class="grid grid-cols-6 gap-4 mt-10">

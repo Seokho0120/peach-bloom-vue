@@ -8,11 +8,11 @@ defineProps<{
   images: ImageType[];
 }>();
 
-const user = ref<User | null>(null);
+// const user = ref<User | null>(null);
 
-onAuthStateChanged(getAuth(), (currentUser) => {
-  user.value = currentUser;
-});
+// onAuthStateChanged(getAuth(), (currentUser) => {
+//   user.value = currentUser;
+// });
 </script>
 
 <template>
