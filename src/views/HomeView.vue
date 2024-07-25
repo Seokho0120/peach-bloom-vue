@@ -10,9 +10,9 @@ import type { ImageType, ItemsListType } from '@/types/items.types';
 //   user.value = currentUser;
 // });
 
-const { data } = useGetMainList();
-
 const images = ref<ImageType[]>([]);
+
+const { data } = useGetMainList();
 
 watchEffect(() => {
   if (data.value) {

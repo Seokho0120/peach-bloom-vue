@@ -62,3 +62,9 @@ export function getAllItemsList() {
     snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as ItemsListType[]),
   );
 }
+
+export function getMainItemsList() {
+  return getDocs(collection(db, 'mainItems')).then((snapshot) =>
+    snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as ItemsListType[]),
+  );
+}
