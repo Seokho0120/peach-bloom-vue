@@ -19,6 +19,9 @@ import 'primevue/resources/themes/aura-light-indigo/theme.css';
 import 'primevue/resources/primevue.min.css'; // PrimeVue의 기본 CSS 파일 추가
 import 'primeicons/primeicons.css';
 
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+
 const app = createApp(App);
 
 app.use(createPinia());
@@ -31,5 +34,7 @@ app.use(ConfirmationService);
 app.use(ToastService);
 app.directive('tooltip', Tooltip);
 app.component('ConfirmDialog', ConfirmDialog);
+
+app.use(ElementPlus);
 
 app.mount('#app');
