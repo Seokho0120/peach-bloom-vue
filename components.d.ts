@@ -49,5 +49,6 @@ declare module 'vue' {
     UploadProductPrice: typeof import('./src/components/upload/UploadProductPrice.vue')['default']
     UploadProductSellingType: typeof import('./src/components/upload/UploadProductSellingType.vue')['default']
     UploadProductShippingOption: typeof import('./src/components/upload/UploadProductShippingOption.vue')['default']
+    UploadTest: typeof import('./src/components/upload/UploadTest.vue')['default']
   }
 }

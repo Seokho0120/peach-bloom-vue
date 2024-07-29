@@ -19,6 +19,7 @@
     "@vee-validate/zod": "^4.13.1",
     "@vueuse/core": "^10.11.0",
     "axios": "^1.7.2",
+    "element-plus": "^2.7.8",
     "firebase": "^10.12.2",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",

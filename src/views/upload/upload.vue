@@ -131,6 +131,21 @@ const selectButtonOptions = ref([
   { name: '피드 리스트', value: 1 },
   { name: '상품 리스트', value: 2 },
 ]);
+
+const test = [
+  {
+    ID: 0,
+    Name: '전체',
+  },
+  {
+    ID: 1,
+    Name: '테스트1',
+  },
+  {
+    ID: 2,
+    Name: '테스트2',
+  },
+];
 </script>
 
 <template>
@@ -192,6 +207,10 @@ const selectButtonOptions = ref([
 
         <ReuseTemplate label="상품 가격">
           <UploadProductPrice ref="uploadProductPriceRef" />
+        </ReuseTemplate>
+
+        <ReuseTemplate label="업로드 테스트">
+          <UploadTest :model-value="test" />
         </ReuseTemplate>
 
         <div class="flex justify-end">
