@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { useGetMainList } from '@/composables/useItems';
-import type { ImageType, ItemsListType } from '@/types/items.types';
+import type { ImageType } from '@/types/items.types';
 
 defineProps<{
   images: ImageType[];
 }>();
-
-// const user = ref<User | null>(null);
-
-// onAuthStateChanged(getAuth(), (currentUser) => {
-//   user.value = currentUser;
-// });
 </script>
 
 <template>
@@ -25,12 +16,8 @@ defineProps<{
     :showItemNavigatorsOnHover="false"
     :showIndicators="true"
   >
-    <template #item="slotProps">
-      <img
-        :src="slotProps.item.imageUrl"
-        :alt="slotProps.item.imageUrl"
-        style="width: 100%; height: 680px; object-fit: cover"
-      />
+    <template #item="{ item }">
+      <img :src="item.imageUrl" :alt="item.imageUrl" style="width: 100%; height: 680px; object-fit: cover" />
     </template>
   </Galleria>
 </template>

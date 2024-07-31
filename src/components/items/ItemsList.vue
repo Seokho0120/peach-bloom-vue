@@ -31,13 +31,13 @@ watch(
   { immediate: true },
 );
 
-const { data, isError, isLoading } = useGetItemsList();
+const { data: itemList, isError, isLoading } = useGetItemsList();
 
 const images = ref<ImageType[]>([]);
 
 watchEffect(() => {
-  if (data.value) {
-    images.value = data.value.flatMap(
+  if (itemList.value) {
+    images.value = itemList.value.flatMap(
       (item: ItemsListType) => item.imageUrl.map((url) => ({ imageUrl: [url] })), // 각 URL을 배열로 감싸기
     );
   }
@@ -52,7 +52,7 @@ watchEffect(() => {
 
     <div class="grid grid-cols-6 gap-4 mt-10">
       <ItemsListCard
-        v-for="item in data"
+        v-for="item in itemList"
         :key="item.productId"
         :brandName="item.brandName"
         :imageUrl="item.imageUrl"

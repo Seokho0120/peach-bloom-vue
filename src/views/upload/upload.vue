@@ -6,13 +6,13 @@ import { createReusableTemplate } from '@vueuse/core';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import { postItem, postMainItem } from '@/api/firestore';
+import { uploadItem, uploadMainItem } from '@/api/firestore';
 import UploadProductInfo from '@/components/upload/UploadProductInfo.vue';
 import UploadProductCategory from '@/components/upload/UploadProductCategory.vue';
 import UploadProductSellingType from '@/components/upload/UploadProductSellingType.vue';
 import UploadProductDeliveryOption from '@/components/upload/UploadProductDeliveryOption.vue';
 import type UploadProductPrice from '@/components/upload/UploadProductPrice.vue';
-import type { postItemType } from '@/types/items.types';
+import type { uploadItemType } from '@/types/items.types';
 import type UploadProductImage from '@/components/upload/UploadProductImage.vue';
 
 const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
@@ -91,13 +91,19 @@ function cancel() {
   });
 }
 
+const selectButtonValue = ref({ name: '상품 리스트', value: 2 });
+const selectButtonOptions = ref([
+  { name: '상품 리스트', value: 2 },
+  { name: '피드 리스트', value: 1 },
+]);
+
 const queryClient = useQueryClient();
 const { mutate: submit, isPending } = useMutation({
-  mutationFn: async (payload: postItemType) => {
+  mutationFn: async (payload: uploadItemType) => {
     if (selectButtonValue.value.value === 1) {
-      await postMainItem(payload);
+      await uploadMainItem(payload);
     } else if (selectButtonValue.value.value === 2) {
-      await postItem(payload);
+      await uploadItem(payload);
     } else return;
   },
   onSuccess: () => {
@@ -126,12 +132,7 @@ const { mutate: submit, isPending } = useMutation({
   },
 });
 
-const selectButtonValue = ref({ name: '피드 리스트', value: 1 });
-const selectButtonOptions = ref([
-  { name: '피드 리스트', value: 1 },
-  { name: '상품 리스트', value: 2 },
-]);
-
+// NXDASH 업로드 테스트 코드
 export interface Template {
   ID: number;
   Name: string;

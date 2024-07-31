@@ -4,9 +4,9 @@ import { createReusableTemplate } from '@vueuse/core';
 import { useToast } from 'primevue/usetoast';
 import { uploadImage } from '@/api/uploader';
 
-const props = defineProps<{ selectButtonValue: { name: string; value: number } }>();
-
 const [DefineFormField, ReuseFormField] = createReusableTemplate();
+
+const props = defineProps<{ selectButtonValue: { name: string; value: number } }>();
 
 const toast = useToast();
 const imageUrl = ref<string[]>([]);
@@ -34,6 +34,7 @@ const onFileSelect = async (event: Event) => {
             detail: '이미지 크기는 2000*850 픽셀이어야 합니다.',
             life: 3000,
           });
+
           URL.revokeObjectURL(objectUrl);
           loading.value = false;
           return;
@@ -46,6 +47,7 @@ const onFileSelect = async (event: Event) => {
             detail: '정사각형 이미지만 업로드 가능합니다.',
             life: 3000,
           });
+
           URL.revokeObjectURL(objectUrl);
           loading.value = false;
           return;
@@ -53,7 +55,9 @@ const onFileSelect = async (event: Event) => {
       }
 
       try {
+        // CLOUDINANRY에 이미지 업로드
         const url = await uploadImage(file);
+
         imageUrl.value = [...imageUrl.value, url];
         toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
       } catch (error) {
@@ -123,12 +127,19 @@ watch(
 
     <template v-if="imageUrl.length > 0">
       <div class="relative">
-        <Image preview>
+        <Image
+          preview
+          :pt="{
+            root: {
+              class: 'w-full',
+            },
+          }"
+        >
           <template #indicatoricon>
             <i class="pi pi-search" />
           </template>
           <template #image>
-            <img :src="imageUrl[0]" alt="Upload Image" class="rounded shadow w-full" />
+            <img :src="imageUrl[0]" alt="Upload Image" class="w-full rounded shadow" />
           </template>
           <template #preview="slotProps">
             <img :src="imageUrl[0]" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
@@ -136,11 +147,11 @@ watch(
         </Image>
         <Button
           icon="pi pi-times"
+          class="absolute top-2 right-2"
           severity="secondary"
           text
           rounded
           aria-label="Cancel"
-          class="absolute top-2 right-2"
           @click="removeImage(0)"
           :pt="{
             root: {

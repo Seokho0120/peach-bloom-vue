@@ -1,4 +1,4 @@
-import type { ItemsListType, postItemType } from '@/types/items.types';
+import type { ItemsListType, uploadItemType } from '@/types/items.types';
 import firebaseApp from './firebasedb';
 import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
@@ -35,25 +35,25 @@ export async function getBrandList() {
   }
 }
 
-export async function postItem({ item, imageUrl }: postItemType) {
+export async function uploadItem({ item, imageUrl }: uploadItemType) {
   try {
     await addDoc(collection(db, 'items'), {
       ...item,
       imageUrl,
     });
   } catch (error) {
-    console.log('postItem API error', error);
+    console.log('uploadItem API error', error);
   }
 }
 
-export async function postMainItem({ item, imageUrl }: postItemType) {
+export async function uploadMainItem({ item, imageUrl }: uploadItemType) {
   try {
     await addDoc(collection(db, 'mainItems'), {
       ...item,
       imageUrl,
     });
   } catch (error) {
-    console.log('postMainItem API error', error);
+    console.log('uploadMainItem API error', error);
   }
 }
 

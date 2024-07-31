@@ -15,7 +15,7 @@ export interface ItemsType {
   saleRate: number;
 }
 
-export interface postItemType {
+export interface uploadItemType {
   item: ItemsType;
   imageUrl: string[];
 }
@@ -24,4 +24,4 @@ export interface ItemsListType extends ItemsType {
   imageUrl: string[];
 }
 
-export type ImageType = Pick<postItemType, 'imageUrl'>;
+export type ImageType = Pick<uploadItemType, 'imageUrl'>;
