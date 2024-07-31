@@ -132,19 +132,18 @@ const selectButtonOptions = ref([
   { name: '상품 리스트', value: 2 },
 ]);
 
-interface Template {
+export interface Template {
   ID: number;
   Name: string;
 }
 
-interface Employee {
+export interface Employee {
   DeptName: string;
   EmpKey: string;
   EmpName: string;
   Templates: Template[];
 }
 
-// 초기 데이터 설정
 const test1 = ref<Employee[]>([
   {
     DeptName: '테크이노베이션실',
@@ -173,9 +172,6 @@ const test1 = ref<Employee[]>([
   },
 ]);
 
-const visible = ref(false);
-
-// const selectedIds = ref([]);
 const selectedIds = ref(test1.value.map((emp) => emp.Templates.map((t) => t.ID)));
 
 const monitoringItems = ref([
@@ -189,22 +185,7 @@ const monitoringItems = ref([
   { Name: 'HTTP_Content', ID: 10 },
 ]);
 
-const updateTemplate = (index: number) => {
-  // Templates의 ID와 monitoringItems의 ID를 비교하여 Name 업데이트
-  const selectedTemplates = selectedIds.value[index].map((selectedId) => {
-    const matchedItem = monitoringItems.value.find((item) => item.ID === selectedId);
-    return matchedItem ? { ID: matchedItem.ID, Name: matchedItem.Name } : { ID: selectedId, Name: '' };
-  });
-  test1.value[index].Templates = selectedTemplates;
-};
-
-// const applyUpdates = () => {
-//   console.log('업데이트된 데이터:', test1.value);
-//   visible.value = false; // 대화상자 닫기
-// };
-
 const applyUpdates = () => {
-  // selectedIds를 기반으로 test1 업데이트
   selectedIds.value.forEach((ids, index) => {
     const selectedTemplates = ids.map((selectedId) => {
       const matchedItem = monitoringItems.value.find((item) => item.ID === selectedId);
@@ -212,26 +193,7 @@ const applyUpdates = () => {
     });
     test1.value[index].Templates = selectedTemplates;
   });
-
-  console.log('업데이트된 데이터:', test1.value);
-  visible.value = false; // 대화상자 닫기
 };
-
-watch(
-  test1,
-  () => {
-    console.log('test1.value', test1.value);
-  },
-  { immediate: true, deep: true },
-);
-
-watch(
-  selectedIds,
-  () => {
-    console.log('selectedIds.value', selectedIds.value);
-  },
-  { immediate: true, deep: true },
-);
 </script>
 
 <template>
@@ -283,7 +245,7 @@ watch(
         </ReuseTemplate>
       </div>
       <div class="w-full">
-        <!-- <ReuseTemplate label="상품 이미지">
+        <ReuseTemplate label="상품 이미지">
           <UploadProductImage ref="uploadProductImageRef" :select-button-value="selectButtonValue" />
         </ReuseTemplate>
 
@@ -293,80 +255,16 @@ watch(
 
         <ReuseTemplate label="상품 가격">
           <UploadProductPrice ref="uploadProductPriceRef" />
-        </ReuseTemplate> -->
-
-        <ReuseTemplate label="업로드 테스트">
-          <div>
-            <InputText type="text" />
-            <Button label="Show" @click="visible = true" />
-          </div>
-
-          <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '70%' }">
-            <DataTable :value="test1">
-              <Column field="DeptName" header="DeptName" />
-              <Column field="Templates" header="Templates">
-                <template #body="{ index }">
-                  <!-- <MultiSelect
-                    v-model="selectedIds[index]"
-                    :options="monitoringItems"
-                    optionLabel="Name"
-                    option-value="ID"
-                    display="chip"
-                    placeholder="Select Columns"
-                    :maxSelectedLabels="3"
-                    @change="updateTemplate(index)"
-                  /> -->
-
-                  <MultiSelect
-                    v-model="selectedIds[index]"
-                    :options="monitoringItems"
-                    optionLabel="Name"
-                    option-value="ID"
-                    display="chip"
-                    placeholder="Select Columns"
-                    :maxSelectedLabels="3"
-                  />
-                </template>
-              </Column>
-            </DataTable>
-            <div class="flex justify-end mt-4">
-              <Button label="적용" @click="applyUpdates" />
-              <Button label="취소" @click="visible = false" class="ml-2" />
-            </div>
-          </Dialog>
         </ReuseTemplate>
 
+        <!-- TODO: NXDASH 담당자 셀렉 -->
         <!-- <ReuseTemplate label="업로드 테스트">
-          <div>
-            <InputText type="text" />
-            <Button label="Show" @click="visible = true" />
-          </div>
-
-          <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '70%' }">
-            <DataTable :value="test1">
-              <Column field="DeptName" header="DeptName" />
-              <Column field="Templates" header="Templates">
-                <template #body="{ index }">
-                  {{ index }}
-                  {{ selectedIds[index] }}
-
-                  <MultiSelect
-                    v-model="selectedIds[index]"
-                    :options="monitoringItems"
-                    optionLabel="Name"
-                    option-value="ID"
-                    display="chip"
-                    placeholder="Select Columns"
-                    :maxSelectedLabels="3"
-                  />
-                </template>
-              </Column>
-            </DataTable>
-            <div class="flex justify-end mt-4">
-              <Button label="적용" @click="updateTemplates" />
-              <Button label="취소" @click="visible = false" class="ml-2" />
-            </div>
-          </Dialog>
+          <UploadTest
+            :test1="test1"
+            :selectedIds="selectedIds"
+            :monitoringItems="monitoringItems"
+            :applyUpdates="applyUpdates"
+          />
         </ReuseTemplate> -->
 
         <div class="flex justify-end">

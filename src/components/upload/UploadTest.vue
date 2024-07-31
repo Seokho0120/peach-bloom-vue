@@ -1,57 +1,52 @@
 <script setup lang="ts">
 import { ref, toRefs } from 'vue';
+import type { Template } from '@/views/upload/upload.vue';
 
-interface Template {
-  ID: number;
-  Name: string;
+interface Employee {
+  DeptName: string;
+  EmpKey: string;
+  EmpName: string;
+  Templates: Template[];
 }
 
 const props = defineProps<{
-  modelValue: Template[];
+  test1: Employee[];
+  selectedIds: number[][];
+  monitoringItems: { Name: string; ID: number }[];
+  applyUpdates: () => void;
 }>();
 
-const { modelValue } = toRefs(props);
+const { test1, selectedIds, monitoringItems, applyUpdates } = toRefs(props);
 
-const emit = defineEmits<{
-  (e: 'update', value: Template[]): void;
-}>();
-
-const selectedIds = ref<number[]>(modelValue.value.map((t) => t.ID));
-
-const monitoringItems = ref<Template[]>([
-  { Name: '전체 모니터링 요소', ID: 0 },
-  { Name: 'Ping', ID: 4 },
-  { Name: 'Port', ID: 1 },
-  { Name: 'URL', ID: 2 },
-  { Name: 'DB', ID: 5 },
-  { Name: 'CustomProtocol', ID: 6 },
-  { Name: 'SOAP', ID: 7 },
-  { Name: 'HTTP_Content', ID: 10 },
-]);
-
-console.log('modelValue.value', modelValue.value);
+const visible = ref(false);
 </script>
 
 <template>
-  <ElSelect
-    v-model="selectedIds"
-    class="w-300px"
-    multiple
-    clearable
-    placeholder="전체"
-    popper-class="custom-header"
-    collapse-tags
-    :max-collapse-tags="3"
-  >
-    <template #header>
-      <p class="rounded flex bg-$dnx-light-500 mb-2 py-2 px-3 text-11px w-280px gap-2">
-        <NxIcon :size="1" class="mt-1">las la-info-circle</NxIcon>
-        선택된 모니터링 요소의 알림 발생 시 24시간<br />
-        관제센터에서 연락드립니다.
-      </p>
-      <!-- <ElCheckbox v-model="checkAll" class="w-full" @click="toggleAll"> 전체 모니터링 요소 </ElCheckbox> -->
-    </template>
+  <div>
+    <InputText type="text" />
+    <Button label="Show" @click="visible = true" />
+  </div>
 
-    <ElOption v-for="item in monitoringItems" :key="item.ID" :label="item.Name" :value="item.ID" />
-  </ElSelect>
+  <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '70%' }">
+    <DataTable :value="test1">
+      <Column field="DeptName" header="DeptName" />
+      <Column field="Templates" header="Templates">
+        <template #body="{ index }">
+          <MultiSelect
+            v-model="selectedIds[index]"
+            :options="monitoringItems"
+            optionLabel="Name"
+            option-value="ID"
+            display="chip"
+            placeholder="Select Columns"
+            :maxSelectedLabels="3"
+          />
+        </template>
+      </Column>
+    </DataTable>
+    <div class="flex justify-end mt-4">
+      <Button label="적용" @click="applyUpdates" />
+      <Button label="취소" @click="visible = false" class="ml-2" />
+    </div>
+  </Dialog>
 </template>
