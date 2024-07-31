@@ -78,6 +78,11 @@ function showTemplate() {
           isSale: productProductPrice.isSale,
           salePrice: productProductPrice.salePrice,
           saleRate: productProductPrice.saleRate,
+          reviewCount: 0,
+          heartCount: 0,
+          heartOn: false,
+          isNew: false, // TODO: 어떻게 관리할지 고민
+          isSoldOut: false, // TODO: 어떻게 관리할지 고민
         },
         imageUrl: productProductImage?.imageUrl || [],
       });

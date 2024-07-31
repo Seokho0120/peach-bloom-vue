@@ -13,6 +13,11 @@ export interface ItemsType {
   isSale: boolean;
   salePrice: number;
   saleRate: number;
+  reviewCount: number;
+  heartCount: number;
+  heartOn: boolean;
+  isNew: boolean;
+  isSoldOut: boolean;
 }
 
 export interface uploadItemType {
