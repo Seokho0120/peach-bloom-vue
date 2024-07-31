@@ -46,22 +46,22 @@ watchEffect(() => {
 
 <template>
   <div class="container">
-    <div class="w-full">
-      <div class="flex justify-content-center">
-        <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
-      </div>
+    <div class="flex justify-content-center">
+      <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
+    </div>
 
-      <div class="grid grid-cols-6 gap-4 mt-10 w-full">
-        <ItemsListCard
-          v-for="item in itemList"
-          :key="item.productId"
-          :brandName="item.brandName"
-          :imageUrl="item.imageUrl"
-          :productName="item.productName"
-          :salePrice="item.salePrice"
-          :saleRate="item.saleRate"
-        />
-      </div>
+    <div class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
+      <ItemsListCard
+        v-for="item in itemList"
+        :key="item.productId"
+        :brandName="item.brandName"
+        :imageUrl="item.imageUrl"
+        :productName="item.productName"
+        :salePrice="item.salePrice"
+        :saleRate="item.saleRate"
+        :review-count="item.reviewCount"
+        :heart-count="item.heartCount"
+      />
     </div>
   </div>
 </template>
