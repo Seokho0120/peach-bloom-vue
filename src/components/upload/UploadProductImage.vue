@@ -105,7 +105,7 @@ watch(
 
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
-      <div class="card flex justify-content-center">
+      <div class="flex justify-content-center">
         <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput" />
         <div>
           <Button

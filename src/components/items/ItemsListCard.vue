@@ -13,12 +13,12 @@ defineProps<{
     <img :src="imageUrl[0]" alt="image" />
 
     <div class="pt-3.5">
-      <div class="text-xs pb-1">{{ brandName }}</div>
+      <div class="text-xs pb-1 font-semibold">{{ brandName }}</div>
       <div class="text-xs pb-2">{{ productName }}</div>
 
       <div class="flex gap-2">
-        <div class="text-[#ff4800]">{{ saleRate }}%</div>
-        <div class="font-bold">{{ salePrice }}</div>
+        <div class="text-[#ff4800] text-sm">{{ saleRate }}%</div>
+        <div class="font-bold text-md">{{ salePrice }}</div>
       </div>
     </div>
   </div>

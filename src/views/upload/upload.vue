@@ -228,7 +228,7 @@ const applyUpdates = () => {
       <div class="w-full">
         <div class="flex flex-col mb-10">
           <h2 class="text-xl font-semibold mb-3">상품 분류</h2>
-          <div class="card flex justify-content-center">
+          <div class="flex justify-content-center">
             <SelectButton
               v-model="selectButtonValue"
               :options="selectButtonOptions"

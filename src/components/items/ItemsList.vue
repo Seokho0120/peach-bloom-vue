@@ -45,21 +45,60 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div>
-    <div class="card flex justify-content-center">
-      <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
-    </div>
+  <div class="container">
+    <div class="w-full">
+      <div class="flex justify-content-center">
+        <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
+      </div>
 
-    <div class="grid grid-cols-6 gap-4 mt-10">
-      <ItemsListCard
-        v-for="item in itemList"
-        :key="item.productId"
-        :brandName="item.brandName"
-        :imageUrl="item.imageUrl"
-        :productName="item.productName"
-        :salePrice="item.salePrice"
-        :saleRate="item.saleRate"
-      />
+      <div class="grid grid-cols-6 gap-4 mt-10 w-full">
+        <ItemsListCard
+          v-for="item in itemList"
+          :key="item.productId"
+          :brandName="item.brandName"
+          :imageUrl="item.imageUrl"
+          :productName="item.productName"
+          :salePrice="item.salePrice"
+          :saleRate="item.saleRate"
+        />
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.container {
+  container-type: inline-size;
+  max-width: 100%;
+}
+
+@container (min-width: 100px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (min-width: 500px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@container (min-width: 1020px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@container (min-width: 1260px) {
+  .grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@container (min-width: 1535px) {
+  .grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+</style>
