@@ -3,6 +3,8 @@ import { ref, watch, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemsList } from '@/composables/useItems';
 import type { ImageType, ItemsListType } from '@/types/items.types';
+import { getItemsList } from '@/api/firestore';
+import { useQuery } from '@tanstack/vue-query';
 
 const route = useRoute();
 const router = useRouter();
@@ -36,11 +38,37 @@ const { data: itemList, isError, isLoading } = useGetItemsList();
 const images = ref<ImageType[]>([]);
 
 watchEffect(() => {
+  console.log('itemList.value', itemList.value);
+
   if (itemList.value) {
     images.value = itemList.value.flatMap(
       (item: ItemsListType) => item.imageUrl.map((url) => ({ imageUrl: [url] })), // 각 URL을 배열로 감싸기
     );
   }
+});
+
+const category = ref('all');
+
+watch(
+  selectedFilter,
+  () => {
+    router.replace({
+      query: {
+        ...route.query,
+        filter: selectedFilter.value,
+      },
+    });
+  },
+  { immediate: true },
+);
+
+const { data: test } = useQuery({
+  queryKey: ['items', category.value, selectedFilter.value],
+  queryFn: () => getItemsList(category.value, selectedFilter.value),
+});
+
+watch(test, () => {
+  console.log('test.value', test.value);
 });
 </script>
 
