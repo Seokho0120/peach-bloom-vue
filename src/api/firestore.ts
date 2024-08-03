@@ -10,8 +10,10 @@ import {
   query,
   QueryConstraint,
   where,
+  type DocumentData,
 } from 'firebase/firestore';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
+import { ref } from 'vue';
 
 export const db = getFirestore(firebaseApp);
 
@@ -73,46 +75,18 @@ export function getAllItemsList() {
   );
 }
 
+// 정상호출
 export async function getItemsList(category: string, filter: string) {
-  const baseQuery = collection(db, 'items');
+  // TODO: filter로 오름차순/내림차순 어떻게하는지 알아보기
+  const q = query(collection(db, 'items'), where('categoryName', '==', category));
+  const querySnapshot = await getDocs(q);
+  const items = ref<DocumentData[]>([]);
 
-  const categoryConstraint = category !== 'all' && category ? where('categoryName', '==', category) : null; // 카테고리 필드 이름 수정
+  querySnapshot.forEach((doc) => {
+    items.value.push(doc.data());
+  });
 
-  const filterOrderBy =
-    filter === 'recommend'
-      ? orderBy('heartCount', 'desc') // 추천순
-      : filter === 'new'
-        ? orderBy('isNew', 'desc') // 신상품순
-        : filter === 'review'
-          ? orderBy('reviewCount', 'desc') // 리뷰많은순
-          : filter === 'lowPrice'
-            ? orderBy('salePrice') // 낮은가격순
-            : filter === 'highPrice'
-              ? orderBy('salePrice', 'desc') // 높은가격순
-              : filter === 'discount'
-                ? orderBy('saleRate', 'desc') // 높은할인순
-                : filter === 'like'
-                  ? orderBy('heartCount', 'desc') // 좋아요많은순
-                  : orderBy('reviewCount'); // 기본 정렬
-
-  const queries: QueryConstraint[] = [categoryConstraint, filterOrderBy, limit(8)].filter(
-    (query) => query !== null,
-  ) as QueryConstraint[]; // null값 제거
-
-  const productQuery = query(baseQuery, ...queries);
-  const snapshot = await getDocs(productQuery);
-
-  console.log(
-    '데이터:',
-    snapshot.docs.map((doc) => doc.data()),
-  );
-
-  const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-
-  return {
-    products: snapshot.docs.map((doc) => doc.data()),
-    lastDoc,
-  };
+  return items.value;
 }
 
 export function getMainItemsList() {
