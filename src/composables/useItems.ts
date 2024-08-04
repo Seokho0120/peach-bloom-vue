@@ -44,7 +44,6 @@ export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
     queryFn: async () => {
       return await getItemsList(category.value, filter.value);
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   return { data };

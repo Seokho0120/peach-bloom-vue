@@ -150,56 +150,56 @@ export interface Employee {
   Templates: Template[];
 }
 
-const test1 = ref<Employee[]>([
-  {
-    DeptName: '테크이노베이션실',
-    EmpKey: 'NX21115',
-    EmpName: '이호2',
-    Templates: [
-      { ID: 0, Name: '' },
-      { Name: 'Ping', ID: 4 },
-      { Name: 'URL', ID: 2 },
-    ],
-  },
-  {
-    DeptName: '테크데브팀 프론트엔드파트',
-    EmpKey: 'NX25316',
-    EmpName: '조식2',
-    Templates: [
-      { ID: 0, Name: '' },
-      { Name: 'HTTP_Content', ID: 10 },
-    ],
-  },
-  {
-    DeptName: '테크데브팀 프론트엔드파트',
-    EmpKey: 'NX2123',
-    EmpName: '김승2',
-    Templates: [{ Name: 'DB', ID: 5 }],
-  },
-]);
+// const test1 = ref<Employee[]>([
+//   {
+//     DeptName: '테크이노베이션실',
+//     EmpKey: 'NX21115',
+//     EmpName: '이호2',
+//     Templates: [
+//       { ID: 0, Name: '' },
+//       { Name: 'Ping', ID: 4 },
+//       { Name: 'URL', ID: 2 },
+//     ],
+//   },
+//   {
+//     DeptName: '테크데브팀 프론트엔드파트',
+//     EmpKey: 'NX25316',
+//     EmpName: '조식2',
+//     Templates: [
+//       { ID: 0, Name: '' },
+//       { Name: 'HTTP_Content', ID: 10 },
+//     ],
+//   },
+//   {
+//     DeptName: '테크데브팀 프론트엔드파트',
+//     EmpKey: 'NX2123',
+//     EmpName: '김승2',
+//     Templates: [{ Name: 'DB', ID: 5 }],
+//   },
+// ]);
 
-const selectedIds = ref(test1.value.map((emp) => emp.Templates.map((t) => t.ID)));
+// const selectedIds = ref(test1.value.map((emp) => emp.Templates.map((t) => t.ID)));
 
-const monitoringItems = ref([
-  { Name: '전체 모니터링 요소', ID: 0 },
-  { Name: 'Ping', ID: 4 },
-  { Name: 'Port', ID: 1 },
-  { Name: 'URL', ID: 2 },
-  { Name: 'DB', ID: 5 },
-  { Name: 'CustomProtocol', ID: 6 },
-  { Name: 'SOAP', ID: 7 },
-  { Name: 'HTTP_Content', ID: 10 },
-]);
+// const monitoringItems = ref([
+//   { Name: '전체 모니터링 요소', ID: 0 },
+//   { Name: 'Ping', ID: 4 },
+//   { Name: 'Port', ID: 1 },
+//   { Name: 'URL', ID: 2 },
+//   { Name: 'DB', ID: 5 },
+//   { Name: 'CustomProtocol', ID: 6 },
+//   { Name: 'SOAP', ID: 7 },
+//   { Name: 'HTTP_Content', ID: 10 },
+// ]);
 
-const applyUpdates = () => {
-  selectedIds.value.forEach((ids, index) => {
-    const selectedTemplates = ids.map((selectedId) => {
-      const matchedItem = monitoringItems.value.find((item) => item.ID === selectedId);
-      return matchedItem ? { ID: matchedItem.ID, Name: matchedItem.Name } : { ID: selectedId, Name: '' };
-    });
-    test1.value[index].Templates = selectedTemplates;
-  });
-};
+// const applyUpdates = () => {
+//   selectedIds.value.forEach((ids, index) => {
+//     const selectedTemplates = ids.map((selectedId) => {
+//       const matchedItem = monitoringItems.value.find((item) => item.ID === selectedId);
+//       return matchedItem ? { ID: matchedItem.ID, Name: matchedItem.Name } : { ID: selectedId, Name: '' };
+//     });
+//     test1.value[index].Templates = selectedTemplates;
+//   });
+// };
 </script>
 
 <template>
