@@ -48,7 +48,7 @@ const toggleReview = () => {
         >
           <template #default>
             <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-5 h-5" />
-            <p class="text-xs pl-1">{{ heartCount }}</p>
+            <span class="text-xs pl-1">{{ heartCount }}</span>
           </template>
         </Button>
 
@@ -63,7 +63,7 @@ const toggleReview = () => {
         >
           <template #default>
             <Icon icon="heroicons:chat-bubble-left" class="w-5 h-5" />
-            <p class="text-xs pl-1">{{ reviewCount }}</p>
+            <span class="text-xs pl-1">{{ reviewCount }}</span>
           </template>
         </Button>
       </div>

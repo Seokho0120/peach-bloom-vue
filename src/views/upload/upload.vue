@@ -84,7 +84,7 @@ function showTemplate() {
           isNew: false, // TODO: 어떻게 관리할지 고민
           isSoldOut: false, // TODO: 어떻게 관리할지 고민
         },
-        imageUrl: productProductImage?.imageUrl || [],
+        imageUrl: productProductImage?.imageUrls || [],
       });
     },
   });
@@ -234,6 +234,7 @@ export interface Employee {
               :options="selectButtonOptions"
               optionLabel="name"
               aria-labelledby="basic"
+              :allow-empty="false"
             />
           </div>
         </div>

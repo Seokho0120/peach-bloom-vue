@@ -9,80 +9,83 @@ const [DefineFormField, ReuseFormField] = createReusableTemplate();
 const props = defineProps<{ selectButtonValue: { name: string; value: number } }>();
 
 const toast = useToast();
-const imageUrl = ref<string[]>([]);
+const imageUrls = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const loading = ref<boolean>(false);
 
 const onFileSelect = async (event: Event) => {
   const input = event.target as HTMLInputElement;
 
-  if (input.files && input.files.length > 0) {
-    loading.value = true;
+  if (!input.files || input.files.length === 0) {
+    return;
+  }
 
-    // 이미지 크기 체크
-    const file = input.files[0];
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-    img.src = objectUrl;
 
-    img.onload = async () => {
-      if (props.selectButtonValue.value === 1) {
-        if (img.width !== 2000 || img.height !== 850) {
-          toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: '이미지 크기는 2000*850 픽셀이어야 합니다.',
-            life: 3000,
-          });
+  loading.value = true;
 
-          URL.revokeObjectURL(objectUrl);
-          loading.value = false;
-          return;
-        }
-      } else {
-        if (img.width !== img.height) {
-          toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: '정사각형 이미지만 업로드 가능합니다.',
-            life: 3000,
-          });
+  // 이미지 크기 체크
+  const file = input.files[0];
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.src = objectUrl;
 
-          URL.revokeObjectURL(objectUrl);
-          loading.value = false;
-          return;
-        }
-      }
+  img.onload = async () => {
+    if (props.selectButtonValue.value === 1) {
+      if (img.width !== 2000 || img.height !== 850) {
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: '이미지 크기는 2000*850 픽셀이어야 합니다.',
+          life: 3000,
+        });
 
-      try {
-        // CLOUDINANRY에 이미지 업로드
-        const url = await uploadImage(file);
-
-        imageUrl.value = [...imageUrl.value, url];
-        toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
-      } catch (error) {
-        toast.add({ severity: 'error', summary: 'Error', detail: '이미지 업로드에 실패했습니다.', life: 3000 });
-      } finally {
         URL.revokeObjectURL(objectUrl);
         loading.value = false;
+        return;
       }
-    };
+    } else {
+      if (img.width !== img.height) {
+        toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: '정사각형 이미지만 업로드 가능합니다.',
+          life: 3000,
+        });
 
-    img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        loading.value = false;
+        return;
+      }
+    }
+
+    try {
+      // CLOUDINANRY에 이미지 업로드
+      const url = await uploadImage(file);
+
+      imageUrls.value = [...imageUrls.value, url];
+      toast.add({ severity: 'info', summary: 'Success', detail: '이미지가 업로드 되었습니다.', life: 3000 });
+    } catch (error) {
       toast.add({ severity: 'error', summary: 'Error', detail: '이미지 업로드에 실패했습니다.', life: 3000 });
-      loading.value = false;
+    } finally {
       URL.revokeObjectURL(objectUrl);
-    };
-  }
+      loading.value = false;
+    }
+  };
+
+  img.onerror = () => {
+    toast.add({ severity: 'error', summary: 'Error', detail: '이미지 업로드에 실패했습니다.', life: 3000 });
+    loading.value = false;
+    URL.revokeObjectURL(objectUrl);
+  };
 };
 
 const removeImage = (index: number) => {
-  imageUrl.value = imageUrl.value.filter((_, idx) => idx !== index);
+  imageUrls.value = imageUrls.value.filter((_, idx) => idx !== index);
 };
 
 function getFormData() {
   return {
-    imageUrl: imageUrl.value,
+    imageUrls: imageUrls.value,
   };
 }
 
@@ -91,7 +94,7 @@ defineExpose({ getFormData });
 watch(
   () => props.selectButtonValue,
   () => {
-    imageUrl.value = [];
+    imageUrls.value = [];
   },
 );
 </script>
@@ -105,7 +108,7 @@ watch(
 
   <div class="flex flex-col gap-6">
     <ReuseFormField class="flex-1 gap-4">
-      <div class="flex justify-content-center">
+      <div>
         <input type="file" accept="image/*" name="file" @change="onFileSelect" class="hidden" ref="fileInput" />
         <div>
           <Button
@@ -125,7 +128,7 @@ watch(
       </div>
     </ReuseFormField>
 
-    <template v-if="imageUrl.length > 0">
+    <template v-if="imageUrls.length > 0">
       <div class="relative">
         <Image
           preview
@@ -139,10 +142,10 @@ watch(
             <i class="pi pi-search" />
           </template>
           <template #image>
-            <img :src="imageUrl[0]" alt="Upload Image" class="w-full rounded shadow" />
+            <img :src="imageUrls[0]" alt="Upload Image" class="w-full rounded shadow" />
           </template>
           <template #preview="slotProps">
-            <img :src="imageUrl[0]" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
+            <img :src="imageUrls[0]" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
           </template>
         </Image>
         <Button
@@ -161,7 +164,7 @@ watch(
         />
       </div>
       <div class="grid grid-cols-3 gap-4">
-        <div v-for="(url, idx) in imageUrl.slice(1)" :key="url" class="relative">
+        <div v-for="(url, idx) in imageUrls.slice(1)" :key="url" class="relative">
           <Image preview>
             <template #indicatoricon>
               <i class="pi pi-search" />

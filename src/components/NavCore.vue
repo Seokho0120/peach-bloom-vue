@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 import { useGetCategoryList } from '@/composables/useProductCategory';
 
 const route = useRoute();
-const filterId = computed(() => route.query.filter);
+const sortBy = computed(() => route.query.sortBy);
 
 const {
   categoryList,
@@ -19,7 +19,7 @@ const {
         :to="{
           name: 'itemsList',
           params: { id: category.id },
-          query: { filter: filterId },
+          query: { sortBy: sortBy },
         }"
       >
         <div class="">{{ category.name }}</div>
