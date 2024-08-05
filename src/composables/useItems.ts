@@ -38,7 +38,7 @@ export function useGetAllItemsList() {
 export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
   const enabled = computed(() => category.value !== '' && filter.value !== '');
 
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     enabled,
     queryKey: ['itemsList', { category: category, filter: filter }],
     queryFn: async () => {
@@ -46,5 +46,5 @@ export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
     },
   });
 
-  return { data };
+  return { data, isLoading, isError };
 }

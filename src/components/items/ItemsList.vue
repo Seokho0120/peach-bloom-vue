@@ -29,22 +29,79 @@ watch(selectedSortBy, () => {
   });
 });
 
-watch(sortByQuery, () => {
-  selectedSortBy.value = sortByQuery.value;
-}, { immediate: true });
+watch(
+  sortByQuery,
+  () => {
+    selectedSortBy.value = sortByQuery.value;
+  },
+  { immediate: true },
+);
 
-const { data: itemList } = useGetItemsList(categoryQuery, selectedSortBy);
+const { data: itemList, isLoading, isError } = useGetItemsList(categoryQuery, selectedSortBy);
+
+watch(itemList, () => {
+  console.log('selectedSortBy.value', selectedSortBy.value);
+  console.log('itemList.value', itemList.value);
+  // console.log('isError.value', isError.value);
+});
+
+const sortingItemList = computed(() => {
+  if (!itemList.value) return [];
+
+  if (selectedSortBy.value === 'new') {
+    return itemList.value.filter((item) => item.isNew);
+  } else if (selectedSortBy.value === 'recommend') {
+    // isNew && isSale === true 아이템을 우선순위로 하면서 항상 reviewCount가 많은 순서
+    return [...itemList.value].sort((a, b) => {
+      const APriority = a.isNew && a.isSale ? 1 : 0;
+      const BPriority = b.isNew && b.isSale ? 1 : 0;
+
+      if (APriority === BPriority) {
+        return b.reviewCount - a.reviewCount;
+      }
+
+      return b.reviewCount - a.reviewCount;
+    });
+  }
+
+  return [...itemList.value].sort((a, b) => {
+    const APrice = a.salePrice > 0 ? a.salePrice : a.consumerPrice;
+    const BPrice = b.salePrice > 0 ? b.salePrice : b.consumerPrice;
+
+    switch (selectedSortBy.value) {
+      case 'review':
+        return b.reviewCount - a.reviewCount;
+      case 'lowPrice':
+        return APrice - BPrice;
+      case 'highPrice':
+        return BPrice - APrice;
+      case 'discount':
+        return b.saleRate - a.saleRate;
+      case 'like':
+        return b.heartCount - a.heartCount;
+      default:
+        return 0;
+    }
+  });
+});
 </script>
 
 <template>
-  <div class="container-2">
+  <div class="container-query">
     <div>
-      <Dropdown v-model="selectedSortBy" :options="sortByList" optionLabel="name" option-value="id" />
+      <Dropdown
+        v-model="selectedSortBy"
+        :options="sortByList"
+        optionLabel="name"
+        option-value="id"
+        :loading="isLoading"
+      />
+      <!-- @change="(e) => test(e)" -->
     </div>
 
-    <div class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
+    <div v-if="!isError" class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
       <ItemsListCard
-        v-for="item in itemList"
+        v-for="item in sortingItemList"
         :key="item.productId"
         :brandName="item.brandName"
         :imageUrl="item.imageUrl"
@@ -55,11 +112,12 @@ const { data: itemList } = useGetItemsList(categoryQuery, selectedSortBy);
         :heart-count="item.heartCount"
       />
     </div>
+    <div v-else>데이터를 불러오는 과정에서 오류가 발생했습니다.</div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.container-2 {
+.container-query {
   width: 100%;
   container-type: inline-size;
 }

@@ -16,8 +16,10 @@ const {
 
 const { brandList, isError: brandListError, isLoading: brandListLoading } = useGetBrandList({ includeAsterisk: true });
 
-const categoryError = computed(() => categoryListError.value || (categoryList.value === null || categoryList.value === undefined));
-const brandError = computed(() => brandListError.value || (brandList.value === null || brandList.value === undefined));
+const categoryError = computed(
+  () => categoryListError.value || categoryList.value === null || categoryList.value === undefined,
+);
+const brandError = computed(() => brandListError.value || brandList.value === null || brandList.value === undefined);
 
 function getFormData() {
   // TODO: 에러검사 로직 추가 필요
@@ -30,11 +32,6 @@ function getFormData() {
 }
 
 defineExpose({ getFormData });
-
-watch(categoryList, () => {
-  // console.log('categoryList.value', categoryList.value);
-});
-// add 할때 id값이 아닌, name값으로 등록해야하기 때문에 optionValue="name"로 설정
 </script>
 
 <template>
