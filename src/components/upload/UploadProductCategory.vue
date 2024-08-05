@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { createReusableTemplate } from '@vueuse/core';
 import { useGetBrandList, useGetCategoryList } from '@/composables/useProductCategory';
 
@@ -16,8 +16,8 @@ const {
 
 const { brandList, isError: brandListError, isLoading: brandListLoading } = useGetBrandList({ includeAsterisk: true });
 
-const categoryError = computed(() => categoryListError.value || categoryList.value === null || undefined);
-const brandError = computed(() => brandListError.value || brandList.value === null || undefined);
+const categoryError = computed(() => categoryListError.value || (categoryList.value === null || categoryList.value === undefined));
+const brandError = computed(() => brandListError.value || (brandList.value === null || brandList.value === undefined));
 
 function getFormData() {
   // TODO: 에러검사 로직 추가 필요
@@ -69,7 +69,7 @@ watch(categoryList, () => {
           </template>
         </template>
       </Dropdown>
-      <span v-if="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</span>
+      <p v-if="categoryError" class="text-red-500">카테고리 목록을 불러오는 중 오류가 발생했습니다.</p>
     </ReuseFormField>
 
     <ReuseFormField label="브랜드" class="flex-1">
@@ -94,7 +94,7 @@ watch(categoryList, () => {
           </template>
         </template>
       </Dropdown>
-      <span v-if="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</span>
+      <p v-if="brandError" class="text-red-500">브랜드 목록을 불러오는 중 오류가 발생했습니다.</p>
     </ReuseFormField>
   </div>
 </template>

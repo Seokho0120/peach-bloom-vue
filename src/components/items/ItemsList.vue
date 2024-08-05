@@ -7,8 +7,9 @@ const route = useRoute();
 const router = useRouter();
 
 const categoryQuery = computed(() => route.params.id.toString());
+const sortByQuery = computed(() => route.query.sortBy?.toString() ?? 'recommend');
 
-const filterList = ref([
+const sortByList = [
   { name: '추천순', id: 'recommend' },
   { name: '신상품순', id: 'new' },
   { name: '리뷰많은순', id: 'review' },
@@ -16,29 +17,29 @@ const filterList = ref([
   { name: '높은가격순', id: 'highPrice' },
   { name: '높은할인순', id: 'discount' },
   { name: '좋아요많은순', id: 'like' },
-]);
+];
 
-const selectedFilter = ref(filterList.value[0].id);
-watch(
-  selectedFilter,
-  () => {
-    router.replace({
-      query: {
-        ...route.query,
-        filter: selectedFilter.value,
-      },
-    });
-  },
-  { immediate: true },
-);
+const selectedSortBy = ref(sortByList[0].id);
+watch(selectedSortBy, () => {
+  router.replace({
+    query: {
+      ...route.query,
+      sortBy: selectedSortBy.value,
+    },
+  });
+});
 
-const { data: itemList } = useGetItemsList(categoryQuery, selectedFilter);
+watch(sortByQuery, () => {
+  selectedSortBy.value = sortByQuery.value;
+}, { immediate: true });
+
+const { data: itemList } = useGetItemsList(categoryQuery, selectedSortBy);
 </script>
 
 <template>
-  <div class="container">
-    <div class="flex justify-content-center">
-      <Dropdown v-model="selectedFilter" :options="filterList" optionLabel="name" option-value="id" />
+  <div class="container-2">
+    <div>
+      <Dropdown v-model="selectedSortBy" :options="sortByList" optionLabel="name" option-value="id" />
     </div>
 
     <div class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
@@ -58,9 +59,9 @@ const { data: itemList } = useGetItemsList(categoryQuery, selectedFilter);
 </template>
 
 <style scoped lang="scss">
-.container {
+.container-2 {
+  width: 100%;
   container-type: inline-size;
-  max-width: 100%;
 }
 
 @container (min-width: 100px) {
