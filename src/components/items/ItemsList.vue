@@ -39,17 +39,20 @@ watch(
 
 const { data: itemList, isLoading, isError } = useGetItemsList(categoryQuery, selectedSortBy);
 
-watch(itemList, () => {
-  console.log('selectedSortBy.value', selectedSortBy.value);
-  console.log('itemList.value', itemList.value);
-  // console.log('isError.value', isError.value);
-});
-
 const sortingItemList = computed(() => {
   if (!itemList.value) return [];
 
   if (selectedSortBy.value === 'new') {
-    return itemList.value.filter((item) => item.isNew);
+    return [...itemList.value].sort((a, b) => {
+      const AIsNew = a.isNew ? 1 : 0;
+      const BIsNew = b.isNew ? 1 : 0;
+
+      if (AIsNew !== BIsNew) {
+        return BIsNew - AIsNew;
+      }
+
+      return b.reviewCount - a.reviewCount;
+    });
   } else if (selectedSortBy.value === 'recommend') {
     // isNew && isSale === true 아이템을 우선순위로 하면서 항상 reviewCount가 많은 순서
     return [...itemList.value].sort((a, b) => {
@@ -83,6 +86,10 @@ const sortingItemList = computed(() => {
         return 0;
     }
   });
+});
+
+watch(sortingItemList, () => {
+  console.log('sortingItemList.value', sortingItemList.value);
 });
 </script>
 
