@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-defineProps<{
+const props = defineProps<{
   imageUrl: string[];
   brandName: string;
   productName: string;
@@ -9,7 +10,10 @@ defineProps<{
   salePrice: number;
   reviewCount: number;
   heartCount: number;
+  productId: string;
 }>();
+
+const router = useRouter();
 
 const isHeart = ref(false);
 const isReview = ref(false);
@@ -21,10 +25,14 @@ const toggleHeart = () => {
 const toggleReview = () => {
   isReview.value = !isReview.value;
 };
+
+function goToDetail() {
+  router.push({ name: 'itemDetail', query: { id: props.productId } });
+}
 </script>
 
 <template>
-  <div>
+  <div @click="goToDetail" class="cursor-pointer">
     <img :src="imageUrl[0]" alt="image" />
 
     <div class="flex flex-col gap-1 pt-3.5">
@@ -38,13 +46,14 @@ const toggleReview = () => {
 
       <div class="flex gap-10 mt-2">
         <Button
+          type="button"
           text
           :pt="{
             root: {
               class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
             },
           }"
-          @click="toggleHeart"
+          @click.stop="toggleHeart"
         >
           <template #default>
             <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-5 h-5" />

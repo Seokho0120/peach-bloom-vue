@@ -110,6 +110,7 @@ watch(sortingItemList, () => {
       <ItemsListCard
         v-for="item in sortingItemList"
         :key="item.productId"
+        :product-id="item.productId"
         :brandName="item.brandName"
         :imageUrl="item.imageUrl"
         :productName="item.productName"
