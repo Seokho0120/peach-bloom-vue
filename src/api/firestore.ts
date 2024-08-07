@@ -1,19 +1,8 @@
-import type { ItemsListType, uploadItemType } from '@/types/items.types';
-import firebaseApp from './firebasedb';
-import {
-  addDoc,
-  collection,
-  getDocs,
-  getFirestore,
-  limit,
-  orderBy,
-  query,
-  QueryConstraint,
-  where,
-  type DocumentData,
-} from 'firebase/firestore';
-import type { GetProductCategoryType } from '@/types/productCategory.types';
 import { ref } from 'vue';
+import firebaseApp from './firebasedb';
+import type { ItemsListType, uploadItemType } from '@/types/items.types';
+import type { GetProductCategoryType } from '@/types/productCategory.types';
+import { addDoc, collection, getDocs, getFirestore, query, where, type DocumentData } from 'firebase/firestore';
 
 export const db = getFirestore(firebaseApp);
 
@@ -76,21 +65,25 @@ export function getAllItemsList() {
 }
 
 // 정상호출
-export async function getItemsList(category: string, filter: string) {
-  // TODO: filter로 오름차순/내림차순 어떻게하는지 알아보기
-  const q = query(collection(db, 'items'), where('categoryName', '==', category));
-  const querySnapshot = await getDocs(q);
-  const items = ref<DocumentData[]>([]);
+export async function getItemsList(category: string) {
+  const itemQuery = query(collection(db, 'items'), where('categoryName', '==', category));
+  const querySnapshot = await getDocs(itemQuery);
+  const itemsDetailDocs = querySnapshot.docs.map((doc) => doc.data() as ItemsListType);
 
-  querySnapshot.forEach((doc) => {
-    items.value.push(doc.data());
-  });
-
-  return items.value;
+  return itemsDetailDocs;
 }
 
 export function getMainItemsList() {
   return getDocs(collection(db, 'mainItems')).then((snapshot) =>
     snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as ItemsListType[]),
   );
+}
+
+export async function getItemDetail(productId: string) {
+  const itemQuery = query(collection(db, 'itemsDetail'), where('productId', '==', productId));
+  const querySnapshot = await getDocs(itemQuery);
+  const itemsDetailDocs = querySnapshot.docs.map((doc) => doc.data());
+  const itemsDetailData = itemsDetailDocs[0];
+
+  return itemsDetailData;
 }

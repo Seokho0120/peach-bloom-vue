@@ -27,7 +27,9 @@ const toggleReview = () => {
 };
 
 function goToDetail() {
-  router.push({ name: 'itemDetail', query: { id: props.productId } });
+  const itemId = props.productId;
+
+  router.push({ name: 'itemDetail', params: { id: itemId } });
 }
 </script>
 

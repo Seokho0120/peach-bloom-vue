@@ -44,7 +44,16 @@ const router = createRouter({
       path: '/items/:id',
       name: 'itemsList',
       component: () => import('@/views/items/items.vue'),
+      // TODO: 질문하기
+      // children: [
+      //   {
+      //     path: 'detail/:detailId',
+      //     name: 'itemDetail',
+      //     component: () => import('@/views/itemDetail/itemDetail.vue'),
+      //   },
+      // ],
     },
+
     {
       path: '/detail/:id',
       name: 'itemDetail',

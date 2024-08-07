@@ -2,9 +2,11 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemsList } from '@/composables/useItems';
+import { useItemsListStore } from '@/stores/itemsList.store';
 
 const route = useRoute();
 const router = useRouter();
+const itemListStore = useItemsListStore();
 
 const categoryQuery = computed(() => route.params.id.toString());
 const sortByQuery = computed(() => route.query.sortBy?.toString() ?? 'recommend');
@@ -88,6 +90,10 @@ const sortingItemList = computed(() => {
   });
 });
 
+watch(sortingItemList, (newList) => {
+  itemListStore.sortingItemList = newList;
+});
+
 watch(sortingItemList, () => {
   console.log('sortingItemList.value', sortingItemList.value);
 });
@@ -103,7 +109,6 @@ watch(sortingItemList, () => {
         option-value="id"
         :loading="isLoading"
       />
-      <!-- @change="(e) => test(e)" -->
     </div>
 
     <div v-if="!isError" class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
