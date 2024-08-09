@@ -52,7 +52,9 @@ export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
 export function useGetItemDetail(productId: Ref<string>) {
   const { data } = useQuery({
     queryKey: ['itemsDetail', productId],
-    queryFn: () => getItemDetail(productId.value),
+    queryFn: async () => {
+      return await getItemDetail(productId.value);
+    },
   });
 
   return { data };

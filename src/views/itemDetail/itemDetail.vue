@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useItemsListStore } from '@/stores/itemsList.store';
 import type { ItemDetailType } from '@/types/items.types';
+import { useConfirm } from 'primevue/useconfirm';
 
-const router = useRoute();
-const productId = computed(() => router.params.id.toString());
+const confirm = useConfirm();
+
+const route = useRoute();
+const router = useRouter();
+const productId = computed(() => route.params.id.toString());
 const itemStore = useItemsListStore();
 
 const { data } = useGetItemDetail(productId);
@@ -32,9 +36,9 @@ watch(
 );
 
 const isHeart = ref(false);
-const toggleHeart = () => {
+function toggleHeart() {
   isHeart.value = !isHeart.value;
-};
+}
 
 const ratingValue = computed(() => {
   const max = 500;
@@ -43,16 +47,29 @@ const ratingValue = computed(() => {
 });
 
 const quantity = ref(1);
-
-const increaseQuantity = () => {
+function increaseQuantity() {
   quantity.value++;
-};
-
-const decreaseQuantity = () => {
+}
+function decreaseQuantity() {
   if (quantity.value > 1) {
     quantity.value--;
   }
-};
+}
+
+function goToCarts() {
+  confirm.require({
+    group: 'goToPage',
+    message: '장바구니에 상품이 담겼습니다.',
+    acceptLabel: '장바구니 바로가기',
+    accept: () => {
+      router.push({ name: 'cart' });
+    },
+  });
+}
+
+// watch(itemDetail, () => {
+//   console.log('itemDetail.value', itemDetail.value);
+// });
 </script>
 
 <template>
@@ -158,6 +175,7 @@ const decreaseQuantity = () => {
 
       <div class="flex items-center gap-2">
         <Button
+          @click="goToCarts"
           label="장바구니 담기"
           text
           :pt="{
@@ -179,19 +197,3 @@ const decreaseQuantity = () => {
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.quantity-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.quantity-display {
-  margin: 0 15px;
-  font-size: 1.5em;
-  font-weight: bold;
-}
-</style>
