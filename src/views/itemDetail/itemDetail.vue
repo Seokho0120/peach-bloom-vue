@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useItemsListStore } from '@/stores/itemsList.store';
 import type { ItemDetailType } from '@/types/items.types';
-import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
 const router = useRoute();
 const productId = computed(() => router.params.id.toString());
@@ -27,8 +27,6 @@ watch(
       };
       itemDetail.value = mergedItem;
     }
-
-    console.log('itemDetail.value???', itemDetail.value);
   },
   { immediate: true },
 );
@@ -44,9 +42,7 @@ const ratingValue = computed(() => {
   return itemDetail.value?.reviewCount ? (itemDetail.value.reviewCount / max) * 5 : 0;
 });
 
-const number = ref(0);
-
-const quantity = ref(1); // 초기 수량
+const quantity = ref(1);
 
 const increaseQuantity = () => {
   quantity.value++;
@@ -66,82 +62,97 @@ const decreaseQuantity = () => {
     </div>
 
     <div class="w-full border-t-4 border-black">
-      <div class="flex items-center justify-between py-6 text-2xl font-bold">
-        <div>{{ itemDetail?.productName }}</div>
-        <Button
-          type="button"
-          text
-          :pt="{
-            root: {
-              class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
-            },
-          }"
-          @click.stop="toggleHeart"
-        >
-          <template #default>
-            <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-8 h-8" />
-          </template>
-        </Button>
+      <div class="flex flex-col gap-4 border-b-[1px] border-gray-200 mb-6">
+        <div class="flex items-center justify-between py-6 text-2xl font-bold">
+          <div>{{ itemDetail?.productName }}</div>
+          <Button
+            type="button"
+            text
+            :pt="{
+              root: {
+                class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
+              },
+            }"
+            @click.stop="toggleHeart"
+          >
+            <template #default>
+              <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-8 h-8" />
+            </template>
+          </Button>
+        </div>
+
+        <div class="flex items-center gap-4 text-sm">
+          <Rating
+            v-model="ratingValue"
+            readonly
+            :cancel="false"
+            :pt="{
+              onIcon: {
+                class: 'text-black w-3',
+              },
+              offIcon: {
+                class: 'w-3',
+              },
+            }"
+          />
+          <p class="underline cursor-pointer">{{ itemDetail?.reviewCount }}개 리뷰보기</p>
+        </div>
+
+        <div class="mb-6">
+          <div v-if="itemDetail?.saleRate !== 0">
+            <div class="flex items-center font-bold gap-1">
+              <p class="text-2xl text-[#ff4801]">{{ itemDetail?.saleRate }}%</p>
+              <p class="text-2xl">{{ itemDetail?.salePrice }}</p>
+              <p class="text-lg">원</p>
+            </div>
+
+            <div class="flex items-center line-through text-gray-400">
+              <p class="text-sm">{{ itemDetail?.consumerPrice }} 원</p>
+            </div>
+          </div>
+          <div v-else-if="itemDetail?.saleRate === 0" class="flex items-center font-bold">
+            <p class="text-2xl">{{ itemDetail?.consumerPrice }}</p>
+            <p class="text-lg">원</p>
+          </div>
+        </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <Rating v-model="ratingValue" readonly :cancel="false" />
-        <p class="underline cursor-pointer">{{ itemDetail?.reviewCount }}</p>
+      <div class="text-sm flex flex-col gap-4 border-b-[1px] border-gray-200 mb-9">
+        <div class="flex">
+          <div class="flex-1">구매 적립금</div>
+          <!-- TODO: 최종 결제 금액의 5%로 계산하기 -->
+          <div class="flex-1">최대 380 마일리지 적립 예정</div>
+        </div>
+
+        <div class="flex">
+          <div class="flex-1">무이자 할부</div>
+          <div class="flex-1">카드사별 할부 혜택 안내</div>
+        </div>
+
+        <div class="flex">
+          <div class="flex-1">배송정보</div>
+          <div class="flex-1">1일 이내 출고</div>
+        </div>
+
+        <div class="flex mb-6">
+          <div class="flex-1">배송비</div>
+          <div class="flex-1">50,000원 이상 구매시 무료배송 제주/도서산간 1,000원 추가</div>
+        </div>
       </div>
 
-      <div class="flex items-center font-bold gap-1">
-        <p class="text-2xl text-[#ff4801]">{{ itemDetail?.saleRate }}%</p>
-        <p class="text-2xl">{{ itemDetail?.consumerPrice }}</p>
-        <p class="text-lg">원</p>
-      </div>
-
-      <!-- TODO: 세일 아닐떄 보여주기 -->
-      <!-- <div class="flex items-center font-bold">
-        <p class="text-2xl">{{ itemDetail?.consumerPrice }}</p>
-        <p class="text-lg">원</p>
-      </div> -->
-
-      <div class="flex items-center gap-2">
-        <p>구매 적립금</p>
-        <!-- TODO: 구매급액의 3% ~ 5%로 측정하기 -->
-        <p class="text-red-400">최대 380 마일리지 적립 예정</p>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <p>무이자 할부</p>
-        <p class="text-red-400">카드사별 할부 혜택 안내</p>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <p>배송정보</p>
-        <p class="text-red-400">1일 이내 출고</p>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <p>배송비</p>
-        <p>50,000원 이상 구매시 무료배송 제주/도서산간 1,000원 추가</p>
-      </div>
-
-      <div className="w-36 font-bold flex items-center justify-between border border-gray-200 gap-3 lg:gap-4">
-        <!-- <button
-          class="border-r flex items-center justify-center px-4 py-4"
-          @click="decreaseQuantity"
-          :disabled="quantity <= 1"
-        >
-          -
-        </button> -->
+      <div className="w-32 font-bold flex items-center justify-between border border-gray-200 mb-7">
         <button
-          class="border-r flex items-center justify-center px-4 py-4"
+          class="border-r flex items-center justify-center px-3 py-3"
           @click="decreaseQuantity"
           :disabled="quantity <= 1"
         >
-          <i class="pi pi-minus"></i>
+          <i class="pi pi-minus" />
         </button>
-        <div>{{ quantity }}</div>
-        <!-- <button class="border-l flex items-center justify-center px-4 py-4" @click="increaseQuantity">+</button> -->
 
-        <button class="border-l flex items-center justify-center px-4 py-4" @click="increaseQuantity">
-          <i class="pi pi-plus"></i>
+        <p>{{ quantity }}</p>
+
+        <button class="border-l flex items-center justify-center px-3 py-3" @click="increaseQuantity">
+          <i class="pi pi-plus" />
         </button>
       </div>
 
