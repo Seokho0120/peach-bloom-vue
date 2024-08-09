@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import firebaseApp from './firebasedb';
-import type { ItemsListType, uploadItemType } from '@/types/items.types';
+import type { CartItemListType, ItemsListType, uploadItemType } from '@/types/items.types';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
 import { addDoc, collection, getDocs, getFirestore, query, where, type DocumentData } from 'firebase/firestore';
 
@@ -86,4 +86,10 @@ export async function getItemDetail(productId: string) {
   const itemsDetailData = itemsDetailDocs[0];
 
   return itemsDetailData;
+}
+
+export async function postCartItem(cartItem: CartItemListType) {
+  const docRef = await addDoc(collection(db, 'itemsCart'), cartItem);
+
+  console.log('docRef???', docRef);
 }

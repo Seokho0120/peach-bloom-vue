@@ -35,3 +35,7 @@ export interface ItemDetailType extends ItemsListType {
   howToUse: string;
   ingredients: string;
 }
+
+export interface CartItemListType extends ItemDetailType {
+  quantity: number;
+}

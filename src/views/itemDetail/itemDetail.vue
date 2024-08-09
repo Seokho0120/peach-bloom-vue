@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useItemsListStore } from '@/stores/itemsList.store';
 import type { ItemDetailType } from '@/types/items.types';
 import { useConfirm } from 'primevue/useconfirm';
+import { useCartListStore } from '@/stores/cart.store';
+import { postCartItem } from '@/api/firestore';
 
 const confirm = useConfirm();
 
@@ -12,9 +14,12 @@ const route = useRoute();
 const router = useRouter();
 const productId = computed(() => route.params.id.toString());
 const itemStore = useItemsListStore();
+const cartStore = useCartListStore();
 
 const { data } = useGetItemDetail(productId);
 const sortingItemList = computed(() => itemStore.sortingItemList);
+// const cartItemList = computed(() => cartStore.cartItems);
+// const cartItemList = cartStore.cartItems;
 
 const itemDetail = ref<ItemDetailType | undefined>(undefined);
 
@@ -56,20 +61,30 @@ function decreaseQuantity() {
   }
 }
 
-function goToCarts() {
+function openConfirmModal() {
   confirm.require({
     group: 'goToPage',
     message: '장바구니에 상품이 담겼습니다.',
     acceptLabel: '장바구니 바로가기',
-    accept: () => {
+    accept: async () => {
+      addToCart();
+      await nextTick();
       router.push({ name: 'cart' });
     },
   });
 }
 
-// watch(itemDetail, () => {
-//   console.log('itemDetail.value', itemDetail.value);
-// });
+const addToCart = async () => {
+  if (itemDetail.value) {
+    const cartItem = {
+      ...itemDetail.value,
+      quantity: quantity.value,
+    };
+    await postCartItem(cartItem);
+
+    cartStore.cartItems = [...cartStore.cartItems, cartItem];
+  }
+};
 </script>
 
 <template>
@@ -175,7 +190,7 @@ function goToCarts() {
 
       <div class="flex items-center gap-2">
         <Button
-          @click="goToCarts"
+          @click="openConfirmModal"
           label="장바구니 담기"
           text
           :pt="{
