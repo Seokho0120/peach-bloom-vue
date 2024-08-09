@@ -1,7 +1,7 @@
 import { getAllItemsList, getItemDetail, getItemsList, getMainItemsList } from '@/api/firestore';
 import type { ItemsListType } from '@/types/items.types';
 import { useQuery } from '@tanstack/vue-query';
-import { computed, type ComputedRef, type Ref } from 'vue';
+import { computed, type Ref } from 'vue';
 
 export function useGetMainList() {
   const { data, isLoading, isError } = useQuery<ItemsListType[]>({

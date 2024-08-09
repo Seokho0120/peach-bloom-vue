@@ -93,3 +93,9 @@ export async function postCartItem(cartItem: CartItemListType) {
 
   console.log('docRef???', docRef);
 }
+
+export function getCartItemList() {
+  return getDocs(collection(db, 'itemsCart')).then((snapshot) =>
+    snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as CartItemListType[]),
+  );
+}

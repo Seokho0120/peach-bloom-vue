@@ -26,6 +26,10 @@ const toggleReview = () => {
   isReview.value = !isReview.value;
 };
 
+/** 헤어케어 -> 이름: 딥클렌징 샴푸 아이템만 디테일 데이터 등록되어있음
+ * TODO: 다른 아이템도 데이터 추가 예정
+ * 딥클렌징 샴푸만 장바구니 담기 가능
+ */
 function goToDetail() {
   const itemId = props.productId;
 

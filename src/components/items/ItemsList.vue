@@ -94,9 +94,9 @@ watch(sortingItemList, (newList) => {
   itemListStore.sortingItemList = newList;
 });
 
-watch(sortingItemList, () => {
-  console.log('sortingItemList.value', sortingItemList.value);
-});
+// watch(sortingItemList, () => {
+//   console.log('sortingItemList.value', sortingItemList.value);
+// });
 </script>
 
 <template>

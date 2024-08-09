@@ -18,9 +18,8 @@ const cartStore = useCartListStore();
 
 const { data } = useGetItemDetail(productId);
 const sortingItemList = computed(() => itemStore.sortingItemList);
-// const cartItemList = computed(() => cartStore.cartItems);
-// const cartItemList = cartStore.cartItems;
 
+// FIXME: 현재 새로고침 시 데이터가 날라감
 const itemDetail = ref<ItemDetailType | undefined>(undefined);
 
 watch(
@@ -42,6 +41,7 @@ watch(
 
 const isHeart = ref(false);
 function toggleHeart() {
+  // TODO: auth 로직 작업 후 진행 예정
   isHeart.value = !isHeart.value;
 }
 
@@ -80,6 +80,7 @@ const addToCart = async () => {
       ...itemDetail.value,
       quantity: quantity.value,
     };
+
     await postCartItem(cartItem);
 
     cartStore.cartItems = [...cartStore.cartItems, cartItem];
