@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
-import { useItemsListStore } from '@/stores/itemsList.store';
-import type { ItemDetailType } from '@/types/items.types';
 import { useConfirm } from 'primevue/useconfirm';
 import { useCartListStore } from '@/stores/cart.store';
 import { postCartItem } from '@/api/firestore';
@@ -13,31 +11,9 @@ const confirm = useConfirm();
 const route = useRoute();
 const router = useRouter();
 const productId = computed(() => route.params.id.toString());
-const itemStore = useItemsListStore();
 const cartStore = useCartListStore();
 
-const { data } = useGetItemDetail(productId);
-const sortingItemList = computed(() => itemStore.sortingItemList);
-
-// FIXME: 현재 새로고침 시 데이터가 날라감
-const itemDetail = ref<ItemDetailType | undefined>(undefined);
-
-watch(
-  data,
-  () => {
-    const foundItems = sortingItemList.value.filter((item) => item.productId === data.value?.productId);
-
-    if (foundItems.length > 0) {
-      const mergedItem = {
-        ...foundItems[0],
-        howToUse: data.value?.howToUse || '',
-        ingredients: data.value?.ingredients || '',
-      };
-      itemDetail.value = mergedItem;
-    }
-  },
-  { immediate: true },
-);
+const { data: itemDetail } = useGetItemDetail(productId);
 
 const isHeart = ref(false);
 function toggleHeart() {
@@ -76,20 +52,20 @@ function openConfirmModal() {
 
 const addToCart = async () => {
   if (itemDetail.value) {
-    const cartItem = {
-      ...itemDetail.value,
-      quantity: quantity.value,
-    };
+    // const cartItem = {
+    //   ...itemDetail.value,
+    //   quantity: quantity.value,
+    // };
 
-    await postCartItem(cartItem);
+    // await postCartItem(cartItem);
 
-    cartStore.cartItems = [...cartStore.cartItems, cartItem];
+    // cartStore.cartItems = [...cartStore.cartItems, cartItem];
   }
 };
 </script>
 
 <template>
-  <div class="w-full max-w-[1300px] min-w-[900px] mx-auto flex px-12 gap-10">
+  <div class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 gap-10">
     <div class="flex-shrink-0">
       <Image :src="itemDetail?.imageUrl[0]" alt="Detail Image" width="564" class="w-full h-auto object-cover" />
     </div>
@@ -134,18 +110,18 @@ const addToCart = async () => {
         <div class="mb-6">
           <div v-if="itemDetail?.saleRate !== 0">
             <div class="flex items-center font-bold gap-1">
-              <p class="text-2xl text-[#ff4801]">{{ itemDetail?.saleRate }}%</p>
-              <p class="text-2xl">{{ itemDetail?.salePrice }}</p>
-              <p class="text-lg">원</p>
+              <span class="text-2xl text-[#ff4801]">{{ itemDetail?.saleRate }}%</span>
+              <span class="text-2xl">{{ itemDetail?.salePrice }}</span>
+              <span class="text-lg">원</span>
             </div>
 
             <div class="flex items-center line-through text-gray-400">
-              <p class="text-sm">{{ itemDetail?.consumerPrice }} 원</p>
+              <span class="text-sm">{{ itemDetail?.consumerPrice }} 원</span>
             </div>
           </div>
           <div v-else-if="itemDetail?.saleRate === 0" class="flex items-center font-bold">
-            <p class="text-2xl">{{ itemDetail?.consumerPrice }}</p>
-            <p class="text-lg">원</p>
+            <span class="text-2xl">{{ itemDetail?.consumerPrice }}</span>
+            <span class="text-lg">원</span>
           </div>
         </div>
       </div>
