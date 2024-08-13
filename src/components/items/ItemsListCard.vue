@@ -1,19 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import type { ItemsListType } from '@/types/items.types';
 
-const props = defineProps<{
-  imageUrl: string[];
-  brandName: string;
-  productName: string;
-  saleRate: number;
-  salePrice: number;
-  reviewCount: number;
-  heartCount: number;
-  productId: string;
-}>();
-
-const router = useRouter();
+defineProps<{
+  product: ItemsListType
+}>()
 
 const isHeart = ref(false);
 const isReview = ref(false);
@@ -25,29 +16,29 @@ const toggleHeart = () => {
 const toggleReview = () => {
   isReview.value = !isReview.value;
 };
-
-/** 헤어케어 -> 이름: 딥클렌징 샴푸 아이템만 디테일 데이터 등록되어있음
- * TODO: 다른 아이템도 데이터 추가 예정
- * 딥클렌징 샴푸만 장바구니 담기 가능
- */
-function goToDetail() {
-  const itemId = props.productId;
-
-  router.push({ name: 'itemDetail', params: { id: itemId } });
-}
 </script>
 
 <template>
-  <div @click="goToDetail" class="cursor-pointer">
-    <img :src="imageUrl[0]" alt="image" />
+  <div>
+    <router-link
+      :to="{ name: 'itemDetail', params: { id: product.productId } }"
+    >
+      <img :src="product.imageUrl[0]" alt="image" />
+    </router-link>  
 
     <div class="flex flex-col gap-1 pt-3.5">
-      <div class="text-xs font-semibold">{{ brandName }}</div>
-      <div class="text-xs">{{ productName }}</div>
+      <div class="text-xs font-semibold">{{ product.brandName }}</div>
+      <div class="text-xs">
+        <router-link
+          :to="{ name: 'itemDetail', params: { id: product.productId } }"
+        >
+          {{ product.productName }}
+        </router-link>
+      </div>
 
       <div class="flex gap-2 mt-2">
-        <div class="text-[#ff4800]">{{ saleRate }}%</div>
-        <div class="font-bold">{{ salePrice }}</div>
+        <div class="text-[#ff4800]">{{ product.saleRate }}%</div>
+        <div class="font-bold">{{ product.salePrice }}</div>
       </div>
 
       <div class="flex gap-10 mt-2">
@@ -59,11 +50,11 @@ function goToDetail() {
               class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
             },
           }"
-          @click.stop="toggleHeart"
+          @click="toggleHeart"
         >
           <template #default>
             <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-5 h-5" />
-            <span class="text-xs pl-1">{{ heartCount }}</span>
+            <span class="text-xs pl-1">{{ product.heartCount }}</span>
           </template>
         </Button>
 
@@ -78,7 +69,7 @@ function goToDetail() {
         >
           <template #default>
             <Icon icon="heroicons:chat-bubble-left" class="w-5 h-5" />
-            <span class="text-xs pl-1">{{ reviewCount }}</span>
+            <span class="text-xs pl-1">{{ product.reviewCount }}</span>
           </template>
         </Button>
       </div>

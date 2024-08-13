@@ -3,6 +3,8 @@ import firebaseApp from './firebasedb';
 import type { CartItemListType, ItemsListType, uploadItemType } from '@/types/items.types';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
 import { addDoc, collection, getDocs, getFirestore, query, where, type DocumentData } from 'firebase/firestore';
+import ItemDetail from '@/views/itemDetail/itemDetail.vue';
+import { z } from 'zod';
 
 export const db = getFirestore(firebaseApp);
 
@@ -79,13 +81,55 @@ export function getMainItemsList() {
   );
 }
 
+
+
+const itemDetailSchema = z.object({
+  productId: z.string(),
+  productDescription: z.string(),
+  productName: z.string(),
+  brandName: z.string(),
+  categoryName: z.string(),
+  sellingType: z.array(z.string()),
+  breadth: z.number(),
+  length: z.number(),
+  weight: z.number(),
+  width: z.number(),
+  consumerPrice: z.number(),
+  isSale: z.boolean(),
+  salePrice: z.number(),
+  saleRate: z.number(),
+  reviewCount: z.number(),
+  heartCount: z.number(),
+  heartOn: z.boolean(),
+  isNew: z.boolean(),
+  isSoldOut: z.boolean(),
+  imageUrl: z.array(z.string()),
+  howToUse: z.string().optional(),
+  ingredients: z.string().optional(),
+});
+
 export async function getItemDetail(productId: string) {
+  const itemListQuery = query(collection(db, 'items'), where('productId', '==', productId));
+  const querySnapshot1 = await getDocs(itemListQuery);
+  const itemsDetailDocs2 = querySnapshot1.docs.map((doc) => doc.data());
+
   const itemQuery = query(collection(db, 'itemsDetail'), where('productId', '==', productId));
   const querySnapshot = await getDocs(itemQuery);
   const itemsDetailDocs = querySnapshot.docs.map((doc) => doc.data());
   const itemsDetailData = itemsDetailDocs[0];
 
-  return itemsDetailData;
+  const mergedData = {
+    ...itemsDetailDocs2[0],
+    ...itemsDetailData,
+  }
+
+  const parsed = itemDetailSchema.safeParse(mergedData);
+  if (!parsed.success) {
+    console.error('parsing error', parsed.error);
+    return null
+  }
+
+  return parsed.data;
 }
 
 export async function postCartItem(cartItem: CartItemListType) {

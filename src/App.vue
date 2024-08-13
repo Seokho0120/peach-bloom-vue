@@ -10,7 +10,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
   <Toast />
   <ConfirmDialog group="goToPage">
     <template #container="{ message, acceptCallback, rejectCallback }">
-      <div class="flex flex-col p-10">
+      <div class="flex flex-col p-10 relative">
         <i class="pi pi-times absolute right-3 top-3 cursor-pointer" @click="() => rejectCallback()" />
         <p class="text-lg pb-6" v-html="message.message" />
         <Button type="button" :label="message.acceptLabel" class="flex-grow" @click="() => acceptCallback()" />

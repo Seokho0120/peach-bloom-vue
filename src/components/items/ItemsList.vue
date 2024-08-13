@@ -2,11 +2,9 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemsList } from '@/composables/useItems';
-import { useItemsListStore } from '@/stores/itemsList.store';
 
 const route = useRoute();
 const router = useRouter();
-const itemListStore = useItemsListStore();
 
 const categoryQuery = computed(() => route.params.id.toString());
 const sortByQuery = computed(() => route.query.sortBy?.toString() ?? 'recommend');
@@ -41,7 +39,7 @@ watch(
 
 const { data: itemList, isLoading, isError } = useGetItemsList(categoryQuery, selectedSortBy);
 
-const sortingItemList = computed(() => {
+const sortedItemList = computed(() => {
   if (!itemList.value) return [];
 
   if (selectedSortBy.value === 'new') {
@@ -55,7 +53,9 @@ const sortingItemList = computed(() => {
 
       return b.reviewCount - a.reviewCount;
     });
-  } else if (selectedSortBy.value === 'recommend') {
+  }
+
+  if (selectedSortBy.value === 'recommend') {
     // isNew && isSale === true 아이템을 우선순위로 하면서 항상 reviewCount가 많은 순서
     return [...itemList.value].sort((a, b) => {
       const APriority = a.isNew && a.isSale ? 1 : 0;
@@ -69,34 +69,36 @@ const sortingItemList = computed(() => {
     });
   }
 
-  return [...itemList.value].sort((a, b) => {
-    const APrice = a.salePrice > 0 ? a.salePrice : a.consumerPrice;
-    const BPrice = b.salePrice > 0 ? b.salePrice : b.consumerPrice;
+  if (selectedSortBy.value === 'review') {
+    return [...itemList.value].sort((a, b) => b.reviewCount - a.reviewCount);
+  }
 
-    switch (selectedSortBy.value) {
-      case 'review':
-        return b.reviewCount - a.reviewCount;
-      case 'lowPrice':
-        return APrice - BPrice;
-      case 'highPrice':
-        return BPrice - APrice;
-      case 'discount':
-        return b.saleRate - a.saleRate;
-      case 'like':
-        return b.heartCount - a.heartCount;
-      default:
-        return 0;
-    }
-  });
+  if (selectedSortBy.value === 'lowPrice') {
+    return [...itemList.value].sort((a, b) => {
+      const APrice = a.salePrice > 0 ? a.salePrice : a.consumerPrice;
+      const BPrice = b.salePrice > 0 ? b.salePrice : b.consumerPrice;
+      return APrice - BPrice;
+    });
+  }
+
+  if (selectedSortBy.value === 'highPrice') {
+    return [...itemList.value].sort((a, b) => {
+      const APrice = a.salePrice > 0 ? a.salePrice : a.consumerPrice;
+      const BPrice = b.salePrice > 0 ? b.salePrice : b.consumerPrice;
+      return BPrice - APrice;
+    });
+  }
+
+  if (selectedSortBy.value === 'discount') {
+    return [...itemList.value].sort((a, b) => b.saleRate - a.saleRate);
+  }
+
+  if (selectedSortBy.value === 'like') {
+    return [...itemList.value].sort((a, b) => b.heartCount - a.heartCount);
+  }
+
+  return [...itemList.value];
 });
-
-watch(sortingItemList, (newList) => {
-  itemListStore.sortingItemList = newList;
-});
-
-// watch(sortingItemList, () => {
-//   console.log('sortingItemList.value', sortingItemList.value);
-// });
 </script>
 
 <template>
@@ -113,16 +115,9 @@ watch(sortingItemList, (newList) => {
 
     <div v-if="!isError" class="grid grid-cols-6 gap-y-16 gap-x-5 mt-10 w-full">
       <ItemsListCard
-        v-for="item in sortingItemList"
+        v-for="item in sortedItemList"
         :key="item.productId"
-        :product-id="item.productId"
-        :brandName="item.brandName"
-        :imageUrl="item.imageUrl"
-        :productName="item.productName"
-        :salePrice="item.salePrice"
-        :saleRate="item.saleRate"
-        :review-count="item.reviewCount"
-        :heart-count="item.heartCount"
+        :product="item"
       />
     </div>
     <div v-else>데이터를 불러오는 과정에서 오류가 발생했습니다.</div>
