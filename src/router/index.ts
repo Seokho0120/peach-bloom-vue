@@ -20,11 +20,6 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/carts',
-      name: 'carts',
-      component: HomeView,
-    },
-    {
       path: '/login',
       name: 'login',
       // import로 화면 보여주면 필요할때 다운받아서 보여주기 때문에 성능최적화 방법 중 하나
@@ -44,14 +39,6 @@ const router = createRouter({
       path: '/items/:id',
       name: 'itemsList',
       component: () => import('@/views/items/items.vue'),
-      // TODO: 질문하기
-      // children: [
-      //   {
-      //     path: 'detail/:detailId',
-      //     name: 'itemDetail',
-      //     component: () => import('@/views/itemDetail/itemDetail.vue'),
-      //   },
-      // ],
     },
     {
       path: '/detail/:id',

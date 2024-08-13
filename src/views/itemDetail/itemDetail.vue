@@ -56,9 +56,7 @@ const addToCart = async () => {
     //   ...itemDetail.value,
     //   quantity: quantity.value,
     // };
-
     // await postCartItem(cartItem);
-
     // cartStore.cartItems = [...cartStore.cartItems, cartItem];
   }
 };
