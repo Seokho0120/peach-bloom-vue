@@ -32,8 +32,8 @@ export interface ItemsListType extends ItemsType {
 export type ImageType = Pick<uploadItemType, 'imageUrl'>;
 
 export interface ItemDetailType extends ItemsListType {
-  howToUse: string;
-  ingredients: string;
+  howToUse?: string;
+  ingredients?: string;
 }
 
 export interface CartItemListType extends ItemDetailType {

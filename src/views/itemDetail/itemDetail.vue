@@ -52,12 +52,11 @@ function openConfirmModal() {
 
 const addToCart = async () => {
   if (itemDetail.value) {
-    // const cartItem = {
-    //   ...itemDetail.value,
-    //   quantity: quantity.value,
-    // };
-    // await postCartItem(cartItem);
-    // cartStore.cartItems = [...cartStore.cartItems, cartItem];
+    const cartItem = {
+      ...itemDetail.value,
+      quantity: quantity.value,
+    };
+    await postCartItem(cartItem);
   }
 };
 </script>
