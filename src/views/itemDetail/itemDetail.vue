@@ -3,15 +3,14 @@ import { computed, nextTick, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useConfirm } from 'primevue/useconfirm';
-import { useCartListStore } from '@/stores/cart.store';
 import { postCartItem } from '@/api/firestore';
+import { serverTimestamp, Timestamp } from 'firebase/firestore';
 
 const confirm = useConfirm();
 
 const route = useRoute();
 const router = useRouter();
 const productId = computed(() => route.params.id.toString());
-const cartStore = useCartListStore();
 
 const { data: itemDetail } = useGetItemDetail(productId);
 
@@ -43,7 +42,7 @@ function openConfirmModal() {
     message: '장바구니에 상품이 담겼습니다.',
     acceptLabel: '장바구니 바로가기',
     accept: async () => {
-      addToCart();
+      await addToCart();
       await nextTick();
       router.push({ name: 'cart' });
     },
@@ -55,6 +54,7 @@ const addToCart = async () => {
     const cartItem = {
       ...itemDetail.value,
       quantity: quantity.value,
+      createdAt: serverTimestamp() as Timestamp,
     };
     await postCartItem(cartItem);
   }

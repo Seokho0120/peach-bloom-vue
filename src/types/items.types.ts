@@ -1,3 +1,5 @@
+import type { Timestamp } from 'firebase/firestore';
+
 export interface ItemsType {
   productId: string;
   productDescription: string;
@@ -38,4 +40,5 @@ export interface ItemDetailType extends ItemsListType {
 
 export interface CartItemListType extends ItemDetailType {
   quantity: number;
+  createdAt: Timestamp;
 }

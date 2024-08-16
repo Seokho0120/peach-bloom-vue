@@ -1,7 +1,7 @@
 import firebaseApp from './firebasedb';
 import type { CartItemListType, ItemsListType, uploadItemType } from '@/types/items.types';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
-import { addDoc, collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, getFirestore, query, Timestamp, where } from 'firebase/firestore';
 import { z } from 'zod';
 
 export const db = getFirestore(firebaseApp);
@@ -135,7 +135,18 @@ export async function postCartItem(cartItem: CartItemListType) {
 }
 
 export function getCartItemList() {
-  return getDocs(collection(db, 'itemsCart')).then((snapshot) =>
-    snapshot.empty ? [] : (snapshot.docs.map((doc) => doc.data()) as CartItemListType[]),
-  );
+  return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
+    if (snapshot.empty) {
+      return [];
+    }
+
+    const items = snapshot.docs.map((doc) => ({
+      ...(doc.data() as CartItemListType),
+    }));
+
+    // 최신순으로 정렬
+    return items.sort((a, b) => {
+      return b.createdAt.seconds - a.createdAt.seconds;
+    });
+  });
 }

@@ -8,7 +8,6 @@ export function useGetCartItemsList() {
     queryFn: async () => {
       return await getCartItemList();
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   return {

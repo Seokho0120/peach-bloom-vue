@@ -1,39 +1,68 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type { CartItemListType } from '@/types/items.types';
-import { ref, watch } from 'vue';
 
-const { data, isError, isLoading } = useGetCartItemsList();
+const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 const selectedProduct = ref();
+const quantityValues = ref<Record<string, number>>({}); // Record<Key, Value>
 
-watch(data, () => {
-  console.log('data.value', data.value);
-});
+watch(
+  cartItemList,
+  (newData) => {
+    if (newData) {
+      newData.forEach((item) => {
+        quantityValues.value[item.productId] = item.quantity;
+      });
+      console.log('quantityValues.value', quantityValues.value);
+
+      selectedProduct.value = [...newData];
+      console.log('selectedProduct.value', selectedProduct.value);
+    }
+  },
+  { immediate: true },
+);
 
 function buyItem(index: any) {
   console.log('buyItem', index);
 }
 
-function decreaseQuantity() {}
+watch(selectedProduct, () => {
+  console.log('selectedProduct.value', selectedProduct.value);
+});
 
-function increaseQuantity() {}
+const test1 = ref(true);
+function test() {
+  console.log('전체');
+  test1.value = !test1.value;
+}
 </script>
 
 <template>
   <div class="flex flex-col w-full max-w-[100rem] min-w-[50rem] mx-auto pb-8 px-12">
-    <!-- <div class="flex flex-col px-12"></div> -->
-
-    <!-- <div class="mb-8 border-t-4 border-black">
-      <ItemsListCard v-for="item in data" :key="item.productId" :product="item" />
-    </div> -->
-
-    <DataTable v-model:selection="selectedProduct" :value="data" data-key="productId" paginator :rows="5">
+    <!-- :select-all="test1"
+    @select-all-change="test()" -->
+    <DataTable
+      class="border-t-4 border-black"
+      v-model:selection="selectedProduct"
+      :value="cartItemList"
+      data-key="productId"
+      paginator
+      :rows="5"
+      :loading="isLoading"
+    >
+      <template #empty>
+        <p class="text-2xl font-bold flex justify-center items-center p-12">장바구니에 담은 상품이 없습니다.</p>
+      </template>
       <Column selectionMode="multiple" headerStyle="width: 2rem" />
       <Column
         header="상품정보"
         :pt="{
           bodyCell: {
-            class: 'border-r-[1px]',
+            class: 'border-r-[1px] p-6',
+          },
+          headerCell: {
+            class: 'py-4 px-6 text-lg font-bold',
           },
         }"
       >
@@ -55,52 +84,33 @@ function increaseQuantity() {}
           </div>
         </template>
       </Column>
-      <!-- field="quantity" -->
       <Column
         header="수량"
         :pt="{
           bodyCell: {
-            class: 'border-r-[1px]',
+            class: 'border-r-[1px] w-10 p-6',
+          },
+          headerCell: {
+            class: 'py-4 px-0 text-lg font-bold',
           },
         }"
       >
         <template #body="{ data }: { data: CartItemListType }">
-          <!-- TODO: css 만들기 / 갯수 계산하는 로직도 만들어보기 -->
-
-          <!-- <div className="w-32 font-bold flex items-center justify-between border border-gray-200 mb-7">
-            <button
-              class="border-r flex items-center justify-center px-3 py-3"
-              :disabled="data.quantity <= 1"
-              @click="decreaseQuantity"
+          <div class="flex items-center justify-center">
+            <InputNumber
+              v-model="quantityValues[data.productId]"
+              showButtons
+              buttonLayout="horizontal"
+              :min="1"
+              :max="99"
+              :pt="{
+                input: {
+                  root: {
+                    class: 'w-12 text-center',
+                  },
+                },
+              }"
             >
-              <i class="pi pi-minus" />
-            </button>
-
-            <p>{{ data.quantity }}</p>
-
-            <button class="border-l flex items-center justify-center px-3 py-3" @click="increaseQuantity">
-              <i class="pi pi-plus" />
-            </button>
-          </div> -->
-
-          <!-- <InputNumber
-            v-model="data.quantity"
-            showButtons
-            buttonLayout="vertical"
-            style="width: 3rem"
-            :min="0"
-            :max="99"
-          >
-            <template #incrementbuttonicon>
-              <span class="pi pi-plus" />
-            </template>
-            <template #decrementbuttonicon>
-              <span class="pi pi-minus" />
-            </template>
-          </InputNumber> -->
-
-          <div class="flex-auto">
-            <InputNumber v-model="data.quantity" showButtons buttonLayout="horizontal" :min="0" :max="100">
               <template #incrementbuttonicon>
                 <span class="pi pi-plus" />
               </template>
@@ -118,17 +128,20 @@ function increaseQuantity() {}
           bodyCell: {
             class: 'border-r-[1px]',
           },
+          headerCell: {
+            class: 'py-4 px-0  text-lg font-bold',
+          },
         }"
       >
         <template #body="{ data, index }: { data: CartItemListType; index: number }">
           <div class="flex flex-col items-center gap-4 font-bold">
             <div v-if="data.isSale" class="flex items-baseline">
-              <p class="text-xl">{{ data.salePrice }}</p>
+              <p class="text-xl">{{ (data.salePrice * quantityValues[data.productId]).toLocaleString() }}</p>
               <span>원</span>
             </div>
 
             <div v-else class="flex items-baseline">
-              <p class="text-xl">{{ data.consumerPrice }}</p>
+              <p class="text-xl">{{ (data.consumerPrice * quantityValues[data.productId]).toLocaleString() }}</p>
               <span>원</span>
             </div>
 
@@ -146,10 +159,20 @@ function increaseQuantity() {}
         </template>
       </Column>
 
-      <Column header="배송비">
+      <Column
+        header="배송비"
+        :pt="{
+          headerCell: {
+            class: 'py-4 px-0  text-lg font-bold',
+          },
+        }"
+      >
         <template #body="{ data }: { data: CartItemListType }">
           <div class="flex flex-col items-center font-bold">
-            <div v-if="data.consumerPrice < 30000">3000원</div>
+            <div v-if="data.consumerPrice < 30000" class="flex items-baseline">
+              <p>3,000</p>
+              <span class="text-xs">원</span>
+            </div>
             <div v-else>무료배송</div>
           </div>
         </template>
