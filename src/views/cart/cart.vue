@@ -251,20 +251,13 @@ watch(
         root: {
           class: 'mt-24',
         },
-        header: {
-          class: 'bg-red-400',
-        },
-        thead: {
-          class: 'bg-red-400',
-        },
       }"
     >
       <Column
         header="총 주문금액"
         :pt="{
           headerCell: {
-            class: 'py-4 px-6 text-lg font-bold',
-            // class: 'flex flex-col items-center py-4 px-6 text-lg font-bold',
+            class: 'py-4 px-6 text-lg font-bold text-center',
           },
           bodyCell: {
             class: 'py-8',
@@ -272,7 +265,7 @@ watch(
         }"
       >
         <template #body="{ data }">
-          <div class="flex flex-col">
+          <div class="flex flex-col items-center">
             <div class="flex items-baseline">
               <p class="text-3xl font-bold">{{ data.totalOrder }}</p>
               <span class="font-semibold">원</span>
@@ -281,18 +274,39 @@ watch(
         </template>
       </Column>
 
+      <Column style="width: 2rem">
+        <template #body>
+          <div class="flex flex-col items-center">
+            <Icon icon="heroicons:plus-16-solid" class="text-3xl" />
+          </div>
+        </template>
+      </Column>
+
       <Column
         header="총 배송비"
         :pt="{
           headerCell: {
-            class: 'py-4 px-6 text-lg font-bold',
+            class: 'py-4 px-6 text-lg font-bold text-center',
+          },
+          bodyCell: {
+            class: 'py-8',
           },
         }"
       >
         <template #body="{ data }">
-          <div class="flex items-baseline">
-            <p class="text-3xl font-bold">{{ data.totalShipping }}</p>
-            <span class="font-semibold">원</span>
+          <div class="flex flex-col items-center">
+            <div class="flex items-baseline">
+              <p class="text-3xl font-bold">{{ data.totalShipping }}</p>
+              <span class="font-semibold">원</span>
+            </div>
+          </div>
+        </template>
+      </Column>
+
+      <Column style="width: 2rem">
+        <template #body>
+          <div class="flex flex-col items-center">
+            <Icon icon="heroicons:equals-16-solid" class="text-3xl" />
           </div>
         </template>
       </Column>
@@ -301,17 +315,28 @@ watch(
         header="총 결제금액"
         :pt="{
           headerCell: {
-            class: 'py-4 px-6 text-lg font-bold',
+            class: 'py-4 px-6 text-lg font-bold text-center',
+          },
+          bodyCell: {
+            class: 'py-8',
           },
         }"
       >
         <template #body="{ data }">
-          <div class="flex items-baseline">
-            <p class="text-3xl font-bold">{{ data.totalPayment }}</p>
-            <span class="font-semibold">원</span>
+          <div class="flex flex-col items-center">
+            <div class="flex items-baseline">
+              <p class="text-3xl font-bold">{{ data.totalPayment }}</p>
+              <span class="font-semibold">원</span>
+            </div>
           </div>
         </template>
       </Column>
     </DataTable>
   </div>
 </template>
+
+<style lang="scss" scoped>
+:deep(.p-column-header-content) {
+  display: contents;
+}
+</style>
