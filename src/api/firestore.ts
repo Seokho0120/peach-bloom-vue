@@ -1,7 +1,19 @@
 import firebaseApp from './firebasedb';
-import type { CartItemListType, ItemsListType, uploadItemType } from '@/types/items.types';
+import type { CartItemListType, CartItemType, ItemsListType, uploadItemType } from '@/types/items.types';
 import type { GetProductCategoryType } from '@/types/productCategory.types';
-import { addDoc, collection, getDocs, getFirestore, query, Timestamp, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+  Timestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { z } from 'zod';
 
 export const db = getFirestore(firebaseApp);
@@ -128,10 +140,35 @@ export async function getItemDetail(productId: string) {
   return parsed.data;
 }
 
-export async function postCartItem(cartItem: CartItemListType) {
-  const docRef = await addDoc(collection(db, 'itemsCart'), cartItem);
+export async function postCartItem(cartItem: CartItemType, userId: string) {
+  const userCartRef = await doc(db, 'itemsCart', userId);
+  const userCartSnap = await getDoc(userCartRef);
+  console.log('userCartSnap', userCartSnap);
+  console.log('cartItem', cartItem);
 
-  console.log('docRef???', docRef);
+  if (userCartSnap.exists()) {
+    const items = userCartSnap.data().items;
+    console.log('items', items);
+    const existingItem = items.findIndex((i: any) => i.productId === cartItem.productId);
+    console.log('existingItem', existingItem);
+
+    // const existingItem = items.find((item) => item.productId === cartItem.productId);
+
+    if (existingItem !== -1) {
+      // 이미 존재하는 경우 수량 업데이트
+      existingItem.quantity += cartItem.quantity;
+    } else {
+      // 새로운 아이템인 경우 추가
+      items.push(cartItem);
+    }
+
+    await updateDoc(userCartRef, { items: items });
+  } else {
+    await setDoc(userCartRef, { userId: cartItem.productId, items: cartItem });
+  }
+
+  // const userCartRef = await addDoc(collection(db, 'itemsCart'), cartItem);
+  // const userCartSnap = await getDoc(userCartRef);
 }
 
 export function getCartItemList() {
@@ -140,13 +177,64 @@ export function getCartItemList() {
       return [];
     }
 
-    const items = snapshot.docs.map((doc) => ({
-      ...(doc.data() as CartItemListType),
+    const data = snapshot.docs.map((doc) => ({
+      ...doc.data(),
     }));
 
+    // console.log('data????', data);
+
     // 최신순으로 정렬
-    return items.sort((a, b) => {
+    const sortedItems = data[0].items.sort((a, b) => {
       return b.createdAt.seconds - a.createdAt.seconds;
     });
+
+    // userId와 함께 반환
+    return {
+      userId: data[0].userId,
+      items: sortedItems,
+    };
+  });
+}
+
+// export function getCartItemList() {
+//   return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
+//     if (snapshot.empty) {
+//       return [];
+//     }
+
+//     const items = snapshot.docs.map((doc) => ({
+//       ...(doc.data() as CartItemType),
+//     }));
+
+//     // 최신순으로 정렬
+//     return items.sort((a, b) => {
+//       return b.createdAt.seconds - a.createdAt.seconds;
+//     });
+//   });
+// }
+
+export type removeCartType = {
+  userId: string;
+  productId: string;
+};
+
+export async function deleteCartItem({ userId, productId }: removeCartType) {
+  console.log('asdlkasjd');
+  const userCartRef = doc(db, 'itemsCart', userId);
+  const userCartSnap = await getDoc(userCartRef);
+
+  if (!userCartSnap.exists()) {
+    throw new Error('카트에 제품이 존재하지 않아요 🚨');
+  }
+
+  const items = userCartSnap.data().items;
+  console.log('items', items);
+
+  const updatedItems = items.filter((item: CartItemType) => item.productId !== productId);
+  console.log('productId???', productId);
+  console.log('updatedItems', updatedItems);
+
+  await updateDoc(userCartRef, {
+    items: updatedItems,
   });
 }

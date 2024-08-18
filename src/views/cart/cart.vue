@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useGetCartItemsList } from '@/composables/useCartItems';
-import type { CartItemListType } from '@/types/items.types';
-import type { DataTableRowSelectEvent } from 'primevue/datatable';
+import type { CartItemType } from '@/types/items.types';
+import { deleteCartItem } from '@/api/firestore';
+import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 
 interface ResultInfoType {
   totalOrder: number;
@@ -10,9 +11,17 @@ interface ResultInfoType {
   totalPayment: number;
 }
 
+// TODO: user로 분기처리 예정
+const user = ref<User | null>(null);
+const userId = ref<string>('');
+onAuthStateChanged(getAuth(), (currentUser) => {
+  user.value = currentUser;
+  userId.value = user.value?.uid || '';
+});
+
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
-const selectedProduct = ref<CartItemListType[]>([]);
+const selectedProduct = ref<CartItemType[]>([]);
 const quantityValues = ref<Record<string, number>>({}); // Record<Key, Value>
 const selectAll = ref(true);
 
@@ -20,11 +29,31 @@ function buyItem(index: number) {
   console.log('buyItem', index);
 }
 
+function deleteItem(productId: string) {
+  selectedProduct.value = selectedProduct.value.filter((item) => item.productId !== productId);
+
+  // if (cartItemList.value) {
+  //   const updateCartItemList = cartItemList.value.filter((item) => item.productId !== productId);
+
+  //   cartItemList.value = updateCartItemList;
+  // }
+
+  // console.log('userId.value', userId.value);
+  // console.log('productId', productId);
+
+  deleteCartItem({ userId: userId.value, productId }).catch((error) => {
+    console.error('삭제 실패!!!!!', error.message);
+  });
+}
+
 watch(
   cartItemList,
   (newData) => {
+    // console.log('cartItemList.value ???', cartItemList.value);
+
     if (newData) {
-      newData.forEach((item) => {
+      console.log('newData', newData);
+      newData.items.forEach((item) => {
         quantityValues.value[item.productId] = item.quantity;
       });
 
@@ -44,7 +73,7 @@ function onSelectAll() {
   }
 }
 
-const resultInfo = ref<ResultInfoType>({
+const totalInfo = ref<ResultInfoType>({
   totalOrder: 0,
   totalShipping: 0,
   totalPayment: 0,
@@ -55,9 +84,9 @@ const totalShipping = ref(0);
 const totalPayment = ref(0);
 
 function updateResultInfo() {
-  resultInfo.value.totalOrder = totalOrder.value;
-  resultInfo.value.totalShipping = totalShipping.value;
-  resultInfo.value.totalPayment = totalPayment.value;
+  totalInfo.value.totalOrder = totalOrder.value;
+  totalInfo.value.totalShipping = totalShipping.value;
+  totalInfo.value.totalPayment = totalPayment.value;
 }
 
 watch(selectedProduct, (newVal) => {
@@ -106,7 +135,9 @@ watch(
 
 <template>
   <div class="flex flex-col w-full max-w-[100rem] min-w-[50rem] mx-auto pb-40 px-12">
-    <DataTable
+    <button @click="() => deleteItem('85860d27')">버튼</button>
+
+    <!-- <DataTable
       class="border-t-4 border-black"
       v-model:selection="selectedProduct"
       :value="cartItemList"
@@ -144,6 +175,21 @@ watch(
                   <p>[{{ data.saleRate }}%] {{ data.salePrice }}원</p>
                 </div>
               </div>
+            </div>
+
+            <div class="ml-auto">
+              <Button
+                @click="() => deleteItem(data.productId)"
+                icon="pi pi-times"
+                severity="contrast"
+                text
+                aria-label="Delete"
+                :pt="{
+                  root: {
+                    class: 'rounded-none',
+                  },
+                }"
+              />
             </div>
           </div>
         </template>
@@ -241,12 +287,12 @@ watch(
           </div>
         </template>
       </Column>
-    </DataTable>
-
+    </DataTable> -->
+    <!-- 
     <DataTable
       class="border-t-4 border-black"
       :loading="isLoading"
-      :value="[resultInfo]"
+      :value="[totalInfo]"
       :pt="{
         root: {
           class: 'mt-24',
@@ -331,7 +377,7 @@ watch(
           </div>
         </template>
       </Column>
-    </DataTable>
+    </DataTable> -->
   </div>
 </template>
 

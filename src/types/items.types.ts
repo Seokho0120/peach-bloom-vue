@@ -38,7 +38,57 @@ export interface ItemDetailType extends ItemsListType {
   ingredients?: string;
 }
 
-export interface CartItemListType extends ItemDetailType {
-  quantity: number;
-  createdAt: Timestamp;
+// Firestore Timestamp 형식
+export interface FirestoreTimestamp {
+  seconds: number;
+  nanoseconds: number;
 }
+
+// CartItemType 정의
+export interface CartItemType {
+  breadth: number;
+  heartCount: number;
+  quantity: number;
+  width: number;
+  imageUrl: string[];
+  weight: number;
+  consumerPrice: number;
+  reviewCount: number;
+  createdAt: FirestoreTimestamp;
+  length: number;
+  productDescription: string;
+  isSoldOut: boolean;
+  categoryName: string;
+  productName: string;
+  heartOn: boolean;
+  sellingType: string[];
+  productId: string;
+  salePrice: number;
+  brandName: string;
+  isSale: boolean;
+  saleRate: number;
+  isNew: boolean;
+  ingredients?: string; // 선택적 속성
+  howToUse?: string; // 선택적 속성
+}
+
+// CartItemListType 정의
+export interface CartItemListType {
+  userId: string;
+  items: CartItemType[];
+}
+
+// export interface FirestoreTimestamp {
+//   seconds: number;
+//   nanoseconds: number;
+// }
+
+// export interface CartItemType extends ItemDetailType {
+//   quantity: number;
+//   createdAt: FirestoreTimestamp;
+// }
+
+// export interface CartItemListType {
+//   items: CartItemType[];
+//   userId: string;
+// }
