@@ -4,7 +4,7 @@ import type { CartItemListType } from '@/types/items.types';
 import { watch } from 'vue';
 
 export function useGetCartItemsList() {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<CartItemListType>({
     queryKey: ['cartItemsList'],
     queryFn: async () => {
       const test = await getCartItemList();

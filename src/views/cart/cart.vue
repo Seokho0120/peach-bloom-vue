@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useGetCartItemsList } from '@/composables/useCartItems';
-import type { CartItemType } from '@/types/items.types';
+import type { CartItemListType, CartItemType } from '@/types/items.types';
 import { deleteCartItem } from '@/api/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 
@@ -57,7 +57,7 @@ watch(
         quantityValues.value[item.productId] = item.quantity;
       });
 
-      selectedProduct.value = [...newData];
+      selectedProduct.value = [...newData.items];
     }
   },
   { immediate: true },
@@ -67,7 +67,7 @@ function onSelectAll() {
   selectAll.value = !selectAll.value;
 
   if (selectAll.value && cartItemList.value) {
-    selectedProduct.value = [...cartItemList.value];
+    selectedProduct.value = [...cartItemList.value.items];
   } else {
     selectedProduct.value = [];
   }
@@ -90,7 +90,7 @@ function updateResultInfo() {
 }
 
 watch(selectedProduct, (newVal) => {
-  if (newVal.length !== cartItemList.value?.length) {
+  if (newVal.length !== cartItemList.value?.items.length) {
     selectAll.value = false;
   } else {
     selectAll.value = true;
@@ -135,12 +135,12 @@ watch(
 
 <template>
   <div class="flex flex-col w-full max-w-[100rem] min-w-[50rem] mx-auto pb-40 px-12">
-    <button @click="() => deleteItem('85860d27')">버튼</button>
+    <!-- <button @click="() => deleteItem('85860d27')">버튼</button> -->
 
-    <!-- <DataTable
+    <DataTable
       class="border-t-4 border-black"
       v-model:selection="selectedProduct"
-      :value="cartItemList"
+      :value="cartItemList?.items"
       data-key="productId"
       :loading="isLoading"
       @select-all-change="() => onSelectAll()"
@@ -161,7 +161,7 @@ watch(
           },
         }"
       >
-        <template #body="{ data }: { data: CartItemListType }">
+        <template #body="{ data }: { data: CartItemType }">
           <div class="flex gap-6">
             <div style="width: 8rem">
               <img :src="data.imageUrl[0]" :alt="data.imageUrl[0]" style="object-fit: cover" />
@@ -205,7 +205,7 @@ watch(
           },
         }"
       >
-        <template #body="{ data }: { data: CartItemListType }">
+        <template #body="{ data }: { data: CartItemType }">
           <div class="flex items-center justify-center">
             <InputNumber
               v-model="quantityValues[data.productId]"
@@ -243,7 +243,7 @@ watch(
           },
         }"
       >
-        <template #body="{ data, index }: { data: CartItemListType; index: number }">
+        <template #body="{ data, index }: { data: CartItemType; index: number }">
           <div class="flex flex-col items-center gap-4 font-bold">
             <div v-if="data.isSale" class="flex items-baseline">
               <p class="text-xl">{{ (data.salePrice * quantityValues[data.productId]).toLocaleString() }}</p>
@@ -277,7 +277,7 @@ watch(
           },
         }"
       >
-        <template #body="{ data }: { data: CartItemListType }">
+        <template #body="{ data }: { data: CartItemType }">
           <div class="flex flex-col items-center font-bold">
             <div v-if="data.consumerPrice < 30000" class="flex items-baseline">
               <p>3,000</p>
@@ -287,8 +287,8 @@ watch(
           </div>
         </template>
       </Column>
-    </DataTable> -->
-    <!-- 
+    </DataTable>
+
     <DataTable
       class="border-t-4 border-black"
       :loading="isLoading"
@@ -377,7 +377,7 @@ watch(
           </div>
         </template>
       </Column>
-    </DataTable> -->
+    </DataTable>
   </div>
 </template>
 

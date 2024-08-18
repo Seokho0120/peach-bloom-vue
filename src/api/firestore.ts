@@ -171,27 +171,52 @@ export async function postCartItem(cartItem: CartItemType, userId: string) {
   // const userCartSnap = await getDoc(userCartRef);
 }
 
-export function getCartItemList() {
+// export function getCartItemList() {
+//   return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
+//     if (snapshot.empty) {
+//       return [];
+//     }
+
+//     const data = snapshot.docs.map((doc) => ({
+//       ...doc.data(),
+//     }));
+
+//     // console.log('data????', data);
+
+//     // 최신순으로 정렬
+//     const sortedItems = data[0].items.sort((a, b) => {
+//       return b.createdAt.seconds - a.createdAt.seconds;
+//     });
+
+//     // userId와 함께 반환
+//     return {
+//       userId: data[0].userId,
+//       items: sortedItems,
+//     };
+//   });
+// }
+
+export function getCartItemList(): Promise<CartItemListType> {
   return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
-    if (snapshot.empty) {
-      return [];
+    const items: CartItemListType[] = [];
+
+    if (!snapshot.empty) {
+      items.push(
+        ...snapshot.docs.map((doc) => ({
+          ...(doc.data() as CartItemListType),
+        })),
+      );
     }
 
-    const data = snapshot.docs.map((doc) => ({
-      ...doc.data(),
-    }));
-
-    // console.log('data????', data);
-
-    // 최신순으로 정렬
-    const sortedItems = data[0].items.sort((a, b) => {
-      return b.createdAt.seconds - a.createdAt.seconds;
-    });
+    // // 최신순으로 정렬
+    // const sortedItems = items.sort((a, b) => {
+    //   return b.createdAt.seconds - a.createdAt.seconds;
+    // });
 
     // userId와 함께 반환
     return {
-      userId: data[0].userId,
-      items: sortedItems,
+      userId: items[0].userId, // 실제 사용자 ID로 변경해야 함
+      items: items[0].items,
     };
   });
 }
