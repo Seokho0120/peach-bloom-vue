@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useGetCartItemsList } from '@/composables/useCartItems';
-import type { CartItemListType, CartItemType } from '@/types/items.types';
+import type { CartItemType } from '@/types/items.types';
 import { deleteCartItem } from '@/api/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 
-interface ResultInfoType {
-  totalOrder: number;
-  totalShipping: number;
-  totalPayment: number;
-}
-
-// TODO: user로 분기처리 예정
+// TODO: hooks로 분기처리 예정
 const user = ref<User | null>(null);
 const userId = ref<string>('');
 onAuthStateChanged(getAuth(), (currentUser) => {
@@ -25,34 +20,46 @@ const selectedProduct = ref<CartItemType[]>([]);
 const quantityValues = ref<Record<string, number>>({}); // Record<Key, Value>
 const selectAll = ref(true);
 
+interface PendingItemsType {
+  // productId를 키, boolean 값을 가지는 객체
+  [key: string]: boolean;
+}
+const pendingItems = ref<PendingItemsType>({});
+
 function buyItem(index: number) {
   console.log('buyItem', index);
 }
 
 function deleteItem(productId: string) {
-  selectedProduct.value = selectedProduct.value.filter((item) => item.productId !== productId);
-
-  // if (cartItemList.value) {
-  //   const updateCartItemList = cartItemList.value.filter((item) => item.productId !== productId);
-
-  //   cartItemList.value = updateCartItemList;
-  // }
-
-  // console.log('userId.value', userId.value);
-  // console.log('productId', productId);
-
-  deleteCartItem({ userId: userId.value, productId }).catch((error) => {
-    console.error('삭제 실패!!!!!', error.message);
-  });
+  deleteCartItemMutation(productId);
 }
+
+const queryClient = useQueryClient();
+const { mutate: deleteCartItemMutation } = useMutation({
+  mutationFn: async (productId: string) => {
+    await deleteCartItem({ userId: userId.value, productId });
+  },
+  onMutate: (productId) => {
+    pendingItems.value[productId] = true;
+  },
+  onSuccess: (_, variables) => {
+    const productId = variables;
+    pendingItems.value[productId] = false;
+
+    queryClient.invalidateQueries({
+      queryKey: ['cartItemsList'],
+    });
+  },
+  onError: (error, productId) => {
+    pendingItems.value[productId] = false;
+    console.error('상품 삭제를 실패한 이유:', error);
+  },
+});
 
 watch(
   cartItemList,
   (newData) => {
-    // console.log('cartItemList.value ???', cartItemList.value);
-
     if (newData) {
-      console.log('newData', newData);
       newData.items.forEach((item) => {
         quantityValues.value[item.productId] = item.quantity;
       });
@@ -73,6 +80,11 @@ function onSelectAll() {
   }
 }
 
+interface ResultInfoType {
+  totalOrder: number;
+  totalShipping: number;
+  totalPayment: number;
+}
 const totalInfo = ref<ResultInfoType>({
   totalOrder: 0,
   totalShipping: 0,
@@ -135,8 +147,6 @@ watch(
 
 <template>
   <div class="flex flex-col w-full max-w-[100rem] min-w-[50rem] mx-auto pb-40 px-12">
-    <!-- <button @click="() => deleteItem('85860d27')">버튼</button> -->
-
     <DataTable
       class="border-t-4 border-black"
       v-model:selection="selectedProduct"
@@ -148,6 +158,9 @@ watch(
     >
       <template #empty>
         <p class="text-2xl font-bold flex justify-center items-center p-12">장바구니에 담은 상품이 없습니다.</p>
+      </template>
+      <template v-if="isError">
+        <p class="text-2xl font-bold flex justify-center items-center p-12">오류가 발생했습니다.</p>
       </template>
       <Column selectionMode="multiple" headerStyle="width: 2rem" />
       <Column
@@ -190,6 +203,11 @@ watch(
                   },
                 }"
               />
+            </div>
+
+            <div v-if="pendingItems[data.productId]">
+              <Spinner />
+              삭제 중...
             </div>
           </div>
         </template>

@@ -3,10 +3,8 @@ import { computed, nextTick, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useConfirm } from 'primevue/useconfirm';
-import { db, postCartItem } from '@/api/firestore';
-import { doc, getDoc, serverTimestamp, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { postCartItem } from '@/api/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import type { CartItemType } from '@/types/items.types';
 
 const user = ref<User | null>(null);
 const userId = ref<string>('');
@@ -60,53 +58,17 @@ function openConfirmModal() {
 
 const addToCart = async () => {
   if (itemDetail.value) {
-    const date = new Date(); // 현재 시간 가져오기
+    const date = new Date();
 
     const cartItem = {
       ...itemDetail.value,
       quantity: quantity.value,
       createdAt: date,
-      // createdAt: serverTimestamp(),
     };
 
-    const userCartRef = doc(db, 'itemsCart', userId.value);
-    const userCartSnap = await getDoc(userCartRef);
-
-    if (userCartSnap.exists()) {
-      const items = userCartSnap.data().items || [];
-      console.log('items', items);
-      const existingItem = items.find((item: CartItemType) => item.productId === cartItem.productId);
-
-      if (existingItem) {
-        // 이미 존재하는 경우 수량 업데이트
-        existingItem.quantity += cartItem.quantity;
-        existingItem.createdAt = date;
-      } else {
-        // 새로운 아이템인 경우 추가
-        items.push(cartItem);
-      }
-
-      await updateDoc(userCartRef, { items });
-    } else {
-      // 장바구니가 없는 경우 새로 생성
-      await setDoc(userCartRef, { userId: userId.value, items: [cartItem] });
-    }
+    await postCartItem(cartItem, userId.value, date);
   }
 };
-
-// const addToCart = async () => {
-//   if (itemDetail.value) {
-//     const cartItem = {
-//       ...itemDetail.value,
-//       quantity: quantity.value,
-//       createdAt: serverTimestamp() as Timestamp,
-//     };
-//     // userId: userId.value,
-//     // await postCartItem(cartItem);
-
-//     await postCartItem(cartItem, userId.value);
-//   }
-// };
 </script>
 
 <template>
