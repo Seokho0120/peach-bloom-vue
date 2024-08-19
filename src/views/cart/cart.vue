@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type { CartItemType } from '@/types/items.types';
 import { deleteCartItem } from '@/api/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
+
+const router = useRouter();
 
 // TODO: hooks로 분기처리 예정
 const user = ref<User | null>(null);
@@ -14,6 +17,18 @@ onAuthStateChanged(getAuth(), (currentUser) => {
   userId.value = user.value?.uid || '';
 });
 
+watch(
+  user,
+  (newUser) => {
+    if (newUser) {
+      router.push({ name: 'cart' });
+    } else {
+      router.push({ name: 'login' });
+    }
+  },
+  { immediate: true },
+);
+
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
 const selectedProduct = ref<CartItemType[]>([]);
@@ -21,7 +36,7 @@ const quantityValues = ref<Record<string, number>>({}); // Record<Key, Value>
 const selectAll = ref(true);
 
 interface PendingItemsType {
-  // productId를 키, boolean 값을 가지는 객체
+  // productId를 키, boolean 값인 객체
   [key: string]: boolean;
 }
 const pendingItems = ref<PendingItemsType>({});
@@ -152,9 +167,9 @@ watch(
       v-model:selection="selectedProduct"
       :value="cartItemList?.items"
       data-key="productId"
-      :loading="isLoading"
       @select-all-change="() => onSelectAll()"
       :select-all="selectAll"
+      :loading="isLoading && cartItemList?.items.length === 0"
     >
       <template #empty>
         <p class="text-2xl font-bold flex justify-center items-center p-12">장바구니에 담은 상품이 없습니다.</p>
@@ -205,10 +220,7 @@ watch(
               />
             </div>
 
-            <div v-if="pendingItems[data.productId]">
-              <Spinner />
-              삭제 중...
-            </div>
+            <div v-if="pendingItems[data.productId]">삭제 중...</div>
           </div>
         </template>
       </Column>
@@ -309,7 +321,7 @@ watch(
 
     <DataTable
       class="border-t-4 border-black"
-      :loading="isLoading"
+      :loading="isLoading && cartItemList?.items.length === 0"
       :value="[totalInfo]"
       :pt="{
         root: {
