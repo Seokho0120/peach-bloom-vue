@@ -50,7 +50,7 @@ export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
 }
 
 export function useGetItemDetail(productId: Ref<string>) {
-  const { data } = useQuery({
+  const { data, isFetched, isLoading } = useQuery({
     queryKey: ['itemsDetail', productId],
     queryFn: async () => {
       const result = await getItemDetail(productId.value);
@@ -58,5 +58,5 @@ export function useGetItemDetail(productId: Ref<string>) {
     },
   });
 
-  return { data };
+  return { data, isFetched, isLoading };
 }

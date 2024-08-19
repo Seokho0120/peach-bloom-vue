@@ -48,6 +48,15 @@ const router = createRouter({
     {
       path: '/cart',
       name: 'cart',
+      beforeEnter: (to, from, next) => {
+        // 로그인이 되었는지 확인
+
+        // 로그인이 되어있지 않다면 로그인 페이지로 이동
+        // next('/login')
+
+        // 로그인이 되어있다면 
+        next();
+      },
       component: () => import('@/views/cart/cart.vue'),
     },
   ],
