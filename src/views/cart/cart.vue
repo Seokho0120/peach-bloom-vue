@@ -410,9 +410,3 @@ watch(
     </DataTable>
   </div>
 </template>
-
-<style lang="scss" scoped>
-:deep(.p-column-header-content) {
-  display: contents;
-}
-</style>
