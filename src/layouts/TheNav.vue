@@ -21,7 +21,8 @@ const userMenu = [
   },
   {
     label: 'SHOPPING BAG',
-    name: 'cart',
+    name: 'newCart',
+    // name: 'cart',
     icon: 'heroicons:shopping-cart-solid',
   },
   {

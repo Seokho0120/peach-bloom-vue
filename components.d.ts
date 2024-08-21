@@ -11,6 +11,8 @@ declare module 'vue' {
     Brand: typeof import('./src/components/brand.vue')['default']
     BrandForm: typeof import('./src/components/BrandForm.vue')['default']
     Button: typeof import('primevue/button')['default']
+    CartItem: typeof import('./src/components/cart/cartItem.vue')['default']
+    CartList: typeof import('./src/components/cart/CartList.vue')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
