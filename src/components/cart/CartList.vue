@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useGetCartItemsList } from '@/composables/useCartItems';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { watch } from 'vue';
-import { ref } from 'vue';
+import { watch, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import CartList from '../../components/cart/CartList.vue';
-import CartItem from './CartItem.vue';
+import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import { useGetCartItemsList } from '@/composables/useCartItems';
+import type CartItem from './CartItem.vue';
 
 const router = useRouter();
 
@@ -16,11 +14,18 @@ onAuthStateChanged(getAuth(), (currentUser) => {
   userId.value = user.value?.uid || '';
 });
 
+const totalCartPrice = ref<number>(0);
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
 watch(cartItemList, () => {
   console.log('cartItemList.value', cartItemList.value?.items);
 });
+
+const updateCartTotalPrice = (price: number) => {
+  console.log('price??', price);
+
+  totalCartPrice.value += price;
+};
 </script>
 
 <template>
@@ -41,13 +46,21 @@ watch(cartItemList, () => {
         </td>
       </tr>
 
-      <CartItem v-for="item in cartItemList?.items" :product="item" :key="item.productId" />
+      <CartItem
+        v-for="item in cartItemList?.items"
+        :key="item.productId"
+        :product="item"
+        @update:total-price="updateCartTotalPrice"
+      />
 
-      <!-- <tr v-for="item in cartItemList?.items" :key="item.productId">
-        <td class="border-b p-4">
-          <CartItem :product="item" />
-        </td>
-      </tr> -->
+      <!-- TODO: 이렇게 하면 각 th에 넣을수가 없음 -->
+      <!-- <div v-for="item in cartItemList?.items" :key="item.productId">
+        <CartItem :product="item" />
+      </div> -->
     </tbody>
   </table>
+
+  <div>
+    <div>총 금액: {{ totalCartPrice.toLocaleString() }} 원</div>
+  </div>
 </template>
