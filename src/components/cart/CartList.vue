@@ -1,75 +1,53 @@
 <script setup lang="ts">
-import type { CartItemType } from '@/types/items.types';
+import { useGetCartItemsList } from '@/composables/useCartItems';
+import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { watch } from 'vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import CartList from '../../components/cart/CartList.vue';
+import CartItem from './CartItem.vue';
 
-const props = defineProps<{
-  product: CartItemType;
-  // deleteItem: () => void;
-}>();
+const router = useRouter();
 
-const quantity = ref(props.product.quantity);
+const user = ref<User | null>(null);
+const userId = ref<string>('');
+onAuthStateChanged(getAuth(), (currentUser) => {
+  user.value = currentUser;
+  userId.value = user.value?.uid || '';
+});
 
-const calculateTotalPrice = () => {
-  return props.product.isSale ? props.product.salePrice * quantity.value : props.product.consumerPrice * quantity.value;
-};
+const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
-const updateQuantity = () => {
-  // 수량 변경 시 추가 로직이 필요할 경우 여기에 추가
-  // props.product.quantity = quantity.value;
-};
-
-watch(
-  () => props.product.quantity,
-  (newQuantity) => {
-    quantity.value = newQuantity;
-  },
-);
+watch(cartItemList, () => {
+  console.log('cartItemList.value', cartItemList.value?.items);
+});
 </script>
 
 <template>
-  <div class="flex gap-6">
-    <div style="width: 8rem">
-      <img :src="product.imageUrl[0]" :alt="product.imageUrl[0]" style="object-fit: cover" />
-    </div>
-    <div>
-      <div class="text-sm underline cursor-pointer">{{ product.brandName }}</div>
-      <div class="text-lg font-bold mt-2">{{ product.productName }}</div>
-      <div class="flex flex-col gap-2 text-sm">
-        <div class="">{{ product.consumerPrice }}원</div>
-        <div class="text-[#ff4800]">
-          <p>[{{ product.saleRate }}%] {{ product.salePrice }}원</p>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <InputNumber
-        v-model="quantity"
-        showButtons
-        buttonLayout="horizontal"
-        :min="1"
-        :max="99"
-        :pt="{
-          input: {
-            root: {
-              class: 'w-12 text-center',
-            },
-          },
-        }"
-      >
-        <template #incrementbuttonicon>
-          <span class="pi pi-plus" />
-        </template>
-        <template #decrementbuttonicon>
-          <span class="pi pi-minus" />
-        </template>
-      </InputNumber>
+  <table>
+    <thead>
+      <tr>
+        <th class="border-b">상품정보</th>
+        <th class="border-b">수량</th>
+        <th class="border-b">주문금액</th>
+        <th class="border-b">배송비</th>
+        <th class="border-b">액션</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-if="cartItemList?.items.length === 0">
+        <td colspan="5" class="text-2xl font-bold flex justify-center items-center p-12">
+          장바구니에 담은 상품이 없습니다.
+        </td>
+      </tr>
 
-      <p class="text-xl">{{ calculateTotalPrice().toLocaleString() }} 원</p>
-      <div v-if="product.consumerPrice < 30000">3,000 원</div>
-      <div v-else>무료배송</div>
-      <Button icon="pi pi-times" severity="contrast" text aria-label="Delete" />
-      <!-- <Button @click="deleteItem" icon="pi pi-times" severity="contrast" text aria-label="Delete" /> -->
-    </div>
-  </div>
+      <CartItem v-for="item in cartItemList?.items" :product="item" :key="item.productId" />
+
+      <!-- <tr v-for="item in cartItemList?.items" :key="item.productId">
+        <td class="border-b p-4">
+          <CartItem :product="item" />
+        </td>
+      </tr> -->
+    </tbody>
+  </table>
 </template>
