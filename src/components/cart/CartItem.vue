@@ -3,9 +3,12 @@ import { ref } from 'vue';
 import type { CartItemType } from '@/types/items.types';
 import { computed } from 'vue';
 import { watch } from 'vue';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
+import { deleteCartItem } from '@/api/firestore';
 
 const props = defineProps<{
   product: CartItemType;
+  userId: string;
 }>();
 
 const emit = defineEmits<{
@@ -41,14 +44,48 @@ watch(
   { immediate: true },
 );
 
-function handleDelete(productId: string) {
-  console.log('삭제');
+function deleteItem(productId: string) {
+  console.log('삭제', productId);
+  deleteCartItemMutation(productId);
 }
+
+const queryClient = useQueryClient();
+const { mutate: deleteCartItemMutation } = useMutation({
+  mutationFn: async (productId: string) => {
+    await deleteCartItem({ userId: props.userId, productId });
+  },
+  onMutate: (productId) => {},
+  onSuccess: (_, variables) => {
+    const productId = variables;
+
+    queryClient.invalidateQueries({
+      queryKey: ['cartItemsList'],
+    });
+  },
+  onError: (error, productId) => {
+    console.error('상품 삭제를 실패한 이유:', error);
+  },
+});
+
+function buyItem() {
+  console.log('buyItem');
+}
+
+const checked = ref(false);
 </script>
 
 <template>
-  <tr>
-    <td class="flex gap-6">
+  <tr class="p-6 border-b-[1px]">
+    <!-- TODO: 상품 체크해서 금액 계산도 해야됨 -->
+    <!-- 상품 체크 -->
+    <td class="p-0">
+      <div class="flex items-center justify-center">
+        <Checkbox v-model="checked" :binary="true" />
+      </div>
+    </td>
+
+    <!-- 상품정보 -->
+    <td class="flex gap-6 border-r-[1px] p-6">
       <div style="width: 8rem">
         <img :src="product.imageUrl[0]" :alt="product.imageUrl[0]" style="object-fit: cover" />
       </div>
@@ -57,28 +94,31 @@ function handleDelete(productId: string) {
         <div class="text-lg font-bold mt-2">{{ product.productName }}</div>
         <div class="flex flex-col gap-2 text-sm">
           <div class="">{{ product.consumerPrice }}원</div>
-          <div class="text-[#ff4800]">
+          <div v-if="product.saleRate !== 0" class="text-[#ff4800]">
             <p>[{{ product.saleRate }}%] {{ product.salePrice }}원</p>
           </div>
         </div>
-        <div class="ml-auto">
-          <Button
-            @click="() => handleDelete(product.productId)"
-            icon="pi pi-times"
-            severity="contrast"
-            text
-            aria-label="Delete"
-            :pt="{
-              root: {
-                class: 'rounded-none',
-              },
-            }"
-          />
-        </div>
       </div>
+      <div class="ml-auto">
+        <Button
+          @click="() => deleteItem(product.productId)"
+          icon="pi pi-times"
+          severity="contrast"
+          text
+          aria-label="Delete"
+          :pt="{
+            root: {
+              class: 'rounded-none',
+            },
+          }"
+        />
+      </div>
+
+      <!-- <div v-if="pendingItems[data.productId]">삭제 중...</div> -->
     </td>
 
-    <td>
+    <!-- 수량 -->
+    <td class="border-r-[1px] w-10 p-6">
       <InputNumber
         type="number"
         v-model="quantity"
@@ -103,15 +143,36 @@ function handleDelete(productId: string) {
       </InputNumber>
     </td>
 
-    <td class="border-b p-4 text-xl">{{ cartItemPrice.toLocaleString() }}원</td>
+    <!-- 주문금액 -->
+    <td class="border-r-[1px] font-bold">
+      <div class="flex flex-col items-center gap-4">
+        <div class="flex items-baseline">
+          <p class="text-xl">{{ cartItemPrice.toLocaleString() }}</p>
+          <span>원</span>
+        </div>
 
-    <td class="border-b p-4">
-      <div v-if="product.consumerPrice < 30000">3,000원</div>
-      <div v-else>무료배송</div>
+        <Button
+          @click="() => buyItem()"
+          label="BUY NOW"
+          severity="contrast"
+          :pt="{
+            root: {
+              class: 'rounded-none font-bold text-sm',
+            },
+          }"
+        />
+      </div>
     </td>
 
-    <!-- <td class="border-b p-4">
-      <Button @click="() => handleDelete(product.productId)" icon="pi pi-times" severity="contrast" text />
-    </td> -->
+    <!-- 배송비 -->
+    <td class="border-b p-4 font-bold">
+      <div class="flex flex-col items-center">
+        <div v-if="product.consumerPrice < 30000" class="flex items-baseline">
+          <p>3,000</p>
+          <span class="text-xs">원</span>
+        </div>
+        <div v-else>무료배송</div>
+      </div>
+    </td>
   </tr>
 </template>
