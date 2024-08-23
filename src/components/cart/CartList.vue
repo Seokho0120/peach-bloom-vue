@@ -17,13 +17,19 @@ onAuthStateChanged(getAuth(), (currentUser) => {
 const totalCartPrice = ref<number>(0);
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
-watch(cartItemList, () => {
-  console.log('cartItemList.value', cartItemList.value?.items);
-});
+// 초기 총 금액 계산
+const calculateTotalCartPrice = () => {
+  totalCartPrice.value =
+    cartItemList.value?.items.reduce((total, item) => {
+      const itemPrice = item.saleRate > 0 ? item.salePrice * item.quantity : item.consumerPrice * item.quantity;
+      return total + itemPrice;
+    }, 0) || 0;
+};
+
+watch(cartItemList, calculateTotalCartPrice, { immediate: true });
 
 const updateCartTotalPrice = (price: number) => {
-  console.log('price??', price);
-
+  console.log('부모에서 받은 price', price);
   totalCartPrice.value += price;
 };
 </script>

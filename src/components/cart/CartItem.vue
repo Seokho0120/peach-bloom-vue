@@ -12,10 +12,9 @@ const emit = defineEmits<{
   (e: 'update:totalPrice', price: number): void;
 }>();
 
-// const quantity = ref<number>(1);
 const quantity = ref<number>(props.product.quantity);
 
-const totalPrice = computed(() => {
+const cartItemPrice = computed(() => {
   const calculatedPrice =
     props.product.saleRate > 0
       ? props.product.salePrice * quantity.value
@@ -24,16 +23,27 @@ const totalPrice = computed(() => {
   return calculatedPrice;
 });
 
-const emitTotalPrice = () => {
-  console.log('totalPrice.value', totalPrice.value);
-  emit('update:totalPrice', totalPrice.value);
-};
+/**이전값과 현재값을 구해서, 현재값 - 이전값을 부모에 전달해서 더해주기(-값도 더해줌)
+ * TODO: 더 간단한 로직 있으면 생각해보기
+ */
+watch(
+  quantity,
+  (_, oldQuantity) => {
+    if (oldQuantity !== undefined) {
+      const previousPrice =
+        (props.product.saleRate > 0 ? props.product.salePrice : props.product.consumerPrice) * oldQuantity;
+      const currentPrice = cartItemPrice.value;
 
-watch(quantity, emitTotalPrice, { immediate: true });
+      const priceDifference = currentPrice - previousPrice;
+      emit('update:totalPrice', priceDifference);
+    }
+  },
+  { immediate: true },
+);
 
-const handleDelete = (productId: string) => {
+function handleDelete(productId: string) {
   console.log('삭제');
-};
+}
 </script>
 
 <template>
@@ -69,7 +79,6 @@ const handleDelete = (productId: string) => {
     </td>
 
     <td>
-      <!-- @update:model-value="emitTotalPrice" -->
       <InputNumber
         type="number"
         v-model="quantity"
@@ -94,7 +103,7 @@ const handleDelete = (productId: string) => {
       </InputNumber>
     </td>
 
-    <td class="border-b p-4 text-xl">{{ totalPrice.toLocaleString() }}원</td>
+    <td class="border-b p-4 text-xl">{{ cartItemPrice.toLocaleString() }}원</td>
 
     <td class="border-b p-4">
       <div v-if="product.consumerPrice < 30000">3,000원</div>
