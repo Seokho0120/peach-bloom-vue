@@ -85,7 +85,7 @@ watch(
 );
 
 function handleItemCheck() {
-  emit('update:allChecked', props.index, itemChecked.value);
+  // emit('update:allChecked', props.index, itemChecked.value);
 }
 
 function buyItem() {
@@ -99,7 +99,7 @@ function buyItem() {
     <!-- 상품 체크 -->
     <td class="p-0">
       <div class="flex items-center justify-center">
-        <Checkbox v-model="itemChecked" :binary="true" @change="handleItemCheck" />
+        <Checkbox v-model="itemChecked" :binary="true" @change="handleItemCheck" :inputId="props.index.toString()" />
       </div>
     </td>
 
