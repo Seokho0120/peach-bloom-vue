@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, nextTick } from 'vue';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
 import { computed } from 'vue';
-import type { CartItemType } from '@/types/items.types';
-
-const router = useRouter();
 
 const user = ref<User | null>(null);
 const userId = ref<string>('');
@@ -16,56 +12,46 @@ onAuthStateChanged(getAuth(), (currentUser) => {
   userId.value = user.value?.uid || '';
 });
 
-const selectedProduct = ref<CartItemType[]>([]);
 const totalCartPrice = ref<number>(0);
-const totalShippingPrice = ref<number>(0);
-const totalPayment = ref<number>(0);
+const isFreeShipping = ref<boolean>(false);
+const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
-// 초기 총 금액 계산
-function calculateInitialPrice() {
-  totalCartPrice.value =
-    cartItemList.value?.items.reduce((total, item) => {
-      const itemPrice = item.saleRate > 0 ? item.salePrice * item.quantity : item.consumerPrice * item.quantity;
+const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
 
-      if (itemPrice < 30000) {
-        // 하나라도 30000원 이하면 배송비 3000
-        totalShippingPrice.value = 3000;
-      }
+async function updateCartTotalPrice() {
+  await nextTick();
+  let totalPrice = 0;
+  cartItemRefs.value.forEach((cartItemRef) => {
+    if (cartItemRef.itemChecked) {
+      totalPrice += cartItemRef.cartItemPrice
+    }
+  })
 
-      return total + itemPrice;
-    }, 0) || 0;
+  totalCartPrice.value = totalPrice;
 }
 
-watch(cartItemList, calculateInitialPrice, { immediate: true });
-
-function updateCartTotalPrice(price: number) {
-  // console.log('부모에서 받은 price', price);
-  totalCartPrice.value += price;
-}
-
-function updateShippingPrice(shippingPrice: number) {
-  console.log('부모에서 shippingPrice', shippingPrice);
-  // totalShippingPrice.value = shippingPrice;
-  // console.log('totalShippingPrice.value', totalShippingPrice.value);
+function updateShippingPrice() {
+  isFreeShipping.value = cartItemRefs.value.every((cartItemRef) => cartItemRef.isFreeShipping);
 }
 
 const allChecked = ref(true);
 
 function onSelectAll(value: boolean) {
-  allChecked.value = value;
-
-  if (allChecked.value && cartItemList.value) {
-    selectedProduct.value = [...cartItemList.value.items];
-  } else {
-    selectedProduct.value = [];
-  }
+  cartItemRefs.value.forEach((cartItemRef) => {
+    cartItemRef.itemChecked = value
+  })
 }
 
-function handleAllCheckedUpdate(index: number, isChecked: boolean) {
-  console.log('index', index);
-  console.log('isChecked', isChecked);
+function updateAllCheckbox() {
+  allChecked.value = cartItemRefs.value.every((cartItemRef) => cartItemRef.itemChecked)
+}
+
+async function handleCartItemUpdated() {
+  updateCartTotalPrice()
+  updateShippingPrice()
+  updateAllCheckbox()
 }
 </script>
 
@@ -94,15 +80,13 @@ function handleAllCheckedUpdate(index: number, isChecked: boolean) {
 
       <CartItem
         v-for="(item, index) in cartItemList?.items"
+        ref="cartItemRefs"
         :key="item.productId"
         :product="item"
         :user-id="userId"
-        :total-shipping-price="totalShippingPrice"
         :all-checked="allChecked"
         :index="index"
-        @update:total-price="updateCartTotalPrice"
-        @update:shipping-price="updateShippingPrice"
-        @update:all-checked="handleAllCheckedUpdate"
+        @updated="() => handleCartItemUpdated()"
       />
 
       <!-- FIXME: 이렇게 하면 각 th에 넣을수가 없음 -->
@@ -128,7 +112,7 @@ function handleAllCheckedUpdate(index: number, isChecked: boolean) {
         <td class="py-8">
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
-              <p class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</p>
+              <span class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</span>
               <span class="font-semibold">원</span>
             </div>
           </div>
@@ -144,7 +128,11 @@ function handleAllCheckedUpdate(index: number, isChecked: boolean) {
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
               <!-- TODO: 배송비 0아니면 3000, 0 이면 무료배송 -->
-              <p class="text-3xl font-bold">{{ totalShippingPrice.toLocaleString() }}</p>
+              <!-- <p class="text-3xl font-bold">{{ totalShippingPrice.toLocaleString() }}</p> -->
+              <span class="text-3xl font-bold">
+                <template v-if="!isFreeShipping">3,000</template>
+                <template v-else>0</template>
+              </span>
               <span class="font-semibold">원</span>
             </div>
           </div>
@@ -159,9 +147,7 @@ function handleAllCheckedUpdate(index: number, isChecked: boolean) {
         <td class="py-8">
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
-              <!-- <p class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</p> -->
-              <!-- TODO: 총 결제금액 해야됨 -->
-              <!-- <p class="text-3xl font-bold">{{ totalPayment.toLocaleString() }}</p> -->
+              <span class="text-3xl font-bold">{{ totalPayment.toLocaleString() }}</span>
               <span class="font-semibold">원</span>
             </div>
           </div>

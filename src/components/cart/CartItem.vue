@@ -7,53 +7,17 @@ import { deleteCartItem } from '@/api/firestore';
 const props = defineProps<{
   product: CartItemType;
   userId: string;
-  totalShippingPrice: number;
-  allChecked: boolean;
   index: number;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:totalPrice', price: number): void;
-  (e: 'update:shippingPrice', price: number): void;
-  (e: 'update:allChecked', index: number, checked: boolean): void;
+  'updated': []
 }>();
 
 const quantity = ref<number>(props.product.quantity);
-
-const cartItemPrice = computed(() => {
-  const calculatedPrice =
-    props.product.saleRate > 0
-      ? props.product.salePrice * quantity.value
-      : props.product.consumerPrice * quantity.value;
-
-  return calculatedPrice;
-});
-
-// const updateShippingPrice = () => {
-//   const newShippingPrice = cartItemPrice.value <= 30000 ? 3000 : 0;
-//   console.log('newShippingPrice', newShippingPrice);
-//   emit('update:shippingPrice', newShippingPrice);
-// };
-
-/**이전값과 현재값을 구해서, 현재값 - 이전값을 부모에 전달해서 더해주기(-값도 더해줌)
- * TODO: 더 간단한 로직 있으면 생각해보기
- */
-watch(
-  quantity,
-  (_, oldQuantity) => {
-    if (oldQuantity !== undefined) {
-      const previousPrice =
-        (props.product.saleRate > 0 ? props.product.salePrice : props.product.consumerPrice) * oldQuantity;
-      const currentPrice = cartItemPrice.value;
-
-      const priceDifference = currentPrice - previousPrice;
-      emit('update:totalPrice', priceDifference);
-
-      // updateShippingPrice();
-    }
-  },
-  { immediate: true },
-);
+const itemPrice = computed(() => props.product.saleRate > 0 ? props.product.salePrice : props.product.consumerPrice);
+const cartItemPrice = computed(() => itemPrice.value * quantity.value);
+const isFreeShipping = computed(() => cartItemPrice.value >= 30000)
 
 function deleteItem(productId: string) {
   deleteCartItemMutation(productId);
@@ -64,8 +28,8 @@ const { mutate: deleteCartItemMutation } = useMutation({
   mutationFn: async (productId: string) => {
     await deleteCartItem({ userId: props.userId, productId });
   },
-  onSuccess: () => {
-    queryClient.invalidateQueries({
+  onSuccess: async () => {
+    await queryClient.invalidateQueries({
       queryKey: ['cartItemsList'],
     });
   },
@@ -74,23 +38,21 @@ const { mutate: deleteCartItemMutation } = useMutation({
   },
 });
 
-const itemChecked = ref(false);
+const itemChecked = ref(true);
 
-watch(
-  () => props.allChecked,
-  (newVal) => {
-    itemChecked.value = newVal;
-  },
-  { immediate: true },
-);
-
-function handleItemCheck() {
-  // emit('update:allChecked', props.index, itemChecked.value);
-}
+watch([cartItemPrice, isFreeShipping, itemChecked], () => {
+  emit('updated');
+}, {immediate: true});
 
 function buyItem() {
   console.log('buyItem');
 }
+
+defineExpose({
+  cartItemPrice,
+  isFreeShipping,
+  itemChecked,
+})
 </script>
 
 <template>
@@ -99,7 +61,7 @@ function buyItem() {
     <!-- 상품 체크 -->
     <td class="p-0">
       <div class="flex items-center justify-center">
-        <Checkbox v-model="itemChecked" :binary="true" @change="handleItemCheck" :inputId="props.index.toString()" />
+        <Checkbox v-model="itemChecked" :binary="true"/>
       </div>
     </td>
 
@@ -164,7 +126,7 @@ function buyItem() {
     <td class="border-r-[1px] font-bold">
       <div class="flex flex-col items-center gap-4">
         <div class="flex items-baseline">
-          <p class="text-xl">{{ cartItemPrice.toLocaleString() }}</p>
+          <span class="text-xl">{{ cartItemPrice.toLocaleString() }}</span>
           <span>원</span>
         </div>
 
@@ -184,8 +146,8 @@ function buyItem() {
     <!-- 배송비: cartItemPrice으로 측정 -->
     <td class="border-b p-4 font-bold">
       <div class="flex flex-col items-center">
-        <div v-if="cartItemPrice < 30000" class="flex items-baseline">
-          <p>3,000</p>
+        <div v-if="!isFreeShipping" class="flex items-baseline">
+          <span>3,000</span>
           <span class="text-xs">원</span>
         </div>
         <div v-else>무료배송</div>
