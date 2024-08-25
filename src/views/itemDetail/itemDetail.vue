@@ -50,7 +50,8 @@ async function openConfirmModal() {
     message: '장바구니에 상품이 담겼습니다.',
     acceptLabel: '장바구니 바로가기',
     accept: () => {
-      router.push({ name: 'cart' });
+      router.push({ name: 'newCart' });
+      // router.push({ name: 'cart' });
     },
   });
 }
@@ -68,17 +69,14 @@ async function addToCart() {
 
   await postCartItem(cartItem, userId.value, date);
 
-  openConfirmModal()
-};
+  openConfirmModal();
+}
 </script>
 
 <template>
   <div v-if="isLoading">Loading..</div>
   <template v-else>
-    <div 
-      v-if="itemDetail"
-      class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
-    >
+    <div v-if="itemDetail" class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10">
       <div class="flex-shrink-0">
         <Image :src="itemDetail?.imageUrl[0]" alt="Detail Image" width="564" class="w-full h-auto object-cover" />
       </div>
@@ -201,9 +199,7 @@ async function addToCart() {
         </div>
       </div>
     </div>
-    <div
-      v-else
-    >
+    <div v-else>
       <p>찾으시는 제품이 없습니다.</p>
     </div>
   </template>

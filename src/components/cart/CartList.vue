@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
+import { computed } from 'vue';
+import type { CartItemType } from '@/types/items.types';
 
 const router = useRouter();
 
@@ -14,26 +16,57 @@ onAuthStateChanged(getAuth(), (currentUser) => {
   userId.value = user.value?.uid || '';
 });
 
+const selectedProduct = ref<CartItemType[]>([]);
 const totalCartPrice = ref<number>(0);
+const totalShippingPrice = ref<number>(0);
+const totalPayment = ref<number>(0);
+
 const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
 
 // 초기 총 금액 계산
-const calculateTotalCartPrice = () => {
+function calculateInitialPrice() {
   totalCartPrice.value =
     cartItemList.value?.items.reduce((total, item) => {
       const itemPrice = item.saleRate > 0 ? item.salePrice * item.quantity : item.consumerPrice * item.quantity;
+
+      if (itemPrice < 30000) {
+        // 하나라도 30000원 이하면 배송비 3000
+        totalShippingPrice.value = 3000;
+      }
+
       return total + itemPrice;
     }, 0) || 0;
-};
+}
 
-watch(cartItemList, calculateTotalCartPrice, { immediate: true });
+watch(cartItemList, calculateInitialPrice, { immediate: true });
 
-const updateCartTotalPrice = (price: number) => {
-  console.log('부모에서 받은 price', price);
+function updateCartTotalPrice(price: number) {
+  // console.log('부모에서 받은 price', price);
   totalCartPrice.value += price;
-};
+}
 
-const checked = ref(false);
+function updateShippingPrice(shippingPrice: number) {
+  console.log('부모에서 shippingPrice', shippingPrice);
+  // totalShippingPrice.value = shippingPrice;
+  // console.log('totalShippingPrice.value', totalShippingPrice.value);
+}
+
+const allChecked = ref(true);
+
+function onSelectAll(value: boolean) {
+  allChecked.value = value;
+
+  if (allChecked.value && cartItemList.value) {
+    selectedProduct.value = [...cartItemList.value.items];
+  } else {
+    selectedProduct.value = [];
+  }
+}
+
+function handleAllCheckedUpdate(index: number, isChecked: boolean) {
+  console.log('index', index);
+  console.log('isChecked', isChecked);
+}
 </script>
 
 <template>
@@ -43,7 +76,7 @@ const checked = ref(false);
         <!-- 상품 체크 -->
         <th class="py-4 px-1">
           <div class="flex items-center justify-center">
-            <Checkbox v-model="checked" :binary="true" />
+            <Checkbox v-model="allChecked" :binary="true" @update:model-value="(val) => onSelectAll(val)" />
           </div>
         </th>
         <th class="py-4 px-6">상품정보</th>
@@ -60,14 +93,19 @@ const checked = ref(false);
       </tr>
 
       <CartItem
-        v-for="item in cartItemList?.items"
+        v-for="(item, index) in cartItemList?.items"
         :key="item.productId"
         :product="item"
         :user-id="userId"
+        :total-shipping-price="totalShippingPrice"
+        :all-checked="allChecked"
+        :index="index"
         @update:total-price="updateCartTotalPrice"
+        @update:shipping-price="updateShippingPrice"
+        @update:all-checked="handleAllCheckedUpdate"
       />
 
-      <!-- TODO: 이렇게 하면 각 th에 넣을수가 없음 -->
+      <!-- FIXME: 이렇게 하면 각 th에 넣을수가 없음 -->
       <!-- <div v-for="item in cartItemList?.items" :key="item.productId">
         <CartItem :product="item" />
       </div> -->
@@ -105,9 +143,8 @@ const checked = ref(false);
         <td class="py-8">
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
-              <p class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</p>
-              <!-- TODO: 배송비 계산 해야됨 -->
-              <!-- <p class="text-3xl font-bold">{{ totalShipping.toLocaleString() }}</p> -->
+              <!-- TODO: 배송비 0아니면 3000, 0 이면 무료배송 -->
+              <p class="text-3xl font-bold">{{ totalShippingPrice.toLocaleString() }}</p>
               <span class="font-semibold">원</span>
             </div>
           </div>
@@ -122,7 +159,7 @@ const checked = ref(false);
         <td class="py-8">
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
-              <p class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</p>
+              <!-- <p class="text-3xl font-bold">{{ totalCartPrice.toLocaleString() }}</p> -->
               <!-- TODO: 총 결제금액 해야됨 -->
               <!-- <p class="text-3xl font-bold">{{ totalPayment.toLocaleString() }}</p> -->
               <span class="font-semibold">원</span>

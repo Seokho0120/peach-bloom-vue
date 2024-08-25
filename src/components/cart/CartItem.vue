@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { CartItemType } from '@/types/items.types';
-import { computed } from 'vue';
-import { watch } from 'vue';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { deleteCartItem } from '@/api/firestore';
 
 const props = defineProps<{
   product: CartItemType;
   userId: string;
+  totalShippingPrice: number;
+  allChecked: boolean;
+  index: number;
 }>();
 
 const emit = defineEmits<{
   (e: 'update:totalPrice', price: number): void;
+  (e: 'update:shippingPrice', price: number): void;
+  (e: 'update:allChecked', index: number, checked: boolean): void;
 }>();
 
 const quantity = ref<number>(props.product.quantity);
@@ -25,6 +28,12 @@ const cartItemPrice = computed(() => {
 
   return calculatedPrice;
 });
+
+// const updateShippingPrice = () => {
+//   const newShippingPrice = cartItemPrice.value <= 30000 ? 3000 : 0;
+//   console.log('newShippingPrice', newShippingPrice);
+//   emit('update:shippingPrice', newShippingPrice);
+// };
 
 /**이전값과 현재값을 구해서, 현재값 - 이전값을 부모에 전달해서 더해주기(-값도 더해줌)
  * TODO: 더 간단한 로직 있으면 생각해보기
@@ -39,13 +48,14 @@ watch(
 
       const priceDifference = currentPrice - previousPrice;
       emit('update:totalPrice', priceDifference);
+
+      // updateShippingPrice();
     }
   },
   { immediate: true },
 );
 
 function deleteItem(productId: string) {
-  console.log('삭제', productId);
   deleteCartItemMutation(productId);
 }
 
@@ -54,24 +64,33 @@ const { mutate: deleteCartItemMutation } = useMutation({
   mutationFn: async (productId: string) => {
     await deleteCartItem({ userId: props.userId, productId });
   },
-  onMutate: (productId) => {},
-  onSuccess: (_, variables) => {
-    const productId = variables;
-
+  onSuccess: () => {
     queryClient.invalidateQueries({
       queryKey: ['cartItemsList'],
     });
   },
-  onError: (error, productId) => {
+  onError: (error) => {
     console.error('상품 삭제를 실패한 이유:', error);
   },
 });
 
+const itemChecked = ref(false);
+
+watch(
+  () => props.allChecked,
+  (newVal) => {
+    itemChecked.value = newVal;
+  },
+  { immediate: true },
+);
+
+function handleItemCheck() {
+  emit('update:allChecked', props.index, itemChecked.value);
+}
+
 function buyItem() {
   console.log('buyItem');
 }
-
-const checked = ref(false);
 </script>
 
 <template>
@@ -80,7 +99,7 @@ const checked = ref(false);
     <!-- 상품 체크 -->
     <td class="p-0">
       <div class="flex items-center justify-center">
-        <Checkbox v-model="checked" :binary="true" />
+        <Checkbox v-model="itemChecked" :binary="true" @change="handleItemCheck" />
       </div>
     </td>
 
@@ -113,8 +132,6 @@ const checked = ref(false);
           }"
         />
       </div>
-
-      <!-- <div v-if="pendingItems[data.productId]">삭제 중...</div> -->
     </td>
 
     <!-- 수량 -->
@@ -164,10 +181,10 @@ const checked = ref(false);
       </div>
     </td>
 
-    <!-- 배송비 -->
+    <!-- 배송비: cartItemPrice으로 측정 -->
     <td class="border-b p-4 font-bold">
       <div class="flex flex-col items-center">
-        <div v-if="product.consumerPrice < 30000" class="flex items-baseline">
+        <div v-if="cartItemPrice < 30000" class="flex items-baseline">
           <p>3,000</p>
           <span class="text-xs">원</span>
         </div>
