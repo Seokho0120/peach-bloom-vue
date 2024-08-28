@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
-import { computed } from 'vue';
+import { watch } from 'vue';
+import { auth } from '@/api/firebasedb';
+import { onMounted } from 'vue';
 
 const user = ref<User | null>(null);
 const userId = ref<string>('');
-onAuthStateChanged(getAuth(), (currentUser) => {
-  user.value = currentUser;
-  userId.value = user.value?.uid || '';
+
+// onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메소드
+// onAuthStateChanged(getAuth(), (currentUser) => {
+//   user.value = currentUser;
+//   userId.value = user.value?.uid || '';
+// });
+
+onMounted(() => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userId.value = user.uid;
+    } else {
+      userId.value = '';
+    }
+
+    console.log('userId.value', userId.value);
+  });
 });
 
 const totalCartPrice = ref<number>(0);
@@ -25,9 +41,9 @@ async function updateCartTotalPrice() {
   let totalPrice = 0;
   cartItemRefs.value.forEach((cartItemRef) => {
     if (cartItemRef.itemChecked) {
-      totalPrice += cartItemRef.cartItemPrice
+      totalPrice += cartItemRef.cartItemPrice;
     }
-  })
+  });
 
   totalCartPrice.value = totalPrice;
 }
@@ -40,18 +56,18 @@ const allChecked = ref(true);
 
 function onSelectAll(value: boolean) {
   cartItemRefs.value.forEach((cartItemRef) => {
-    cartItemRef.itemChecked = value
-  })
+    cartItemRef.itemChecked = value;
+  });
 }
 
 function updateAllCheckbox() {
-  allChecked.value = cartItemRefs.value.every((cartItemRef) => cartItemRef.itemChecked)
+  allChecked.value = cartItemRefs.value.every((cartItemRef) => cartItemRef.itemChecked);
 }
 
 async function handleCartItemUpdated() {
-  updateCartTotalPrice()
-  updateShippingPrice()
-  updateAllCheckbox()
+  updateCartTotalPrice();
+  updateShippingPrice();
+  updateAllCheckbox();
 }
 </script>
 
@@ -88,11 +104,6 @@ async function handleCartItemUpdated() {
         :index="index"
         @updated="() => handleCartItemUpdated()"
       />
-
-      <!-- FIXME: 이렇게 하면 각 th에 넣을수가 없음 -->
-      <!-- <div v-for="item in cartItemList?.items" :key="item.productId">
-        <CartItem :product="item" />
-      </div> -->
     </tbody>
   </table>
 
@@ -127,8 +138,6 @@ async function handleCartItemUpdated() {
         <td class="py-8">
           <div class="flex flex-col items-center">
             <div class="flex items-baseline">
-              <!-- TODO: 배송비 0아니면 3000, 0 이면 무료배송 -->
-              <!-- <p class="text-3xl font-bold">{{ totalShippingPrice.toLocaleString() }}</p> -->
               <span class="text-3xl font-bold">
                 <template v-if="!isFreeShipping">3,000</template>
                 <template v-else>0</template>
