@@ -17,8 +17,6 @@ onMounted(() => {
       // 로그아웃 된 상태일 경우
       userId.value = '';
     }
-
-    console.log('카트리스트 userId.value', userId.value);
   });
 });
 
@@ -26,13 +24,8 @@ const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);
 const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
+// TODO: 로딩, 에러 처리 보여주기
 const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
-// const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
-
-// watchEffect(() => {
-//   // true -> false되면 로딩 끝났다는 뜻임
-//   console.log('로딩 상태:', isLoading.value);
-// });
 
 const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
 

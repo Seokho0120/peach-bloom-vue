@@ -3,7 +3,6 @@ import type {
   CartItemListType,
   CartItemType,
   DeleteCartItemType,
-  FirestoreTimestamp,
   ItemsListType,
   uploadItemType,
 } from '@/types/items.types';
@@ -173,7 +172,7 @@ export async function postCartItem(cartItem: CartItemType, userId: string, date:
 }
 
 export function getCartItemList(userId: string): Promise<CartItemListType> {
-  const userCartRef = doc(db, 'itemsCart', userId); // 사용자 ID로 문서 참조
+  const userCartRef = doc(db, 'itemsCart', userId); // 사용자 ID로 참조
 
   return getDoc(userCartRef).then((doc) => {
     if (!doc.exists()) {
@@ -182,60 +181,12 @@ export function getCartItemList(userId: string): Promise<CartItemListType> {
     } else {
       const data = doc.data() as CartItemListType;
 
-      console.log('data.items -------->', data.items);
-
       return {
         items: data.items || [],
       };
     }
   });
 }
-
-// 기존꺼2
-// export function getCartItemList(userId: string): Promise<CartItemListType> {
-//   // const userCartRef = doc(db, 'itemsCart', userId);
-
-//   return getDocs(collection(db, 'itemsCart', userId)).then((snapshot) => {
-//     const items: CartItemListType[] = [];
-
-//     if (!snapshot.empty) {
-//       items.push(
-//         ...snapshot.docs.map((doc) => ({
-//           ...(doc.data() as CartItemListType),
-//         })),
-//       );
-//     }
-
-//     return {
-//       items: items[0].items,
-//     };
-//   });
-// }
-
-// 기존꺼
-// export function getCartItemList(): Promise<CartItemListType> {
-//   return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
-//     const items: CartItemListType[] = [];
-
-//     if (!snapshot.empty) {
-//       items.push(
-//         ...snapshot.docs.map((doc) => ({
-//           ...(doc.data() as CartItemListType),
-//         })),
-//       );
-//     }
-
-//     // 최신순 설정
-//     const sortedItems = items[0].items.sort((a, b) => {
-//       return b.createdAt.seconds - a.createdAt.seconds;
-//     });
-
-//     return {
-//       userId: items[0].userId,
-//       items: sortedItems,
-//     };
-//   });
-// }
 
 export async function deleteCartItem({ userId, productId }: DeleteCartItemType) {
   const userCartRef = doc(db, 'itemsCart', userId);

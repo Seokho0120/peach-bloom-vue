@@ -22,17 +22,12 @@ const isAllSelected = computed({
     return selectedType.value.length === saleTypes.value.length;
   },
   set: (value) => {
-    console.log('value', value);
     if (value) {
       selectedType.value = saleTypes.value.map((saleType) => saleType.name);
     } else {
       selectedType.value = [];
     }
   },
-});
-
-watch(selectedType, (newValue, oldValue) => {
-  console.log('watch: selectedType.value', newValue, oldValue);
 });
 
 function getFormData() {

@@ -51,7 +51,6 @@ async function openConfirmModal() {
     acceptLabel: '장바구니 바로가기',
     accept: () => {
       router.push({ name: 'newCart', params: { id: userId.value } });
-      // router.push({ name: 'cart' });
     },
   });
 }

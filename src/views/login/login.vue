@@ -19,10 +19,7 @@ const { defineField, errors, handleSubmit, isSubmitting } = useForm({
         .min(6, '비밀번호는 6-20자 이내로 설정해야 합니다.')
         .max(20)
         .regex(/[A-Z]/, '비밀번호에는 최소 1개 이상의 대문자가 포함되어야 합니다.')
-        .regex(
-          /[!@#$%^&*(),.?":{}|<>]/,
-          '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.',
-        ),
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, '비밀번호에는 최소 1개 이상의 특수문자가 포함되어야 합니다.'),
     }),
   ),
 });
@@ -36,11 +33,7 @@ const loginErrorMessage = ref<string>('');
 const login = handleSubmit(async (loginData) => {
   try {
     const auth = getAuth();
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      loginData.email,
-      loginData.password,
-    );
+    const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
 
     user.value = userCredential.user;
     router.push({ name: 'home' });

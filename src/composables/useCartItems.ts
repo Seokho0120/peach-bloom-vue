@@ -1,11 +1,10 @@
+import { computed, watch, type Ref } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { getCartItemList } from '@/api/firestore';
 import type { CartItemListType } from '@/types/items.types';
-import { computed, watch, type Ref } from 'vue';
 
 export function useGetCartItemsList(userId: Ref<string>) {
   const enabled = computed(() => userId.value === '');
-  console.log('userId.value ----->', userId.value);
 
   const cartItemListData = useQuery<CartItemListType>({
     enabled: enabled,
