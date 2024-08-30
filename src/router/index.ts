@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import { auth } from '@/api/firebasedb';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,11 +13,27 @@ const router = createRouter({
     {
       path: '/mypage',
       name: 'mypage',
+      beforeEnter: (to, from, next) => {
+        const user = auth.currentUser;
+        if (user) {
+          next();
+        } else {
+          next('/login');
+        }
+      },
       component: HomeView,
     },
     {
       path: '/mylike',
       name: 'mylike',
+      beforeEnter: (to, from, next) => {
+        const user = auth.currentUser;
+        if (user) {
+          next();
+        } else {
+          next('/login');
+        }
+      },
       component: HomeView,
     },
     {
@@ -48,15 +65,16 @@ const router = createRouter({
     {
       path: '/cart/:id',
       name: 'cart',
-      // beforeEnter: (to, from, next) => {
-      //   // 로그인이 되었는지 확인
-
-      //   // 로그인이 되어있지 않다면 로그인 페이지로 이동
-      //   // next('/login')
-
-      //   // 로그인이 되어있다면
-      //   next();
-      // },
+      beforeEnter: (to, from, next) => {
+        const user = auth.currentUser;
+        if (user) {
+          // 로그인이 되어있다면
+          next();
+        } else {
+          // 로그인이 되어있지 않는다면
+          next('/login');
+        }
+      },
       component: () => import('@/views/cart/cart.vue'),
     },
   ],
