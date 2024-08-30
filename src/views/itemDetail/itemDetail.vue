@@ -50,7 +50,7 @@ async function openConfirmModal() {
     message: '장바구니에 상품이 담겼습니다.',
     acceptLabel: '장바구니 바로가기',
     accept: () => {
-      router.push({ name: 'newCart', params: { id: userId.value } });
+      router.push({ name: 'cart', params: { id: userId.value } });
     },
   });
 }

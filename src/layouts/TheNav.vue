@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, onAuthStateChanged, signOut, type User } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '@/api/firebasedb';
 import { Icon } from '@iconify/vue';
 import peachbloom from '../assets/images/peachbloom-logo.png';
-import { auth } from '@/api/firebasedb';
-import { watch } from 'vue';
 
 const userId = ref<string>('');
 const router = useRouter();
@@ -82,8 +81,9 @@ const logout = async () => {
           </div>
         </RouterLink>
       </li>
+
       <li v-if="userId">
-        <RouterLink :to="{ name: 'newCart', params: { id: userId } }">
+        <RouterLink :to="{ name: 'cart', params: { id: userId } }">
           <div class="flex items-center gap-1">
             <Icon icon="heroicons:shopping-cart-solid" />
             <span>SHOPPING BAG</span>
