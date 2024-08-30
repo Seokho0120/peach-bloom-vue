@@ -1,30 +1,24 @@
 <script setup lang="ts">
-import { ref, nextTick, computed } from 'vue';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import { ref, nextTick, computed, onMounted } from 'vue';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
-import { watch } from 'vue';
 import { auth } from '@/api/firebasedb';
-import { onMounted } from 'vue';
 
-const user = ref<User | null>(null);
 const userId = ref<string>('');
 
-// onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메소드
-// onAuthStateChanged(getAuth(), (currentUser) => {
-//   user.value = currentUser;
-//   userId.value = user.value?.uid || '';
-// });
-
 onMounted(() => {
+  // onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메서드
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      // 로그인 된 상태일 경우
       userId.value = user.uid;
     } else {
+      // 로그아웃 된 상태일 경우
       userId.value = '';
     }
 
-    console.log('userId.value', userId.value);
+    console.log('카트리스트 userId.value', userId.value);
   });
 });
 
@@ -32,7 +26,13 @@ const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);
 const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
-const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
+const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
+// const { data: cartItemList, isLoading, isError } = useGetCartItemsList();
+
+// watchEffect(() => {
+//   // true -> false되면 로딩 끝났다는 뜻임
+//   console.log('로딩 상태:', isLoading.value);
+// });
 
 const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
 
@@ -88,14 +88,15 @@ async function handleCartItemUpdated() {
       </tr>
     </thead>
     <tbody>
-      <tr v-if="cartItemList?.items.length === 0">
+      <!-- <tr v-if="cartItemList?.items.length === 0"> -->
+      <tr v-if="cartItemList?.length === 0">
         <td colspan="5" class="text-2xl font-bold flex justify-center items-center p-12">
           장바구니에 담은 상품이 없습니다.
         </td>
       </tr>
 
       <CartItem
-        v-for="(item, index) in cartItemList?.items"
+        v-for="(item, index) in cartItemList"
         ref="cartItemRefs"
         :key="item.productId"
         :product="item"

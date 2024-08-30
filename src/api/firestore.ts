@@ -146,6 +146,7 @@ export async function getItemDetail(productId: string) {
   return parsed.data;
 }
 
+// 카트에 제품 담기
 export async function postCartItem(cartItem: CartItemType, userId: string, date: any) {
   const userCartRef = doc(db, 'itemsCart', userId);
   const userCartSnap = await getDoc(userCartRef);
@@ -166,33 +167,75 @@ export async function postCartItem(cartItem: CartItemType, userId: string, date:
     await updateDoc(userCartRef, { items });
   } else {
     // 해당 유저의 cartItems가 없으면, 필드 새로 생성
-    await setDoc(userCartRef, { userId: userId, items: [cartItem] });
+    await setDoc(userCartRef, { items: [cartItem] });
+    // await setDoc(userCartRef, { userId: userId, items: [cartItem] });
   }
 }
 
-export function getCartItemList(): Promise<CartItemListType> {
-  return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
-    const items: CartItemListType[] = [];
+export function getCartItemList(userId: string): Promise<CartItemListType> {
+  const userCartRef = doc(db, 'itemsCart', userId); // 사용자 ID로 문서 참조
 
-    if (!snapshot.empty) {
-      items.push(
-        ...snapshot.docs.map((doc) => ({
-          ...(doc.data() as CartItemListType),
-        })),
-      );
+  return getDoc(userCartRef).then((doc) => {
+    if (!doc.exists()) {
+      console.log('카트에 제품이 비어있습니다.');
+      return { items: [] }; // 빈 배열 반환
+    } else {
+      const data = doc.data() as CartItemListType;
+
+      console.log('data.items -------->', data.items);
+
+      return {
+        items: data.items || [],
+      };
     }
-
-    // 최신순 설정
-    const sortedItems = items[0].items.sort((a, b) => {
-      return b.createdAt.seconds - a.createdAt.seconds;
-    });
-
-    return {
-      userId: items[0].userId,
-      items: sortedItems,
-    };
   });
 }
+
+// 기존꺼2
+// export function getCartItemList(userId: string): Promise<CartItemListType> {
+//   // const userCartRef = doc(db, 'itemsCart', userId);
+
+//   return getDocs(collection(db, 'itemsCart', userId)).then((snapshot) => {
+//     const items: CartItemListType[] = [];
+
+//     if (!snapshot.empty) {
+//       items.push(
+//         ...snapshot.docs.map((doc) => ({
+//           ...(doc.data() as CartItemListType),
+//         })),
+//       );
+//     }
+
+//     return {
+//       items: items[0].items,
+//     };
+//   });
+// }
+
+// 기존꺼
+// export function getCartItemList(): Promise<CartItemListType> {
+//   return getDocs(collection(db, 'itemsCart')).then((snapshot) => {
+//     const items: CartItemListType[] = [];
+
+//     if (!snapshot.empty) {
+//       items.push(
+//         ...snapshot.docs.map((doc) => ({
+//           ...(doc.data() as CartItemListType),
+//         })),
+//       );
+//     }
+
+//     // 최신순 설정
+//     const sortedItems = items[0].items.sort((a, b) => {
+//       return b.createdAt.seconds - a.createdAt.seconds;
+//     });
+
+//     return {
+//       userId: items[0].userId,
+//       items: sortedItems,
+//     };
+//   });
+// }
 
 export async function deleteCartItem({ userId, productId }: DeleteCartItemType) {
   const userCartRef = doc(db, 'itemsCart', userId);

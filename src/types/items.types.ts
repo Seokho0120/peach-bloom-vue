@@ -72,7 +72,7 @@ export interface CartItemType {
 }
 
 export interface CartItemListType {
-  userId: string;
+  userId?: string;
   items: CartItemType[];
 }
 
