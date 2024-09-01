@@ -25,7 +25,6 @@ const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);
 const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
-// TODO: 로딩, 에러 처리 보여주기
 const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
 
 const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
@@ -88,17 +87,23 @@ async function handleCartItemUpdated() {
       </tr>
     </thead>
 
-    <tbody v-if="cartItemList?.length === 0 && isLoading === false" class="border-b-[1px]">
-      <tr>
-        <td colspan="5" class="text-center h-52 text-3xl">장바구니에 담은 상품이 없습니다.</td>
-      </tr>
-    </tbody>
-
     <tbody v-if="isLoading">
       <tr>
         <td colspan="5" class="text-center h-52 text-3xl">
           <ProgressSpinner style="width: 70px; height: 70px" strokeWidth="5" animationDuration=".5s" />
         </td>
+      </tr>
+    </tbody>
+
+    <tbody v-if="isError">
+      <tr>
+        <td colspan="5" class="text-center h-52 text-3xl">오류가 발생했습니다.</td>
+      </tr>
+    </tbody>
+
+    <tbody v-if="cartItemList?.length === 0 && isLoading === false" class="border-b-[1px]">
+      <tr>
+        <td colspan="5" class="text-center h-52 text-3xl">장바구니에 담은 상품이 없습니다.</td>
       </tr>
     </tbody>
 
