@@ -13,7 +13,6 @@ export function useGetCartItemsList(userId: Ref<string>) {
       const data = await getCartItemList(userId.value);
       return data;
     },
-    // staleTime: 5 * 60 * 1000,
   });
 
   const data = computed(() => cartItemListData.data.value?.items || []);

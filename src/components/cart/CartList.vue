@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, nextTick, computed, onMounted } from 'vue';
+import { ref, nextTick, computed, onMounted, watch } from 'vue';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
 import { auth } from '@/api/firebasedb';
+import Skeleton from 'primevue/skeleton';
 
 const userId = ref<string>('');
 
@@ -62,6 +63,12 @@ async function handleCartItemUpdated() {
   updateShippingPrice();
   updateAllCheckbox();
 }
+
+/**
+ * FIXME: isLoading을 이용해서 CartItem의 요소마다 스켈레톤을 적용해보고 싶은데
+ * 1. isLoading이 끝난 후 CartItemList가 들어옴
+ * 2. CartItem의 요소의 크기마다 전부 스켈레톤 사이즈를 적용해야하나..?
+ */
 </script>
 
 <template>
@@ -80,13 +87,39 @@ async function handleCartItemUpdated() {
         <th class="py-4 px-6">배송비</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- <tr v-if="cartItemList?.items.length === 0"> -->
-      <tr v-if="cartItemList?.length === 0">
-        <td colspan="5" class="text-2xl font-bold flex justify-center items-center p-12">
-          장바구니에 담은 상품이 없습니다.
+
+    <tbody v-if="cartItemList?.length === 0 && isLoading === false" class="border-b-[1px]">
+      <tr>
+        <td colspan="5" class="text-center h-52 text-3xl">장바구니에 담은 상품이 없습니다.</td>
+      </tr>
+    </tbody>
+
+    <tbody v-if="isLoading">
+      <tr>
+        <td colspan="5" class="text-center h-52 text-3xl">
+          <ProgressSpinner style="width: 70px; height: 70px" strokeWidth="5" animationDuration=".5s" />
         </td>
       </tr>
+    </tbody>
+
+    <tbody v-else>
+      <!-- <tr v-if="isLoading">
+        <td>
+          <Skeleton width="100%" height="176px"></Skeleton>
+        </td>
+        <td>
+          <Skeleton width="100%" height="176px"></Skeleton>
+        </td>
+        <td>
+          <Skeleton width="100%" height="176px"></Skeleton>
+        </td>
+        <td>
+          <Skeleton width="100%" height="176px"></Skeleton>
+        </td>
+        <td>
+          <Skeleton width="100%" height="176px"></Skeleton>
+        </td>
+      </tr> -->
 
       <CartItem
         v-for="(item, index) in cartItemList"
@@ -96,12 +129,13 @@ async function handleCartItemUpdated() {
         :user-id="userId"
         :all-checked="allChecked"
         :index="index"
+        :is-loading="isLoading"
         @updated="() => handleCartItemUpdated()"
       />
     </tbody>
   </table>
 
-  <table class="border-t-4 border-black mt-24">
+  <table v-if="cartItemList?.length !== 0" class="border-t-4 border-black mt-24">
     <thead>
       <tr class="border-b text-lg font-bold">
         <th class="py-4 px-6 text-center">총 주문금액</th>

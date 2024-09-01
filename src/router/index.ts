@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import { auth } from '@/api/firebasedb';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,12 +15,13 @@ const router = createRouter({
       path: '/mypage',
       name: 'mypage',
       beforeEnter: (to, from, next) => {
-        const user = auth.currentUser;
-        if (user) {
-          next();
-        } else {
-          next('/login');
-        }
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            next();
+          } else {
+            next('/login');
+          }
+        });
       },
       component: HomeView,
     },
@@ -27,12 +29,13 @@ const router = createRouter({
       path: '/mylike',
       name: 'mylike',
       beforeEnter: (to, from, next) => {
-        const user = auth.currentUser;
-        if (user) {
-          next();
-        } else {
-          next('/login');
-        }
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            next();
+          } else {
+            next('/login');
+          }
+        });
       },
       component: HomeView,
     },
@@ -66,14 +69,15 @@ const router = createRouter({
       path: '/cart/:id',
       name: 'cart',
       beforeEnter: (to, from, next) => {
-        const user = auth.currentUser;
-        if (user) {
-          // 로그인이 되어있다면
-          next();
-        } else {
-          // 로그인이 되어있지 않는다면
-          next('/login');
-        }
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // 로그인이 되어있다면
+            next();
+          } else {
+            // 로그인이 되어있지 않는다면
+            next('/login');
+          }
+        });
       },
       component: () => import('@/views/cart/cart.vue'),
     },

@@ -3,34 +3,49 @@ import { ref, computed, watch } from 'vue';
 import type { CartItemType } from '@/types/items.types';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { deleteCartItem } from '@/api/firestore';
+import Skeleton from 'primevue/skeleton';
 
 const props = defineProps<{
   product: CartItemType;
   userId: string;
   index: number;
+  isLoading: boolean;
 }>();
 
+watch(
+  () => props.isLoading,
+  (newVal) => {
+    if (newVal) {
+      console.log('Loading started');
+    } else {
+      console.log('Loading finished');
+    }
+  },
+  { immediate: true },
+);
+
 const emit = defineEmits<{
-  'updated': []
+  updated: [];
 }>();
 
 const quantity = ref<number>(props.product.quantity);
-const itemPrice = computed(() => props.product.saleRate > 0 ? props.product.salePrice : props.product.consumerPrice);
+const itemPrice = computed(() => (props.product.saleRate > 0 ? props.product.salePrice : props.product.consumerPrice));
 const cartItemPrice = computed(() => itemPrice.value * quantity.value);
-const isFreeShipping = computed(() => cartItemPrice.value >= 30000)
+const isFreeShipping = computed(() => cartItemPrice.value >= 30000);
 
 function deleteItem(productId: string) {
   deleteCartItemMutation(productId);
 }
 
 const queryClient = useQueryClient();
-const { mutate: deleteCartItemMutation } = useMutation({
+const { mutate: deleteCartItemMutation, isPending } = useMutation({
   mutationFn: async (productId: string) => {
     await deleteCartItem({ userId: props.userId, productId });
   },
-  onSuccess: async () => {
+  onSuccess: async (_, productId) => {
+    // FIXME: 삭제해도 왜 카트리스트 업데이트 안되는지?
     await queryClient.invalidateQueries({
-      queryKey: ['cartItemsList'],
+      queryKey: ['cartItemsList', props.userId],
     });
   },
   onError: (error) => {
@@ -40,9 +55,13 @@ const { mutate: deleteCartItemMutation } = useMutation({
 
 const itemChecked = ref(true);
 
-watch([cartItemPrice, isFreeShipping, itemChecked], () => {
-  emit('updated');
-}, {immediate: true});
+watch(
+  [cartItemPrice, isFreeShipping, itemChecked],
+  () => {
+    emit('updated');
+  },
+  { immediate: true },
+);
 
 function buyItem() {
   console.log('buyItem');
@@ -52,7 +71,7 @@ defineExpose({
   cartItemPrice,
   isFreeShipping,
   itemChecked,
-})
+});
 </script>
 
 <template>
@@ -61,15 +80,16 @@ defineExpose({
     <!-- 상품 체크 -->
     <td class="p-0">
       <div class="flex items-center justify-center">
-        <Checkbox v-model="itemChecked" :binary="true"/>
+        <Checkbox v-model="itemChecked" :binary="true" />
       </div>
     </td>
 
     <!-- 상품정보 -->
-    <td class="flex gap-6 border-r-[1px] p-6">
+    <td class="flex gap-6 border-r-[1px] p-6 w-42">
       <div style="width: 8rem">
         <img :src="product.imageUrl[0]" :alt="product.imageUrl[0]" style="object-fit: cover" />
       </div>
+
       <div>
         <div class="text-sm underline cursor-pointer">{{ product.brandName }}</div>
         <div class="text-lg font-bold mt-2">{{ product.productName }}</div>
