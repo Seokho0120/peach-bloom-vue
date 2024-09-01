@@ -5,8 +5,10 @@ import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
 import { auth } from '@/api/firebasedb';
 import Skeleton from 'primevue/skeleton';
+import { useCartListStore } from '@/stores/cart.store';
 
 const userId = ref<string>('');
+const cartListStore = useCartListStore();
 
 onMounted(() => {
   // onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메서드
@@ -26,6 +28,14 @@ const isFreeShipping = ref<boolean>(false);
 const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
 const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
+
+watch(
+  () => cartItemList.value,
+  (newItems) => {
+    console.log('newItems???', newItems);
+    cartListStore.cartItems = newItems;
+  },
+);
 
 const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
 

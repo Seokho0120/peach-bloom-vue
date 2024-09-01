@@ -5,10 +5,12 @@ import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/api/firebasedb';
 import { Icon } from '@iconify/vue';
 import peachbloom from '../assets/images/peachbloom-logo.png';
+import { useCartListStore } from '@/stores/cart.store';
 
 const userId = ref<string>('');
 const router = useRouter();
 const isLogin = ref<boolean>(false);
+const cartListStore = useCartListStore();
 
 onMounted(() => {
   // onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메서드
@@ -83,10 +85,20 @@ const logout = async () => {
       </li>
 
       <li v-if="userId">
-        <RouterLink :to="{ name: 'cart', params: { id: userId } }">
+        <RouterLink :to="{ name: 'cart', params: { id: userId } }" class="relative">
           <div class="flex items-center gap-1">
             <Icon icon="heroicons:shopping-cart-solid" />
             <span>SHOPPING BAG</span>
+            <Badge
+              v-if="cartListStore.cartItemsCount > 0"
+              :value="cartListStore.cartItemsCount"
+              severity="danger"
+              :pt="{
+                root: {
+                  class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
+                },
+              }"
+            />
           </div>
         </RouterLink>
       </li>
