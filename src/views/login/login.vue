@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import type { FirebaseError } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { useForm } from 'vee-validate';
@@ -8,6 +8,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { z } from 'zod';
 import { firebaseErrorTypeValidation } from '@/composables/useLoginValidation';
 
+const route = useRoute();
 const router = useRouter();
 
 const { defineField, errors, handleSubmit, isSubmitting } = useForm({
@@ -36,7 +37,11 @@ const login = handleSubmit(async (loginData) => {
     const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
 
     user.value = userCredential.user;
-    router.push({ name: 'home' });
+    if (route.query.originalUrl) {
+      router.push(route.query.originalUrl.toString());
+    } else {
+      router.push({ name: 'home' });
+    }
     console.log('로그인 성공');
   } catch (error) {
     const firebaseError = error as FirebaseError;

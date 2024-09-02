@@ -14,30 +14,18 @@ const router = createRouter({
     {
       path: '/mypage',
       name: 'mypage',
-      beforeEnter: (to, from, next) => {
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            next();
-          } else {
-            next('/login');
-          }
-        });
-      },
-      component: HomeView,
+      component: () => import('@/views/myPage/myPage.vue'),
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/mylike',
       name: 'mylike',
-      beforeEnter: (to, from, next) => {
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            next();
-          } else {
-            next('/login');
-          }
-        });
-      },
-      component: HomeView,
+      component: () => import('@/views/myLike/myLike.vue'),
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/login',
@@ -54,6 +42,9 @@ const router = createRouter({
       path: '/upload',
       name: 'upload',
       component: () => import('@/views/upload/upload.vue'),
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/items/:id',
@@ -66,22 +57,42 @@ const router = createRouter({
       component: () => import('@/views/itemDetail/itemDetail.vue'),
     },
     {
-      path: '/cart/:id',
+      path: '/cart',
       name: 'cart',
-      beforeEnter: (to, from, next) => {
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            // 로그인이 되어있다면
-            next();
-          } else {
-            // 로그인이 되어있지 않는다면
-            next('/login');
-          }
-        });
-      },
       component: () => import('@/views/cart/cart.vue'),
+      meta: {
+        requiresAuth: true
+      }
     },
   ],
 });
+
+
+function getCurrentUser() {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user)
+    }, reject);
+  })
+}
+
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  
+  if (requiresAuth) {
+    const user = await getCurrentUser()
+    if (!user) {
+      return next({
+        name: 'login',
+        query: {
+          originalUrl: to.fullPath
+        }
+      });
+    }
+  }
+
+  next();
+})
 
 export default router;

@@ -1,27 +1,19 @@
 <script setup lang="ts">
-import { ref, nextTick, computed, onMounted, watch } from 'vue';
+import { ref, nextTick, computed, onMounted, watch, onUnmounted } from 'vue';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import type CartItem from './CartItem.vue';
 import { auth } from '@/api/firebasedb';
 import Skeleton from 'primevue/skeleton';
 import { useCartListStore } from '@/stores/cart.store';
+import { useAuthStore } from '@/stores/auth.store';
+import { storeToRefs} from 'pinia';
 
-const userId = ref<string>('');
 const cartListStore = useCartListStore();
 
-onMounted(() => {
-  // onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메서드
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // 로그인 된 상태일 경우
-      userId.value = user.uid;
-    } else {
-      // 로그아웃 된 상태일 경우
-      userId.value = '';
-    }
-  });
-});
+const authStore = useAuthStore();
+const { userId } = storeToRefs(authStore);
+
 
 const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);

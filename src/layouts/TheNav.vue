@@ -1,32 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/api/firebasedb';
+import { getAuth, signOut } from 'firebase/auth';
 import { Icon } from '@iconify/vue';
 import { useCartListStore } from '@/stores/cart.store';
 import peachbloom from '../assets/images/peachbloom-logo.png';
+import { useAuthStore } from '@/stores/auth.store';
+import { storeToRefs } from 'pinia';
 
-const userId = ref<string>('');
 const router = useRouter();
-const isLogin = ref<boolean>(false);
 const cartListStore = useCartListStore();
 
-onMounted(() => {
-  // onAuthStateChanged는 유저 상태의 변화가 있을 때 실행되는 메서드
-  onAuthStateChanged(auth, (user) => {
-    // 로그인, 로그아웃 상태를 boolean으로 관리해보기
-    if (user) {
-      // 로그인 된 상태일 경우
-      userId.value = user.uid;
-      isLogin.value = true;
-    } else {
-      // 로그아웃 된 상태일 경우
-      userId.value = '';
-      isLogin.value = false;
-    }
-  });
-});
+const authStore = useAuthStore();
+const { userId } = storeToRefs(authStore);
 
 const userMenu = [
   {
@@ -84,34 +69,24 @@ const logout = async () => {
         </RouterLink>
       </li>
 
-      <li v-if="userId">
-        <RouterLink :to="{ name: 'cart', params: { id: userId } }" class="relative">
-          <div class="flex items-center gap-1">
-            <Icon icon="heroicons:shopping-cart-solid" />
-            <span>SHOPPING BAG</span>
-            <Badge
-              v-if="cartListStore.cartItemsCount > 0"
-              :value="cartListStore.cartItemsCount"
-              severity="danger"
-              :pt="{
-                root: {
-                  class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
-                },
-              }"
-            />
-          </div>
-        </RouterLink>
-      </li>
-      <li v-else>
-        <RouterLink :to="{ name: 'login' }">
-          <div class="flex items-center gap-1">
-            <Icon icon="heroicons:shopping-cart-solid" />
-            <span>SHOPPING BAG</span>
-          </div>
-        </RouterLink>
-      </li>
+      <RouterLink :to="{ name: 'cart' }" class="relative">
+        <div class="flex items-center gap-1">
+          <Icon icon="heroicons:shopping-cart-solid" />
+          <span>SHOPPING BAG</span>
+          <Badge
+            v-if="cartListStore.cartItemsCount > 0"
+            :value="cartListStore.cartItemsCount"
+            severity="danger"
+            :pt="{
+              root: {
+                class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
+              },
+            }"
+          />
+        </div>
+      </RouterLink>
 
-      <li v-if="!isLogin">
+      <li v-if="!userId">
         <RouterLink
           :to="{
             name: 'login',
