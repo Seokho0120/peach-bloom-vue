@@ -203,3 +203,27 @@ export async function deleteCartItem({ userId, productId }: DeleteCartItemType) 
     items: updatedItems,
   });
 }
+
+interface TEST {
+  userId: string;
+  productId: string;
+  status: boolean;
+}
+
+// 사용자 좋아요 상태 설정
+export async function setUserHeartStatus({ userId, productId, status }: TEST) {
+  const userHeartRef = doc(db, 'hearts', userId);
+
+  // Firestore 문서에서 기존 데이터를 가져온 후, 상태를 업데이트
+  const userHeartSnap = await getDoc(userHeartRef);
+  const updatedData = userHeartSnap.exists() ? userHeartSnap.data() : {};
+
+  // 제품 ID에 대한 좋아요 상태를 업데이트
+  updatedData[productId] = status;
+
+  // Firestore에 업데이트된 데이터를 저장
+  await setDoc(userHeartRef, updatedData);
+
+  // const userHeartRef = doc(db, 'hearts', userId);
+  // await setDoc(userHeartRef, { [productId]: status });
+}

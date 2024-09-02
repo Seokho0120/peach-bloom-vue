@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useConfirm } from 'primevue/useconfirm';
-import { postCartItem } from '@/api/firestore';
+import { postCartItem, setUserHeartStatus } from '@/api/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 
 const user = ref<User | null>(null);
@@ -22,9 +22,11 @@ const productId = computed(() => route.params.id.toString());
 const { data: itemDetail, isLoading } = useGetItemDetail(productId);
 
 const isHeart = ref(false);
-function toggleHeart() {
+async function toggleHeart(productId: string) {
   // TODO: auth 로직 작업 후 진행 예정
   isHeart.value = !isHeart.value;
+
+  await setUserHeartStatus({ userId: userId.value, productId: productId, status: isHeart.value });
 }
 
 const ratingValue = computed(() => {
@@ -93,7 +95,7 @@ async function addToCart() {
                   class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
                 },
               }"
-              @click.stop="toggleHeart"
+              @click.stop="toggleHeart(itemDetail.productId)"
             >
               <template #default>
                 <Icon :icon="isHeart ? 'heroicons:heart-solid' : 'heroicons:heart'" class="w-8 h-8" />
