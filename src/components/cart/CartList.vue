@@ -32,7 +32,6 @@ const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
 watch(
   () => cartItemList.value,
   (newItems) => {
-    console.log('newItems???', newItems);
     cartListStore.cartItems = newItems;
   },
 );

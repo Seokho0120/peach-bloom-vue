@@ -23,10 +23,9 @@ const { data: itemDetail, isLoading } = useGetItemDetail(productId);
 
 const isHeart = ref(false);
 async function toggleHeart(productId: string) {
-  // TODO: auth 로직 작업 후 진행 예정
   isHeart.value = !isHeart.value;
 
-  await setUserHeartStatus({ userId: userId.value, productId: productId, status: isHeart.value });
+  await setUserHeartStatus({ userId: userId.value, productId: productId, isHeart: isHeart.value });
 }
 
 const ratingValue = computed(() => {
@@ -67,7 +66,7 @@ async function addToCart() {
     quantity: quantity.value,
     createdAt: date,
   };
-  // TODO: 로그인 후 가능하다는거 알려줘야함
+  // TODO: 로그인 후 가능하다는거 Dialog로 보여주기
 
   await postCartItem(cartItem, userId.value, date);
 

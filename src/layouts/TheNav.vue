@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/api/firebasedb';
 import { Icon } from '@iconify/vue';
-import peachbloom from '../assets/images/peachbloom-logo.png';
 import { useCartListStore } from '@/stores/cart.store';
+import peachbloom from '../assets/images/peachbloom-logo.png';
 
 const userId = ref<string>('');
 const router = useRouter();
