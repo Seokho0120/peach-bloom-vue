@@ -1,6 +1,32 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue';
 import Toast from 'primevue/toast';
 import ConfirmDialog from 'primevue/confirmdialog';
+import { auth } from '@/api/firebasedb';
+import { useAuthStore } from '@/stores/auth.store';
+import {  onAuthStateChanged, type Unsubscribe } from 'firebase/auth';
+
+const authStore = useAuthStore();
+
+const unsubscribe = ref<Unsubscribe|undefined>(undefined)
+
+onMounted(() => {
+  unsubscribe.value = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // 로그인 된 상태일 경우
+      authStore.setUserId(user.uid);
+    } else {
+      // 로그아웃 된 상태일 경우
+      authStore.setUserId('');
+    }
+  });
+})
+
+onUnmounted(() => {
+  if (unsubscribe.value) {
+    unsubscribe.value();
+  }
+})
 </script>
 
 <template>
