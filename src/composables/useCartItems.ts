@@ -4,7 +4,7 @@ import { getCartItemList } from '@/api/firestore';
 import type { CartItemListType } from '@/types/items.types';
 
 export function useGetCartItemsList(userId: Ref<string>) {
-  const enabled = computed(() => userId.value === '');
+  const enabled = computed(() => userId.value !== '');
 
   const cartItemListData = useQuery<CartItemListType>({
     enabled: enabled,

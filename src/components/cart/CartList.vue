@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { ref, nextTick, computed, onMounted, watch, onUnmounted } from 'vue';
-import { onAuthStateChanged } from 'firebase/auth';
+import { ref, nextTick, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useGetCartItemsList } from '@/composables/useCartItems';
-import type CartItem from './CartItem.vue';
-import { auth } from '@/api/firebasedb';
-import Skeleton from 'primevue/skeleton';
-import { useCartListStore } from '@/stores/cart.store';
 import { useAuthStore } from '@/stores/auth.store';
-import { storeToRefs} from 'pinia';
+import { useCartListStore } from '@/stores/cart.store';
+import type CartItem from './CartItem.vue';
+import Skeleton from 'primevue/skeleton';
 
 const cartListStore = useCartListStore();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
-
 
 const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);

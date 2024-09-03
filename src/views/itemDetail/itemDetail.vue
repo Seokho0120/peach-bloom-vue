@@ -4,14 +4,11 @@ import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useConfirm } from 'primevue/useconfirm';
 import { postCartItem, setUserHeartStatus } from '@/api/firestore';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
+import { useAuthStore } from '@/stores/auth.store';
+import { storeToRefs } from 'pinia';
 
-const user = ref<User | null>(null);
-const userId = ref<string>('');
-onAuthStateChanged(getAuth(), (currentUser) => {
-  user.value = currentUser;
-  userId.value = user.value?.uid || '';
-});
+const authStore = useAuthStore();
+const { userId } = storeToRefs(authStore);
 
 const confirm = useConfirm();
 

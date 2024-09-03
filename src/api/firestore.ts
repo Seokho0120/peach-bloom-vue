@@ -167,17 +167,16 @@ export async function postCartItem(cartItem: CartItemType, userId: string, date:
   } else {
     // 해당 유저의 cartItems가 없으면, 필드 새로 생성
     await setDoc(userCartRef, { items: [cartItem] });
-    // await setDoc(userCartRef, { userId: userId, items: [cartItem] });
   }
 }
 
 export function getCartItemList(userId: string): Promise<CartItemListType> {
-  const userCartRef = doc(db, 'itemsCart', userId); // 사용자 ID로 참조
+  const userCartRef = doc(db, 'itemsCart', userId);
 
   return getDoc(userCartRef).then((doc) => {
     if (!doc.exists()) {
       console.log('카트에 제품이 비어있습니다.');
-      return { items: [] }; // 빈 배열 반환
+      return { items: [] };
     } else {
       const data = doc.data() as CartItemListType;
 
@@ -220,31 +219,3 @@ export async function setUserHeartStatus({ userId, productId, isHeart }: TEST) {
 
   await setDoc(userHeartRef, updatedData);
 }
-// 현재
-/** hearts - 1
- * userId 1
- * [
- *  productId1: true
- *  productId2: false
- *  productId3: true 
- * ]
- * 
- * userId 2
- * [
- *  productId1: true
- *  productId2: true
- *  productId3: false 
- * ]
-  
- */
-
-/** hearts - 2
- * userId 1
- * likerList
- * [
- *  0: productId 1
- *  1: productId 2
- *  2: productId 3
- * ]
- *
- */

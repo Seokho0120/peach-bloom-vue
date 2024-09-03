@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import {ref,  computed} from 'vue';
+import { ref, computed } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
   const userId = ref<string>('');
@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
     userId.value = uid;
   }
 
-  return { 
+  return {
     userId: computed(() => userId.value),
     setUserId,
   };
