@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { getAuth, signOut } from 'firebase/auth';
-import { Icon } from '@iconify/vue';
-import { useCartListStore } from '@/stores/cart.store';
-import peachbloom from '../assets/images/peachbloom-logo.png';
-import { useAuthStore } from '@/stores/auth.store';
 import { storeToRefs } from 'pinia';
+import { Icon } from '@iconify/vue';
+import { useAuthStore } from '@/stores/auth.store';
+import { useGetCartItemsList } from '@/composables/useCartItems';
+import peachbloom from '../assets/images/peachbloom-logo.png';
 
 const router = useRouter();
-const cartListStore = useCartListStore();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
+const { data: cartItemList } = useGetCartItemsList(userId);
 
 const userMenu = [
   {
@@ -74,8 +74,8 @@ const logout = async () => {
           <Icon icon="heroicons:shopping-cart-solid" />
           <span>SHOPPING BAG</span>
           <Badge
-            v-if="cartListStore.cartItemsCount > 0"
-            :value="cartListStore.cartItemsCount"
+            v-if="cartItemList.length > 0"
+            :value="cartItemList.length"
             severity="danger"
             :pt="{
               root: {
