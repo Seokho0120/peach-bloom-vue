@@ -211,11 +211,42 @@ interface TEST {
 
 export async function setUserHeartStatus({ userId, productId, isHeart }: TEST) {
   const userHeartRef = doc(db, 'hearts', userId);
-
   const userHeartSnap = await getDoc(userHeartRef);
   const updatedData = userHeartSnap.exists() ? userHeartSnap.data() : {};
 
   updatedData[productId] = isHeart;
 
   await setDoc(userHeartRef, updatedData);
+}
+
+export async function getUserLikedProducts(userId: string) {
+  const userHeartRef = doc(db, 'hearts', userId);
+  const userHeartSnap = await getDoc(userHeartRef);
+
+  if (!userHeartSnap.exists()) {
+    return []; // 좋아요한 제품이 없는 경우
+  }
+
+  const likedProducts = userHeartSnap.data();
+  const likedProductIds = Object.keys(likedProducts).filter((productId) => likedProducts[productId]);
+
+  return likedProductIds; // 좋아요한 제품 ID 배열 반환
+}
+
+export async function getLikedProductsDetails(userId: string) {
+  const likedProductIds = await getUserLikedProducts(userId);
+
+  if (likedProductIds.length === 0) {
+    return []; // 좋아요한 제품이 없으면 빈 배열 반환
+  }
+
+  const allItems = await getAllItemsList(); // 모든 아이템 리스트 가져오기
+  const allItemsMap = new Map(allItems.map((item) => [item.productId, item])); // 제품 ID를 키로 하는 맵 생성
+
+  const likedProductsDetails = likedProductIds.map((productId) => {
+    const product = allItemsMap.get(productId); // 제품 정보 가져오기
+    return product ? { id: productId, ...product } : null; // 제품 정보 반환
+  });
+
+  return likedProductsDetails.filter((product) => product !== null); // null 제거
 }
