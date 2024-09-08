@@ -20,6 +20,14 @@ const { data: itemDetail, isLoading } = useGetItemDetail(productId);
 
 const isHeart = ref(false);
 async function toggleHeart(productId: string) {
+  // TODO: itemDetail페이지에서 유저가 좋아요한 제품 상태 보여주기
+  if (!userId.value) {
+    // TODO: 모달 보여주기
+    console.error('로그인 먼저 해주세요 🚨');
+    router.push({ name: 'login' });
+    return;
+  }
+
   isHeart.value = !isHeart.value;
 
   await setUserHeartStatus({ userId: userId.value, productId: productId, isHeart: isHeart.value });
@@ -88,7 +96,7 @@ async function addToCart() {
               text
               :pt="{
                 root: {
-                  class: ['w-fit p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
+                  class: ['p-0 border-0 hover:bg-white', isHeart ? 'text-orange-500' : 'text-black'],
                 },
               }"
               @click.stop="toggleHeart(itemDetail.productId)"

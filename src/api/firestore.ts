@@ -203,50 +203,46 @@ export async function deleteCartItem({ userId, productId }: DeleteCartItemType) 
   });
 }
 
-interface TEST {
+interface HeartStatusType {
   userId: string;
   productId: string;
   isHeart: boolean;
 }
 
-export async function setUserHeartStatus({ userId, productId, isHeart }: TEST) {
+export async function setUserHeartStatus({ userId, productId, isHeart }: HeartStatusType) {
   const userHeartRef = doc(db, 'hearts', userId);
   const userHeartSnap = await getDoc(userHeartRef);
-  const updatedData = userHeartSnap.exists() ? userHeartSnap.data() : {};
 
+  const updatedData = userHeartSnap.exists() ? userHeartSnap.data() : {};
   updatedData[productId] = isHeart;
 
   await setDoc(userHeartRef, updatedData);
 }
 
-export async function getUserLikedProducts(userId: string) {
+export async function getLikedProductsList(userId: string) {
   const userHeartRef = doc(db, 'hearts', userId);
   const userHeartSnap = await getDoc(userHeartRef);
 
   if (!userHeartSnap.exists()) {
-    return []; // 좋아요한 제품이 없는 경우
+    return;
   }
 
-  const likedProducts = userHeartSnap.data();
-  const likedProductIds = Object.keys(likedProducts).filter((productId) => likedProducts[productId]);
-
-  return likedProductIds; // 좋아요한 제품 ID 배열 반환
-}
-
-export async function getLikedProductsDetails(userId: string) {
-  const likedProductIds = await getUserLikedProducts(userId);
+  const likedProductsStatus = userHeartSnap.data();
+  const likedProductIds = Object.keys(likedProductsStatus).filter((productId) => likedProductsStatus[productId]);
 
   if (likedProductIds.length === 0) {
-    return []; // 좋아요한 제품이 없으면 빈 배열 반환
+    return;
   }
 
-  const allItems = await getAllItemsList(); // 모든 아이템 리스트 가져오기
-  const allItemsMap = new Map(allItems.map((item) => [item.productId, item])); // 제품 ID를 키로 하는 맵 생성
+  // FIXME: 좋아요한 제품을 가져올때 모든 제품과 productId를 비교해서 가져오는데, 만약 제품이 많아지면 어떻게..?
+  const allItems = await getAllItemsList();
+  // 모든 제품의 ID를 키, 제품을 밸류
+  const allItemsMap = new Map(allItems.map((item) => [item.productId, item]));
 
-  const likedProductsDetails = likedProductIds.map((productId) => {
-    const product = allItemsMap.get(productId); // 제품 정보 가져오기
-    return product ? { id: productId, ...product } : null; // 제품 정보 반환
+  const likedProductsDetail = likedProductIds.map((productId) => {
+    const product = allItemsMap.get(productId);
+    return product ? { ...product } : null;
   });
 
-  return likedProductsDetails.filter((product) => product !== null); // null 제거
+  return likedProductsDetail.filter((product) => product !== null);
 }
