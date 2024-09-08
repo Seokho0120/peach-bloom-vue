@@ -73,8 +73,9 @@ const logout = async () => {
         <div class="flex items-center gap-1">
           <Icon icon="heroicons:shopping-cart-solid" />
           <span>SHOPPING BAG</span>
+
           <Badge
-            v-if="cartItemList.length > 0"
+            v-if="userId && cartItemList.length > 0"
             :value="cartItemList.length"
             severity="danger"
             :pt="{
