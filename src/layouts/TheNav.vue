@@ -6,12 +6,66 @@ import { Icon } from '@iconify/vue';
 import { useAuthStore } from '@/stores/auth.store';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import peachbloom from '../assets/images/peachbloom-logo.png';
+import { watch } from 'vue';
+import { useCartListStore } from '@/stores/cart.store';
+import { ref } from 'vue';
+import { computed } from 'vue';
+import { onMounted } from 'vue';
 
 const router = useRouter();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
 const { data: cartItemList } = useGetCartItemsList(userId);
+
+const cartListStore = useCartListStore();
+const test = ref();
+
+// watch(cartListStore, (newItems) => {
+//   console.log('newItems', newItems);
+//   console.log('cartListStore.cartItemsCount!!', newItems.cartItemsCount);
+//   test.value = newItems.cartItemsCount;
+
+//   console.log('test.value', test.value);
+//   // console.log('cartListStore.cartItemsCount!!', cartListStore.cartItemsCount);
+// });
+
+// watch(cartItemList, () => {
+//   console.log('cartItemList.value.length', cartItemList.value.length);
+// });
+
+// const ttt = computed(() => (test.value !== 0 ? test.value : cartItemList.value.length));
+
+// 컴포넌트가 마운트될 때 초기 상태 설정
+onMounted(() => {
+  test.value = cartListStore.cartItemsCount || 0; // 초기 cartItemsCount 설정
+});
+
+// cartListStore의 cartItemsCount 변화 감지
+watch(
+  () => cartListStore.cartItemsCount,
+  (newCount) => {
+    test.value = newCount || 0; // cartItemsCount가 null이나 undefined일 경우 0으로 처리
+  },
+);
+
+// cartItemList의 변화 감지
+watch(
+  () => cartItemList.value,
+  () => {
+    // cartItemList의 길이가 0일 경우 test.value를 0으로 설정
+    if (cartItemList.value.length === 0) {
+      test.value = 0; // 모든 아이템이 삭제된 경우 test를 0으로 설정
+    } else {
+      test.value = cartItemList.value.length; // cartItemList의 길이를 test에 반영
+    }
+  },
+);
+
+// ttt 계산
+const ttt = computed(() => {
+  return test.value > 0 ? test.value : cartItemList.value.length;
+});
 
 const userMenu = [
   {
@@ -75,8 +129,8 @@ const logout = async () => {
           <span>SHOPPING BAG</span>
 
           <Badge
-            v-if="userId && cartItemList.length > 0"
-            :value="cartItemList.length"
+            v-if="userId && ttt > 0"
+            :value="ttt"
             severity="danger"
             :pt="{
               root: {

@@ -1,9 +1,10 @@
 import { computed, watch, type Ref } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { getCartItemList } from '@/api/firestore';
+import { useQuery, useQueryClient } from '@tanstack/vue-query';
+import { getCartItemList, subscribeToCartItems } from '@/api/firestore';
 import type { CartItemListType } from '@/types/items.types';
 
 export function useGetCartItemsList(userId: Ref<string>) {
+  const queryClient = useQueryClient();
   const enabled = computed(() => userId.value !== '');
 
   const cartItemListData = useQuery<CartItemListType>({
@@ -19,8 +20,17 @@ export function useGetCartItemsList(userId: Ref<string>) {
 
   // error 처리
   watch(cartItemListData.error, (error) => {
-    console.error('cartItemList error:', error?.message); // FIXME: 간헐적으로 undefined 뜨는데 왜?
+    // FIXME: 간헐적으로 undefined 뜨는데 왜?
+    console.error('cartItemList error:', error?.message);
   });
+
+  // watch(userId, () => {
+  //   const unsubscribe = subscribeToCartItems(userId.value, () => {
+  //     queryClient.invalidateQueries({ queryKey: ['cartItemsList', userId.value] });
+  //   });
+
+  //   return () => unsubscribe();
+  // });
 
   return {
     data: data,
