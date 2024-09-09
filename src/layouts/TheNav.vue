@@ -1,16 +1,13 @@
 <script setup lang="ts">
+import { watch, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { getAuth, signOut } from 'firebase/auth';
 import { storeToRefs } from 'pinia';
 import { Icon } from '@iconify/vue';
 import { useAuthStore } from '@/stores/auth.store';
 import { useGetCartItemsList } from '@/composables/useCartItems';
-import peachbloom from '../assets/images/peachbloom-logo.png';
-import { watch } from 'vue';
 import { useCartListStore } from '@/stores/cart.store';
-import { ref } from 'vue';
-import { computed } from 'vue';
-import { onMounted } from 'vue';
+import peachbloom from '../assets/images/peachbloom-logo.png';
 
 const router = useRouter();
 
@@ -19,33 +16,12 @@ const { userId } = storeToRefs(authStore);
 const { data: cartItemList } = useGetCartItemsList(userId);
 
 const cartListStore = useCartListStore();
-const test = ref();
+const cartItemCount = ref(0);
 
-// watch(cartListStore, (newItems) => {
-//   console.log('newItems', newItems);
-//   console.log('cartListStore.cartItemsCount!!', newItems.cartItemsCount);
-//   test.value = newItems.cartItemsCount;
-
-//   console.log('test.value', test.value);
-//   // console.log('cartListStore.cartItemsCount!!', cartListStore.cartItemsCount);
-// });
-
-// watch(cartItemList, () => {
-//   console.log('cartItemList.value.length', cartItemList.value.length);
-// });
-
-// const ttt = computed(() => (test.value !== 0 ? test.value : cartItemList.value.length));
-
-// 컴포넌트가 마운트될 때 초기 상태 설정
-onMounted(() => {
-  test.value = cartListStore.cartItemsCount || 0; // 초기 cartItemsCount 설정
-});
-
-// cartListStore의 cartItemsCount 변화 감지
 watch(
   () => cartListStore.cartItemsCount,
   (newCount) => {
-    test.value = newCount || 0; // cartItemsCount가 null이나 undefined일 경우 0으로 처리
+    cartItemCount.value = newCount || 0;
   },
 );
 
@@ -53,19 +29,14 @@ watch(
 watch(
   () => cartItemList.value,
   () => {
-    // cartItemList의 길이가 0일 경우 test.value를 0으로 설정
+    // cartItemList의 길이가 0일 경우 cartItemCount 0으로 설정
     if (cartItemList.value.length === 0) {
-      test.value = 0; // 모든 아이템이 삭제된 경우 test를 0으로 설정
+      cartItemCount.value = 0; // 카트 전부 삭제되면 cartItemCount를 0으로
     } else {
-      test.value = cartItemList.value.length; // cartItemList의 길이를 test에 반영
+      cartItemCount.value = cartItemList.value.length;
     }
   },
 );
-
-// ttt 계산
-const ttt = computed(() => {
-  return test.value > 0 ? test.value : cartItemList.value.length;
-});
 
 const userMenu = [
   {
@@ -86,6 +57,8 @@ const userMenu = [
 ];
 
 const logout = async () => {
+  cartItemCount.value = 0;
+
   try {
     const auth = getAuth();
     await signOut(auth);
@@ -127,10 +100,9 @@ const logout = async () => {
         <div class="flex items-center gap-1">
           <Icon icon="heroicons:shopping-cart-solid" />
           <span>SHOPPING BAG</span>
-
           <Badge
-            v-if="userId && ttt > 0"
-            :value="ttt"
+            v-if="userId && cartItemCount > 0"
+            :value="cartItemCount"
             severity="danger"
             :pt="{
               root: {

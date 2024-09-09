@@ -188,21 +188,6 @@ export function getCartItemList(userId: string): Promise<CartItemListType> {
   });
 }
 
-// 카트 아이템 실시간 업데이트
-export function subscribeToCartItems(userId: string, callback: () => void) {
-  const userCartRef = doc(db, 'itemsCart', userId);
-
-  return onSnapshot(
-    userCartRef,
-    () => {
-      callback();
-    },
-    (error) => {
-      console.error(error);
-    },
-  );
-}
-
 export async function deleteCartItem({ userId, productId }: DeleteCartItemType) {
   const userCartRef = doc(db, 'itemsCart', userId);
   const userCartSnap = await getDoc(userCartRef);
@@ -219,13 +204,13 @@ export async function deleteCartItem({ userId, productId }: DeleteCartItemType) 
   });
 }
 
-interface HeartStatusT {
+interface HeartStatusType {
   userId: string;
   productId: string;
   isHeart: boolean;
 }
 
-export async function setUserHeartStatus({ userId, productId, isHeart }: HeartStatusT) {
+export async function setUserHeartStatus({ userId, productId, isHeart }: HeartStatusType) {
   const userHeartRef = doc(db, 'hearts', userId);
   const userHeartSnap = await getDoc(userHeartRef);
 
