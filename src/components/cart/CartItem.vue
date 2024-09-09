@@ -3,26 +3,11 @@ import { ref, computed, watch } from 'vue';
 import type { CartItemType } from '@/types/items.types';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { deleteCartItem } from '@/api/firestore';
-import Skeleton from 'primevue/skeleton';
 
 const props = defineProps<{
   product: CartItemType;
   userId: string;
-  index: number;
-  isLoading: boolean;
 }>();
-
-watch(
-  () => props.isLoading,
-  (newVal) => {
-    if (newVal) {
-      console.log('Loading started');
-    } else {
-      console.log('Loading finished');
-    }
-  },
-  { immediate: true },
-);
 
 const emit = defineEmits<{
   updated: [];
