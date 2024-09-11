@@ -6,9 +6,15 @@ import { useConfirm } from 'primevue/useconfirm';
 import { postCartItem, setUserHeartStatus } from '@/api/firestore';
 import { useAuthStore } from '@/stores/auth.store';
 import { storeToRefs } from 'pinia';
+import { useCartListStore } from '@/stores/cart.store';
+import { useQueryClient } from '@tanstack/vue-query';
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
+
+const queryClient = useQueryClient()
+
+const cartStore = useCartListStore();
 
 const confirm = useConfirm();
 
@@ -73,6 +79,11 @@ async function addToCart() {
   };
   // TODO: 로그인 후 가능하다는거 Dialog로 보여주기
 
+  queryClient.invalidateQueries({
+    queryKey: ['cartItemsList'],
+    exact: false,
+    refetchType: 'active'
+  });
   await postCartItem(cartItem, userId.value, date);
 
   openConfirmModal();

@@ -1,10 +1,11 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import type { CartItemType } from '@/types/items.types';
+// import type { CartItemType } from '@/types/items.types';
 
 export const useCartListStore = defineStore('cartList', () => {
-  const cartItems = ref<CartItemType[]>([]);
-  const cartItemsCount = computed(() => cartItems.value.length);
+  // const cartItems = ref<CartItemType[]>([]);
+  // const cartItemsCount = computed(() => cartItems.value.length);
+  const cartItemsCount = ref(0)
 
-  return { cartItems, cartItemsCount };
+  return { cartItemsCount };
 });

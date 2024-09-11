@@ -5,6 +5,7 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import { auth } from '@/api/firebasedb';
 import { useAuthStore } from '@/stores/auth.store';
 import {  onAuthStateChanged, type Unsubscribe } from 'firebase/auth';
+import { VueQueryDevTools } from '@tanstack/vue-query-devtools';
 
 const authStore = useAuthStore();
 
@@ -87,4 +88,5 @@ onUnmounted(() => {
       </div>
     </template>
   </ConfirmDialog>
+  <VueQueryDevTools/>
 </template>

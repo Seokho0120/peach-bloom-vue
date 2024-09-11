@@ -15,26 +15,29 @@ const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
 const { data: cartItemList } = useGetCartItemsList(userId);
 
-const cartListStore = useCartListStore();
+// const cartListStore = useCartListStore();
 const cartItemCount = ref(0);
 
-watch(
-  () => cartListStore.cartItemsCount,
-  (newCount) => {
-    cartItemCount.value = newCount || 0;
-  },
-);
+// watch(
+//   () => cartListStore.cartItemsCount,
+//   (newCount) => {
+//     cartItemCount.value = newCount || 0;
+//   },
+// );
 
 // cartItemList의 변화 감지
 watch(
   () => cartItemList.value,
   () => {
-    // cartItemList의 길이가 0일 경우 cartItemCount 0으로 설정
-    if (cartItemList.value.length === 0) {
-      cartItemCount.value = 0; // 카트 전부 삭제되면 cartItemCount를 0으로
-    } else {
-      cartItemCount.value = cartItemList.value.length;
-    }
+    // // cartItemList의 길이가 0일 경우 cartItemCount 0으로 설정
+    // if (cartItemList.value.length === 0) {
+    //   cartItemCount.value = 0; // 카트 전부 삭제되면 cartItemCount를 0으로
+    // } else {
+    //   cartItemCount.value = cartItemList.value.length;
+    // }
+
+    cartItemCount.value = cartItemList.value.length;
+    // cartListStore.cartItemsCount = cartItemList.value.length;
   },
 );
 

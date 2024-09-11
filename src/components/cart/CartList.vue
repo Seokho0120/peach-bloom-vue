@@ -5,9 +5,9 @@ import { useGetCartItemsList } from '@/composables/useCartItems';
 import { useAuthStore } from '@/stores/auth.store';
 import { useCartListStore } from '@/stores/cart.store';
 import type CartItem from './CartItem.vue';
-import Skeleton from 'primevue/skeleton';
+import CartItemSkeleton from '@/components/cart/CartItemSkeleton.vue';
 
-const cartListStore = useCartListStore();
+// const cartListStore = useCartListStore();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
@@ -18,13 +18,14 @@ const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value
 
 const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
 
-watch(
-  () => cartItemList.value,
-  (newItems) => {
-    console.log('newItems', newItems);
-    cartListStore.cartItems = newItems;
-  },
-);
+// watch(
+//   () => cartItemList.value,
+//   (newItems) => {
+//     console.log('newItems', newItems);
+//     // cartListStore.cartItems = newItems;
+//     cartListStore.cartItemsCount = newItems.length;
+//   },
+// );
 
 const cartItemRefs = ref<Array<InstanceType<typeof CartItem>>>([]);
 
@@ -86,13 +87,13 @@ async function handleCartItemUpdated() {
       </tr>
     </thead>
 
-    <tbody v-if="isLoading">
+    <!-- <tbody v-if="isLoading">
       <tr>
         <td colspan="5" class="text-center h-52 text-3xl">
           <ProgressSpinner style="width: 70px; height: 70px" strokeWidth="5" animationDuration=".5s" />
         </td>
       </tr>
-    </tbody>
+    </tbody> -->
 
     <tbody v-if="isError">
       <tr>
@@ -107,35 +108,19 @@ async function handleCartItemUpdated() {
     </tbody>
 
     <tbody v-else>
-      <!-- <tr v-if="isLoading">
-        <td>
-          <Skeleton width="100%" height="176px"></Skeleton>
-        </td>
-        <td>
-          <Skeleton width="100%" height="176px"></Skeleton>
-        </td>
-        <td>
-          <Skeleton width="100%" height="176px"></Skeleton>
-        </td>
-        <td>
-          <Skeleton width="100%" height="176px"></Skeleton>
-        </td>
-        <td>
-          <Skeleton width="100%" height="176px"></Skeleton>
-        </td>
-      </tr> -->
-
-      <CartItem
-        v-for="(item, index) in cartItemList"
-        ref="cartItemRefs"
-        :key="item.productId"
-        :product="item"
-        :user-id="userId"
-        :all-checked="allChecked"
-        :index="index"
-        :is-loading="isLoading"
-        @updated="() => handleCartItemUpdated()"
-      />
+      <template v-if="isLoading">
+        <CartItemSkeleton />
+      </template>
+      <template v-else>
+        <CartItem
+          v-for="item in cartItemList"
+          ref="cartItemRefs"
+          :key="item.productId"
+          :product="item"
+          :user-id="userId"
+          @updated="() => handleCartItemUpdated()"
+        />
+      </template>
     </tbody>
   </table>
 
