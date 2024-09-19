@@ -4,12 +4,12 @@ import Toast from 'primevue/toast';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { auth } from '@/api/firebasedb';
 import { useAuthStore } from '@/stores/auth.store';
-import {  onAuthStateChanged, type Unsubscribe } from 'firebase/auth';
-import { VueQueryDevTools } from '@tanstack/vue-query-devtools';
+import { onAuthStateChanged, type Unsubscribe } from 'firebase/auth';
+// import { VueQueryDevTools } from '@tanstack/vue-query-devtools';
 
 const authStore = useAuthStore();
 
-const unsubscribe = ref<Unsubscribe|undefined>(undefined)
+const unsubscribe = ref<Unsubscribe | undefined>(undefined);
 
 onMounted(() => {
   unsubscribe.value = onAuthStateChanged(auth, (user) => {
@@ -21,13 +21,13 @@ onMounted(() => {
       authStore.setUserId('');
     }
   });
-})
+});
 
 onUnmounted(() => {
   if (unsubscribe.value) {
     unsubscribe.value();
   }
-})
+});
 </script>
 
 <template>
@@ -88,5 +88,5 @@ onUnmounted(() => {
       </div>
     </template>
   </ConfirmDialog>
-  <VueQueryDevTools/>
+  <!-- <VueQueryDevTools /> -->
 </template>

@@ -24,12 +24,12 @@ import Skeleton from 'primevue/skeleton';
         <div class="text-lg font-bold mt-2">
           <Skeleton height="1.5rem" width="12rem" />
         </div>
-        <div class="flex flex-col gap-2 text-sm">
-          <div class="">
-            <Skeleton height="1rem" width="4rem" />
+        <div class="flex flex-col gap-2 text-sm mt-2">
+          <div>
+            <Skeleton height="1rem" width="5rem" />
           </div>
-          <div class="text-[#ff4800]">
-            <Skeleton height="1rem" width="4rem" />
+          <div>
+            <Skeleton height="1rem" width="5rem" />
           </div>
         </div>
       </div>
@@ -40,17 +40,17 @@ import Skeleton from 'primevue/skeleton';
 
     <!-- 수량 -->
     <td class="border-r-[1px] w-10 p-6">
-      <Skeleton height="1.5rem" width="4rem" />
+      <Skeleton height="2.4rem" />
     </td>
 
     <!-- 주문금액 -->
     <td class="border-r-[1px] font-bold">
       <div class="flex flex-col items-center gap-4">
         <div class="flex items-baseline">
-          <Skeleton height="1rem" width="4rem" />
+          <Skeleton height="2rem" width="5.5rem" />
         </div>
 
-        <Skeleton height="1.5rem" width="4rem" />
+        <Skeleton height="2.5rem" width="7rem" />
       </div>
     </td>
 
