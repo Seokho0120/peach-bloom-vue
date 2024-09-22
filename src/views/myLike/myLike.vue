@@ -1,32 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/auth.store';
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { getLikedProductsList } from '@/api/firestore';
+import { useAuthStore } from '@/stores/auth.store';
+import { useGetLikeItemsList } from '@/composables/useLikeItem';
+import ItemsListCard from '@/components/items/ItemsListCard.vue';
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
-const likedProducts = ref([]);
-const isLoading = ref(true);
-
-// 사용자 좋아요한 제품 리스트 가져오기
-const fetchLikedProducts = async () => {
-  if (userId.value) {
-    likedProducts.value = await getLikedProductsList(userId.value);
-  }
-
-  isLoading.value = false;
-};
-
-onMounted(() => {
-  fetchLikedProducts();
-});
+const { data: likeItemList, isError, isLoading } = useGetLikeItemsList(userId);
 </script>
 
 <template>
   <div>mylike</div>
-  <div v-for="(product, index) in likedProducts" :key="index">
-    <!-- <div>{{ product }}</div> -->
-    <span>{{ product.productName }}</span>
+  <div v-if="!isError">
+    <ItemsListCard v-for="item in likeItemList" :key="item.productId" :product="item" />
   </div>
 </template>

@@ -80,19 +80,3 @@ export interface DeleteCartItemType {
   userId: string;
   productId: string;
 }
-
-//  TODO: 현식님께 물어보기 - 이렇게 하니까 계속 타입 오류 발생했음. extends로 설정하는거랑 뭐가 다른거지?
-// export interface FirestoreTimestamp {
-//   seconds: number;
-//   nanoseconds: number;
-// }
-
-// export interface CartItemType extends ItemDetailType {
-//   quantity: number;
-//   createdAt: FirestoreTimestamp;
-// }
-
-// export interface CartItemListType {
-//   items: CartItemType[];
-//   userId: string;
-// }

@@ -3,8 +3,8 @@ import { ref } from 'vue';
 import type { ItemsListType } from '@/types/items.types';
 
 defineProps<{
-  product: ItemsListType
-}>()
+  product: ItemsListType;
+}>();
 
 const isHeart = ref(false);
 const isReview = ref(false);
@@ -20,18 +20,14 @@ const toggleReview = () => {
 
 <template>
   <div>
-    <router-link
-      :to="{ name: 'itemDetail', params: { id: product.productId } }"
-    >
+    <router-link :to="{ name: 'itemDetail', params: { id: product.productId } }">
       <img :src="product.imageUrl[0]" alt="image" />
-    </router-link>  
+    </router-link>
 
     <div class="flex flex-col gap-1 pt-3.5">
       <div class="text-xs font-semibold">{{ product.brandName }}</div>
       <div class="text-xs">
-        <router-link
-          :to="{ name: 'itemDetail', params: { id: product.productId } }"
-        >
+        <router-link :to="{ name: 'itemDetail', params: { id: product.productId } }">
           {{ product.productName }}
         </router-link>
       </div>

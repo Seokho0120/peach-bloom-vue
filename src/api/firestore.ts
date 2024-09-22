@@ -220,19 +220,19 @@ export async function setUserHeartStatus({ userId, productId, isHeart }: HeartSt
   await setDoc(userHeartRef, updatedData);
 }
 
-export async function getLikedProductsList(userId: string) {
+export async function getLikedProductsList(userId: string): Promise<ItemsListType[]> {
   const userHeartRef = doc(db, 'hearts', userId);
   const userHeartSnap = await getDoc(userHeartRef);
 
   if (!userHeartSnap.exists()) {
-    return;
+    return [];
   }
 
   const likedProductsStatus = userHeartSnap.data();
   const likedProductIds = Object.keys(likedProductsStatus).filter((productId) => likedProductsStatus[productId]);
 
   if (likedProductIds.length === 0) {
-    return;
+    return [];
   }
 
   // FIXME: 좋아요한 제품을 가져올때 모든 제품과 productId를 비교해서 가져오는데, 만약 제품이 많아지면 어떻게..?
