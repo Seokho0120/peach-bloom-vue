@@ -17,14 +17,12 @@ export function useGetCartItemsList(userId: Ref<string>) {
 
   const data = computed(() => cartItemListData.data.value?.items || []);
 
-  // error 처리
   watch(cartItemListData.error, (error) => {
-    // FIXME: 간헐적으로 undefined 뜨는데 왜?
     console.error('cartItemList error:', error?.message);
   });
 
   return {
-    data: data,
+    data,
     isLoading: cartItemListData.isLoading,
     isError: cartItemListData.isError,
   };

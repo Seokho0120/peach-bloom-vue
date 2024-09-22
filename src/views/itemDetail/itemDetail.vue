@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
 
-const queryClient = useQueryClient()
+const queryClient = useQueryClient();
 
 const cartStore = useCartListStore();
 
@@ -69,6 +69,7 @@ async function openConfirmModal() {
 
 async function addToCart() {
   if (!itemDetail.value) return;
+  // TODO: 로그인 후 가능하다는거 Dialog로 보여주기
 
   const date = new Date();
 
@@ -77,14 +78,19 @@ async function addToCart() {
     quantity: quantity.value,
     createdAt: date,
   };
-  // TODO: 로그인 후 가능하다는거 Dialog로 보여주기
 
-  queryClient.invalidateQueries({
-    queryKey: ['cartItemsList'],
-    exact: false,
-    refetchType: 'active'
-  });
+  // TODO: queryClient.invalidateQueries 로 안되는 이유는 모르겠음 물어보기
+  // // 쿼리 리패치
+  // queryClient.invalidateQueries({
+  //   queryKey: ['cartItemsList'],
+  //   exact: false,
+  //   refetchType: 'active',
+  // });
+
   await postCartItem(cartItem, userId.value, date);
+  await queryClient.refetchQueries({
+    queryKey: ['cartItemsList'],
+  });
 
   openConfirmModal();
 }

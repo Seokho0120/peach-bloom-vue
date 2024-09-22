@@ -13,6 +13,7 @@ const router = useRouter();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
+// TODO: 삭제는 잘되는데, 업데이트가 안되고 있음
 const { data: cartItemList } = useGetCartItemsList(userId);
 
 // const cartListStore = useCartListStore();
@@ -28,7 +29,7 @@ const cartItemCount = ref(0);
 // cartItemList의 변화 감지
 watch(
   () => cartItemList.value,
-  () => {
+  (newVal) => {
     // // cartItemList의 길이가 0일 경우 cartItemCount 0으로 설정
     // if (cartItemList.value.length === 0) {
     //   cartItemCount.value = 0; // 카트 전부 삭제되면 cartItemCount를 0으로
@@ -36,7 +37,7 @@ watch(
     //   cartItemCount.value = cartItemList.value.length;
     // }
 
-    cartItemCount.value = cartItemList.value.length;
+    cartItemCount.value = newVal.length;
     // cartListStore.cartItemsCount = cartItemList.value.length;
   },
 );
