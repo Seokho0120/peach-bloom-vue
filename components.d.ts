@@ -41,6 +41,7 @@ declare module 'vue' {
     MainSnb: typeof import('./src/components/MainSnb.vue')['default']
     Message: typeof import('primevue/message')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
+    MyLikeItemsList: typeof import('./src/components/myLike/myLikeItemsList.vue')['default']
     NavCore: typeof import('./src/components/NavCore.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']

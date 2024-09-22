@@ -1,18 +1,12 @@
-<script setup lang="ts">
-import { ref } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/stores/auth.store';
-import { useGetLikeItemsList } from '@/composables/useLikeItem';
-import ItemsListCard from '@/components/items/ItemsListCard.vue';
-
-const authStore = useAuthStore();
-const { userId } = storeToRefs(authStore);
-const { data: likeItemList, isError, isLoading } = useGetLikeItemsList(userId);
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div>mylike</div>
-  <div v-if="!isError">
-    <ItemsListCard v-for="item in likeItemList" :key="item.productId" :product="item" />
+  <div class="flex flex-col mx-auto min-w-[900px] max-w-[1500px] mt-10 px-[50px] pb-[100px]">
+    <h2 class="text-2xl font-bold pb-4">이름</h2>
+    <div class="flex gap-14">
+      <!-- TODO: nav 바꾸기 -->
+      <ItemsSnb />
+      <MyLikeItemsList />
+    </div>
   </div>
 </template>
