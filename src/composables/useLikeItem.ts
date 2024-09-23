@@ -13,17 +13,13 @@ export function useGetLikeItemsList(userId: Ref<string>) {
       const data = await getLikedProductsList(userId.value);
       return data;
     },
+    initialData: []
   });
 
-  const data = computed(() => likeItemListData.data.value || []);
 
   watch(likeItemListData.error, (error) => {
     console.error('likeItemsList error:', error?.message);
   });
 
-  return {
-    data,
-    isLoading: likeItemListData.isLoading,
-    isError: likeItemListData.isError,
-  };
+  return likeItemListData;
 }
