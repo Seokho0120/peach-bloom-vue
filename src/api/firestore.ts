@@ -228,7 +228,9 @@ export async function getLikedProductsList(userId: string): Promise<ItemsListTyp
     return [];
   }
 
+  // 좋아요 상태 boolean
   const likedProductsStatus = userHeartSnap.data();
+  // 좋아요한 제품의 아이디들
   const likedProductIds = Object.keys(likedProductsStatus).filter((productId) => likedProductsStatus[productId]);
 
   if (likedProductIds.length === 0) {
@@ -236,14 +238,17 @@ export async function getLikedProductsList(userId: string): Promise<ItemsListTyp
   }
 
   // FIXME: 좋아요한 제품을 가져올때 모든 제품과 productId를 비교해서 가져오는데, 만약 제품이 많아지면 어떻게..?
+  // FIXME: 매번 순서가 바뀌는데 어떻게 해야할지..
   const allItems = await getAllItemsList();
-  // 모든 제품의 ID를 키, 제품을 밸류
+  // 모든 제품의 id를 key, 제품을 value
   const allItemsMap = new Map(allItems.map((item) => [item.productId, item]));
 
-  const likedProductsDetail = likedProductIds.map((productId) => {
-    const product = allItemsMap.get(productId);
-    return product ? { ...product } : null;
-  });
+  const likedProductsList = likedProductIds
+    .map((productId) => {
+      const product = allItemsMap.get(productId);
+      return product ? { ...product } : null;
+    })
+    .filter((p) => p !== null);
 
-  return likedProductsDetail.filter((product) => product !== null);
+  return likedProductsList;
 }
