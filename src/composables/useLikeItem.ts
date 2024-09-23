@@ -8,7 +8,7 @@ export function useGetLikeItemsList(userId: Ref<string>) {
 
   const likeItemListData = useQuery<ItemsListType[]>({
     enabled: enabled,
-    queryKey: ['likeItemsList', userId.value],
+    queryKey: ['likeItemsList', userId],
     queryFn: async () => {
       const data = await getLikedProductsList(userId.value);
       return data;

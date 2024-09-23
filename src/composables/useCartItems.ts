@@ -8,7 +8,7 @@ export function useGetCartItemsList(userId: Ref<string>) {
 
   const cartItemListData = useQuery<CartItemListType>({
     enabled: enabled,
-    queryKey: ['cartItemsList', userId.value],
+    queryKey: ['cartItemsList', userId],
     queryFn: async () => {
       const data = await getCartItemList(userId.value);
       return data;
