@@ -102,22 +102,24 @@ const logout = async () => {
         </RouterLink>
       </li>
 
-      <RouterLink :to="{ name: 'cart' }" class="relative">
-        <div class="flex items-center gap-1">
-          <Icon icon="heroicons:shopping-cart-solid" />
-          <span>SHOPPING BAG</span>
-          <Badge
-            v-if="userId && cartItemCount > 0"
-            :value="cartItemCount"
-            severity="danger"
-            :pt="{
-              root: {
-                class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
-              },
-            }"
-          />
-        </div>
-      </RouterLink>
+      <li>
+        <RouterLink :to="{ name: 'cart' }" class="relative">
+          <div class="flex items-center gap-1">
+            <Icon icon="heroicons:shopping-cart-solid" />
+            <span>SHOPPING BAG</span>
+            <Badge
+              v-if="userId && cartItemCount > 0"
+              :value="cartItemCount"
+              severity="danger"
+              :pt="{
+                root: {
+                  class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
+                },
+              }"
+            />
+          </div>
+        </RouterLink>
+      </li>
 
       <li v-if="!userId">
         <RouterLink
