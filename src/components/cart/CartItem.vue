@@ -28,9 +28,9 @@ const { mutate: deleteCartItemMutation, isPending } = useMutation({
     await deleteCartItem({ userId: props.userId, productId });
   },
   onSuccess: async (_, productId) => {
-    // FIXME: 삭제해도 왜 카트리스트 업데이트 안되는지?
-    await queryClient.invalidateQueries({
-      queryKey: ['cartItemsList', props.userId],
+    await queryClient.refetchQueries({
+      queryKey: ['cartItemsList'],
+      exact: false,
     });
   },
   onError: (error) => {
