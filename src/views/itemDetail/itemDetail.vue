@@ -79,17 +79,11 @@ async function addToCart() {
     createdAt: date,
   };
 
-  // TODO: queryClient.invalidateQueries 로 안되는 이유는 모르겠음 물어보기
-  // // 쿼리 리패치
-  // queryClient.invalidateQueries({
-  //   queryKey: ['cartItemsList'],
-  //   exact: false,
-  //   refetchType: 'active',
-  // });
 
   await postCartItem(cartItem, userId.value, date);
   await queryClient.refetchQueries({
     queryKey: ['cartItemsList'],
+    exact: false,
   });
 
   openConfirmModal();

@@ -8,13 +8,15 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useGetCartItemsList } from '@/composables/useCartItems';
 import { useCartListStore } from '@/stores/cart.store';
 import peachbloom from '../assets/images/peachbloom-logo.png';
+import { computed } from 'vue';
 
 const router = useRouter();
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
 // TODO: 삭제는 잘되는데, 업데이트가 안되고 있음
-const { data: cartItemList } = useGetCartItemsList(userId);
+const { data } = useGetCartItemsList(userId);
+const cartItemList = computed(() => data.value.items);
 
 // const cartListStore = useCartListStore();
 const cartItemCount = ref(0);
@@ -100,22 +102,24 @@ const logout = async () => {
         </RouterLink>
       </li>
 
-      <RouterLink :to="{ name: 'cart' }" class="relative">
-        <div class="flex items-center gap-1">
-          <Icon icon="heroicons:shopping-cart-solid" />
-          <span>SHOPPING BAG</span>
-          <Badge
-            v-if="userId && cartItemCount > 0"
-            :value="cartItemCount"
-            severity="danger"
-            :pt="{
-              root: {
-                class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
-              },
-            }"
-          />
-        </div>
-      </RouterLink>
+      <li>
+        <RouterLink :to="{ name: 'cart' }" class="relative">
+          <div class="flex items-center gap-1">
+            <Icon icon="heroicons:shopping-cart-solid" />
+            <span>SHOPPING BAG</span>
+            <Badge
+              v-if="userId && cartItemCount > 0"
+              :value="cartItemCount"
+              severity="danger"
+              :pt="{
+                root: {
+                  class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
+                },
+              }"
+            />
+          </div>
+        </RouterLink>
+      </li>
 
       <li v-if="!userId">
         <RouterLink

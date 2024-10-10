@@ -4,23 +4,17 @@ import { useQuery } from '@tanstack/vue-query';
 import { computed, type Ref } from 'vue';
 
 export function useGetMainList() {
-  const { data, isLoading, isError } = useQuery<ItemsListType[]>({
+  return useQuery<ItemsListType[]>({
     queryKey: ['mainItemsList'],
     queryFn: async () => {
       return await getMainItemsList();
     },
     staleTime: 5 * 60 * 1000,
   });
-
-  return {
-    data,
-    isLoading,
-    isError,
-  };
 }
 
 export function useGetAllItemsList() {
-  const { data, isLoading, isError } = useQuery<ItemsListType[]>({
+  return useQuery<ItemsListType[]>({
     queryKey: ['allItemsList'],
     queryFn: async () => {
       return await getAllItemsList();
@@ -28,17 +22,12 @@ export function useGetAllItemsList() {
     staleTime: 5 * 60 * 1000,
   });
 
-  return {
-    data,
-    isLoading,
-    isError,
-  };
 }
 
 export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
   const enabled = computed(() => category.value !== '' && filter.value !== '');
 
-  const { data, isLoading, isError } = useQuery({
+  return useQuery({
     enabled,
     queryKey: ['itemsList', { category: category, filter: filter }],
     queryFn: async () => {
@@ -46,17 +35,14 @@ export function useGetItemsList(category: Ref<string>, filter: Ref<string>) {
     },
   });
 
-  return { data, isLoading, isError };
 }
 
 export function useGetItemDetail(productId: Ref<string>) {
-  const { data, isFetched, isLoading } = useQuery({
+  return useQuery({
     queryKey: ['itemsDetail', productId],
     queryFn: async () => {
       const result = await getItemDetail(productId.value);
       return result;
     },
   });
-
-  return { data, isFetched, isLoading };
 }

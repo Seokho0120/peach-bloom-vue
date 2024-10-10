@@ -16,7 +16,8 @@ const totalCartPrice = ref<number>(0);
 const isFreeShipping = ref<boolean>(false);
 const totalPayment = computed(() => totalCartPrice.value + (isFreeShipping.value ? 0 : 3000));
 
-const { data: cartItemList, isError, isLoading } = useGetCartItemsList(userId);
+const { data, isError, isLoading, } = useGetCartItemsList(userId);
+const cartItemList = computed(() => data.value.items);
 
 // watch(
 //   () => cartItemList.value,
