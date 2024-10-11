@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import { useConfirm } from 'primevue/useconfirm';
 import { postCartItem, setUserHeartStatus } from '@/api/firestore';
 import { useAuthStore } from '@/stores/auth.store';
 import { storeToRefs } from 'pinia';
-import { useCartListStore } from '@/stores/cart.store';
 import { useQueryClient } from '@tanstack/vue-query';
 
 const authStore = useAuthStore();
 const { userId } = storeToRefs(authStore);
 
 const queryClient = useQueryClient();
-
-const cartStore = useCartListStore();
 
 const confirm = useConfirm();
 
@@ -23,6 +20,10 @@ const router = useRouter();
 const productId = computed(() => route.params.id.toString());
 
 const { data: itemDetail, isLoading } = useGetItemDetail(productId);
+
+watch(itemDetail, () => {
+  console.log('itemDetail.value', itemDetail.value);
+});
 
 const isHeart = ref(false);
 async function toggleHeart(productId: string) {
@@ -79,7 +80,6 @@ async function addToCart() {
     createdAt: date,
   };
 
-
   await postCartItem(cartItem, userId.value, date);
   await queryClient.refetchQueries({
     queryKey: ['cartItemsList'],
@@ -88,14 +88,52 @@ async function addToCart() {
 
   openConfirmModal();
 }
+
+const currentIndex = ref(0);
+
+const nextHandler = () => {
+  currentIndex.value = (currentIndex.value + 1) % itemDetail.value!.imageUrl.length;
+};
+
+const prevHandler = () => {
+  currentIndex.value = (currentIndex.value - 1 + itemDetail.value!.imageUrl.length) % itemDetail.value!.imageUrl.length;
+};
 </script>
 
 <template>
   <div v-if="isLoading">Loading..</div>
   <template v-else>
     <div v-if="itemDetail" class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10">
+      <!-- 기존꺼
       <div class="flex-shrink-0">
         <Image :src="itemDetail?.imageUrl[0]" alt="Detail Image" width="564" class="w-full h-auto object-cover" />
+      </div> -->
+
+      <div class="w-full relative">
+        <img :src="itemDetail.imageUrl[currentIndex]" alt="Detail Image" class="w-full" />
+        <button
+          v-if="itemDetail.imageUrl.length > 1"
+          @click="prevHandler"
+          :class="`absolute shadow-md left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60`"
+        >
+          <i class="pi pi-angle-left text-gray-800" />
+        </button>
+
+        <button
+          v-if="itemDetail.imageUrl.length > 1"
+          @click="nextHandler"
+          class="absolute shadow-md right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60"
+        >
+          <i class="pi pi-angle-right text-gray-800" />
+        </button>
+
+        <ul v-if="itemDetail.imageUrl.length > 1" class="absolute bottom-4 flex w-full justify-center gap-1">
+          <li
+            v-for="(_, idx) in itemDetail?.imageUrl"
+            :key="idx"
+            :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40'}`"
+          />
+        </ul>
       </div>
 
       <div class="w-full border-t-4 border-black">
@@ -216,6 +254,7 @@ async function addToCart() {
         </div>
       </div>
     </div>
+
     <div v-else>
       <p>찾으시는 제품이 없습니다.</p>
     </div>
