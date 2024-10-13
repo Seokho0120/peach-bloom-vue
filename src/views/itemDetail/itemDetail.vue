@@ -21,10 +21,6 @@ const productId = computed(() => route.params.id.toString());
 
 const { data: itemDetail, isLoading } = useGetItemDetail(productId);
 
-watch(itemDetail, () => {
-  console.log('itemDetail.value', itemDetail.value);
-});
-
 const isHeart = ref(false);
 async function toggleHeart(productId: string) {
   // TODO: itemDetail페이지에서 유저가 좋아요한 제품 상태 보여주기
@@ -98,6 +94,47 @@ const nextHandler = () => {
 const prevHandler = () => {
   currentIndex.value = (currentIndex.value - 1 + itemDetail.value!.imageUrl.length) % itemDetail.value!.imageUrl.length;
 };
+
+const isDragging = ref(false);
+const startX = ref(0);
+const dragDistance = ref(0);
+const carousel = ref<HTMLElement | null>(null);
+
+const startDrag = (event: MouseEvent) => {
+  isDragging.value = true;
+  startX.value = event.clientX;
+  dragDistance.value = 0;
+
+  if (carousel.value) {
+    carousel.value.style.transition = 'none'; // 애니메이션 중지
+  }
+};
+
+const onDrag = (event: MouseEvent) => {
+  if (!isDragging.value) return;
+
+  dragDistance.value = event.clientX - startX.value;
+  const newTranslateX = currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
+
+  if (carousel.value) {
+    carousel.value.style.transform = `translateX(${newTranslateX}%)`;
+  }
+};
+
+const endDrag = () => {
+  isDragging.value = false;
+  const distance = dragDistance.value;
+
+  if (distance > 100 && currentIndex.value > 0) {
+    prevHandler(); // 왼쪽으로 드래그 시 이전 이미지로
+  } else if (distance < -100 && currentIndex.value < itemDetail.value!.imageUrl.length - 1) {
+    nextHandler(); // 오른쪽으로 드래그 시 다음 이미지로
+  }
+
+  if (carousel.value) {
+    carousel.value.style.transition = ''; // 애니메이션 재개
+  }
+};
 </script>
 
 <template>
@@ -137,13 +174,14 @@ const prevHandler = () => {
         </ul>
       </div> -->
 
-      <div class="overflow-hidden relative flex-shrink-0">
+      <div class="overflow-hidden relative flex-shrink-0" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag">
         <div
+          ref="carousel"
           class="flex transition-transform duration-500 w-[564px]"
           :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
         >
           <div v-for="(image, index) in itemDetail.imageUrl" :key="index" class="flex-shrink-0 w-full">
-            <img :src="image" class="w-full object-contain" alt="image" />
+            <img :src="image" class="w-full object-contain" draggable="false" :alt="image" />
           </div>
         </div>
 
