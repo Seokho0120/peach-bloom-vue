@@ -109,8 +109,44 @@ const prevHandler = () => {
         <Image :src="itemDetail?.imageUrl[0]" alt="Detail Image" width="564" class="w-full h-auto object-cover" />
       </div> -->
 
-      <div class="w-full relative">
+      <!-- 새로 만든거 1 -->
+      <!-- <div class="w-full relative">
         <img :src="itemDetail.imageUrl[currentIndex]" alt="Detail Image" class="w-full" />
+        <button
+          v-if="itemDetail.imageUrl.length > 1"
+          @click="prevHandler"
+          :class="`absolute shadow-md left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60`"
+        >
+          <i class="pi pi-angle-left text-gray-800" />
+        </button>
+
+        <button
+          v-if="itemDetail.imageUrl.length > 1"
+          @click="nextHandler"
+          class="absolute shadow-md right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60"
+        >
+          <i class="pi pi-angle-right text-gray-800" />
+        </button>
+
+        <ul v-if="itemDetail.imageUrl.length > 1" class="absolute bottom-4 flex w-full justify-center gap-1">
+          <li
+            v-for="(_, idx) in itemDetail?.imageUrl"
+            :key="idx"
+            :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40'}`"
+          />
+        </ul>
+      </div> -->
+
+      <div class="overflow-hidden relative flex-shrink-0">
+        <div
+          class="flex transition-transform duration-500 w-[564px]"
+          :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+        >
+          <div v-for="(image, index) in itemDetail.imageUrl" :key="index" class="flex-shrink-0 w-full">
+            <img :src="image" class="w-full object-contain" alt="image" />
+          </div>
+        </div>
+
         <button
           v-if="itemDetail.imageUrl.length > 1"
           @click="prevHandler"
