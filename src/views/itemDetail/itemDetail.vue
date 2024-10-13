@@ -135,6 +135,23 @@ const endDrag = () => {
     carousel.value.style.transition = ''; // 애니메이션 재개
   }
 };
+
+const lastSalePrice = computed(() => itemDetail.value?.salePrice);
+const lastSaleInfo = ref([
+  {
+    lastSaleQ: '나의 구매 가능가격',
+    lastSalePrice: lastSalePrice,
+  },
+]);
+const openIndex = ref<number | null>(null); // 현재 열려 있는 아코디언 인덱스
+
+const toggle = (index: number) => {
+  openIndex.value = openIndex.value === index ? null : index; // 클릭한 인덱스가 열려 있으면 닫고, 닫혀 있으면 엽니다.
+};
+
+const isOpen = (index: number) => {
+  return openIndex.value === index; // 현재 인덱스가 열려 있는지 확인합니다.
+};
 </script>
 
 <template>
@@ -174,7 +191,13 @@ const endDrag = () => {
         </ul>
       </div> -->
 
-      <div class="overflow-hidden relative flex-shrink-0" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag">
+      <!-- 캐러셀 -->
+      <div
+        class="overflow-hidden relative flex-shrink-0 h-full"
+        @mousedown="startDrag"
+        @mousemove="onDrag"
+        @mouseup="endDrag"
+      >
         <div
           ref="carousel"
           class="flex transition-transform duration-500 w-[564px]"
@@ -210,7 +233,8 @@ const endDrag = () => {
         </ul>
       </div>
 
-      <div class="w-full border-t-4 border-black">
+      <!-- 상세내용, 아코디언 -->
+      <div class="w-full border-t-4 border-black flex-shrink-1">
         <div class="flex flex-col gap-4 border-b-[1px] border-gray-200 mb-6">
           <div class="flex items-center justify-between py-6 text-2xl font-bold">
             <div>{{ itemDetail?.productName }}</div>
@@ -247,7 +271,7 @@ const endDrag = () => {
             <p class="underline cursor-pointer">{{ itemDetail?.reviewCount }}개 리뷰보기</p>
           </div>
 
-          <div class="mb-6">
+          <div>
             <div v-if="itemDetail?.saleRate !== 0">
               <div class="flex items-center font-bold gap-1">
                 <span class="text-2xl text-[#ff4801]">{{ itemDetail?.saleRate }}%</span>
@@ -262,6 +286,20 @@ const endDrag = () => {
             <div v-else-if="itemDetail?.saleRate === 0" class="flex items-center font-bold">
               <span class="text-2xl">{{ itemDetail?.consumerPrice }}</span>
               <span class="text-lg">원</span>
+            </div>
+          </div>
+
+          <div v-for="(info, index) in lastSaleInfo" :key="index" class="border-t">
+            <button @click="toggle(index)" class="flex justify-between items-center w-full py-4">
+              <span class="font-semibold text-sm">{{ info.lastSaleQ }}</span>
+              <Icon
+                icon="heroicons:chevron-down"
+                :class="isOpen(index) ? 'rotate-180' : ''"
+                class="transition-transform"
+              />
+            </button>
+            <div v-if="isOpen(index)" class="p-4 text-gray-700">
+              {{ info.lastSalePrice }}
             </div>
           </div>
         </div>
