@@ -145,7 +145,7 @@ const lastSaleInfo = ref([
 ]);
 const openIndex = ref<number | null>(null); // 현재 열려 있는 아코디언 인덱스
 
-const toggle = (index: number) => {
+const toggleAccordion = (index: number) => {
   openIndex.value = openIndex.value === index ? null : index; // 클릭한 인덱스가 열려 있으면 닫고, 닫혀 있으면 엽니다.
 };
 
@@ -290,14 +290,11 @@ const isOpen = (index: number) => {
           </div>
 
           <div v-for="(info, index) in lastSaleInfo" :key="index" class="border-t">
-            <button @click="toggle(index)" class="flex justify-between items-center w-full py-4">
-              <span class="font-semibold text-sm">{{ info.lastSaleQ }}</span>
-              <Icon
-                icon="heroicons:chevron-down"
-                :class="isOpen(index) ? 'rotate-180' : ''"
-                class="transition-transform"
-              />
+            <button @click="toggleAccordion(index)" class="flex justify-between items-center w-full py-4">
+              <p class="font-semibold text-sm">{{ info.lastSaleQ }}</p>
+              <Icon icon="heroicons:chevron-down" :class="isOpen(index) ? 'rotate-180' : ''" />
             </button>
+
             <div v-if="isOpen(index)" class="p-4 text-gray-700">
               {{ info.lastSalePrice }}
             </div>
