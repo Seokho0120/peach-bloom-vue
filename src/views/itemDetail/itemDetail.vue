@@ -20,6 +20,7 @@ const router = useRouter();
 const productId = computed(() => route.params.id.toString());
 
 const { data: itemDetail, isLoading } = useGetItemDetail(productId);
+// TODO: itemDetail.value.imageUrl -> imageUrls 복수형으로 수정 예정
 
 const isHeart = ref(false);
 async function toggleHeart(productId: string) {
@@ -89,10 +90,12 @@ const currentIndex = ref(0);
 
 const nextHandler = () => {
   currentIndex.value = (currentIndex.value + 1) % itemDetail.value!.imageUrl.length;
+  console.log('currentIndex.value', currentIndex.value);
 };
 
 const prevHandler = () => {
   currentIndex.value = (currentIndex.value - 1 + itemDetail.value!.imageUrl.length) % itemDetail.value!.imageUrl.length;
+  console.log('currentIndex.value', currentIndex.value);
 };
 
 const isDragging = ref(false);
@@ -158,39 +161,6 @@ const isOpen = (index: number) => {
   <div v-if="isLoading">Loading..</div>
   <template v-else>
     <div v-if="itemDetail" class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10">
-      <!-- 기존꺼
-      <div class="flex-shrink-0">
-        <Image :src="itemDetail?.imageUrl[0]" alt="Detail Image" width="564" class="w-full h-auto object-cover" />
-      </div> -->
-
-      <!-- 새로 만든거 1 -->
-      <!-- <div class="w-full relative">
-        <img :src="itemDetail.imageUrl[currentIndex]" alt="Detail Image" class="w-full" />
-        <button
-          v-if="itemDetail.imageUrl.length > 1"
-          @click="prevHandler"
-          :class="`absolute shadow-md left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60`"
-        >
-          <i class="pi pi-angle-left text-gray-800" />
-        </button>
-
-        <button
-          v-if="itemDetail.imageUrl.length > 1"
-          @click="nextHandler"
-          class="absolute shadow-md right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60"
-        >
-          <i class="pi pi-angle-right text-gray-800" />
-        </button>
-
-        <ul v-if="itemDetail.imageUrl.length > 1" class="absolute bottom-4 flex w-full justify-center gap-1">
-          <li
-            v-for="(_, idx) in itemDetail?.imageUrl"
-            :key="idx"
-            :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40'}`"
-          />
-        </ul>
-      </div> -->
-
       <!-- 캐러셀 -->
       <div
         class="overflow-hidden relative flex-shrink-0 h-full"
@@ -203,8 +173,10 @@ const isOpen = (index: number) => {
           class="flex transition-transform duration-500 w-[564px]"
           :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
         >
+          <!-- TODO: image id 추가 예정 -->
           <div v-for="(image, index) in itemDetail.imageUrl" :key="index" class="flex-shrink-0 w-full">
-            <img :src="image" class="w-full object-contain" draggable="false" :alt="image" />
+            <!-- TODO: image name 추가 예정 -->
+            <img :src="image" class="w-full" draggable="false" :alt="image" />
           </div>
         </div>
 
@@ -291,7 +263,7 @@ const isOpen = (index: number) => {
 
           <div v-for="(info, index) in lastSaleInfo" :key="index" class="border-t">
             <button @click="toggleAccordion(index)" class="flex justify-between items-center w-full py-4">
-              <p class="font-semibold text-sm">{{ info.lastSaleQ }}</p>
+              <span class="font-semibold text-sm">{{ info.lastSaleQ }}</span>
               <Icon icon="heroicons:chevron-down" :class="isOpen(index) ? 'rotate-180' : ''" />
             </button>
 
