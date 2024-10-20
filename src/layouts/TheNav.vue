@@ -77,67 +77,72 @@ const logout = async () => {
 </script>
 
 <template>
-  <nav class="flex justify-between p-12">
-    <h1>
-      <RouterLink
-        :to="{
-          name: 'home',
-        }"
-      >
-        <img :src="peachbloom" class="mb-4 w-36" alt="peachbloom logo" />
-      </RouterLink>
-    </h1>
-
-    <ul class="flex items-center gap-4 text-sm">
-      <li v-for="item in userMenu" :key="item.name">
+  <nav class="p-12">
+    <div class="flex justify-between">
+      <h1>
         <RouterLink
           :to="{
-            name: item.name,
+            name: 'home',
           }"
         >
-          <div class="flex items-center gap-1">
-            <Icon :icon="item.icon" />
-            <span>{{ item.label }}</span>
-          </div>
+          <img :src="peachbloom" class="mb-4 w-36" alt="peachbloom logo" />
         </RouterLink>
-      </li>
+      </h1>
 
-      <li>
-        <RouterLink :to="{ name: 'cart' }" class="relative">
-          <div class="flex items-center gap-1">
-            <Icon icon="heroicons:shopping-cart-solid" />
-            <span>SHOPPING BAG</span>
-            <Badge
-              v-if="userId && cartItemCount > 0"
-              :value="cartItemCount"
-              severity="danger"
-              :pt="{
-                root: {
-                  class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
-                },
-              }"
-            />
-          </div>
-        </RouterLink>
-      </li>
+      <ul class="flex items-center gap-4 text-sm">
+        <li v-for="item in userMenu" :key="item.name">
+          <RouterLink
+            :to="{
+              name: item.name,
+            }"
+          >
+            <div class="flex items-center gap-1">
+              <Icon :icon="item.icon" />
+              <span>{{ item.label }}</span>
+            </div>
+          </RouterLink>
+        </li>
 
-      <li v-if="!userId">
-        <RouterLink
-          :to="{
-            name: 'login',
-          }"
-          class="flex items-center gap-1"
-        >
-          <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
-          LOGIN
-        </RouterLink>
-      </li>
-      <li v-else>
-        <button type="button" @click="() => logout()" class="flex items-center gap-1">
-          <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
-          LOGOUT
-        </button>
-      </li>
-    </ul>
+        <li>
+          <RouterLink :to="{ name: 'cart' }" class="relative">
+            <div class="flex items-center gap-1">
+              <Icon icon="heroicons:shopping-cart-solid" />
+              <span>SHOPPING BAG</span>
+              <Badge
+                v-if="userId && cartItemCount > 0"
+                :value="cartItemCount"
+                severity="danger"
+                :pt="{
+                  root: {
+                    class: 'absolute bg-[#ff4800] right-[-10px] top-[-12px]',
+                  },
+                }"
+              />
+            </div>
+          </RouterLink>
+        </li>
+
+        <li v-if="!userId">
+          <RouterLink
+            :to="{
+              name: 'login',
+            }"
+            class="flex items-center gap-1"
+          >
+            <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
+            LOGIN
+          </RouterLink>
+        </li>
+        <li v-else>
+          <button type="button" @click="() => logout()" class="flex items-center gap-1">
+            <Icon icon="heroicons:arrow-right-end-on-rectangle-16-solid" />
+            LOGOUT
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- mega menu -->
+    <MegaMenu />
   </nav>
 </template>

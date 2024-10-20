@@ -39,6 +39,7 @@ declare module 'vue' {
     ItemsSnb: typeof import('./src/components/items/ItemsSnb.vue')['default']
     MainItemsList: typeof import('./src/components/main/MainItemsList.vue')['default']
     MainSnb: typeof import('./src/components/MainSnb.vue')['default']
+    MegaMenu: typeof import('./src/components/MegaMenu.vue')['default']
     Message: typeof import('primevue/message')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
     MyLikeItemsList: typeof import('./src/components/myLike/myLikeItemsList.vue')['default']
