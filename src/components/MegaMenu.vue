@@ -125,28 +125,14 @@ watch(hoverIndex, () => {
 const handleMouseLeave = () => {
   hoverIndex.value = null; // link.name에서 마우스가 나가면 hoverIndex를 null로 설정
 };
+
+const keepHoverIndex = () => {
+  // 서브 메뉴에 마우스가 올려졌을 때 hoverIndex를 유지
+  // 아무 동작도 하지 않아서 hoverIndex를 변경하지 않음
+};
 </script>
+
 <template>
-  <!-- <div>
-    <div class="w-full flex cursor-pointer">
-      <div
-        v-for="(link, index) in links"
-        :key="index"
-        class="relative"
-        @mouseenter="hoverIndex = index"
-        @mouseleave="handleMouseLeave"
-      >
-        <h1 class="hover:text-blue-500">
-          {{ link.name }}
-        </h1>
-
-        <div v-if="hoverIndex === index" class="absolute z-50 left-0 right-0 top-full bg-blue-300 p-2">
-          {{ hoverIndex }}
-        </div>
-      </div>
-    </div>
-  </div> -->
-
   <!-- <div>
     <div class="w-full flex cursor-pointer">
       <div
@@ -169,22 +155,28 @@ const handleMouseLeave = () => {
     </div>
   </div> -->
 
+  <!-- 하던거!! -->
   <div>
-    <div class="w-full flex cursor-pointer">
+    <div class="w-full flex gap-2">
       <div v-for="(link, index) in links" :key="index" class="" @mouseenter="hoverIndex = index">
-        <h1 class="hover:text-blue-500">
+        <h1 class="hover:text-blue-500 cursor-pointer h-full">
           {{ link.name }}
         </h1>
       </div>
 
-      <div v-if="hoverIndex" class="absolute z-50 left-0 right-0 top-36 w-full bg-red-400">
+      <div
+        v-if="hoverIndex"
+        class="absolute z-50 left-0 top-36 w-full bg-white border-t-[1px] border-gray-200"
+        @mouseenter="hoverIndex = hoverIndex"
+        @mouseleave="hoverIndex = null"
+      >
         <div class="flex gap-10 p-5">
-          <div v-for="(test, index1) in links[hoverIndex].subLinks" :key="index1" class="flex flex-col">
-            <h1 class="font-bold hover:text-blue-500">{{ test.Head }}</h1>
+          <div v-for="subLinks in links[hoverIndex].subLinks" :key="subLinks.Head" class="flex flex-col">
+            <h1 class="font-bold hover:text-blue-500">{{ subLinks.Head }}</h1>
             <div>
-              <div v-for="(test2, index2) in test.subLink" :key="index2">
-                <RouterLink :to="test2.link" class="block hover:underline">
-                  {{ test2.name }}
+              <div v-for="subLink in subLinks.subLink" :key="subLink.name">
+                <RouterLink :to="subLink.link" class="block hover:underline">
+                  {{ subLink.name }}
                 </RouterLink>
               </div>
             </div>
