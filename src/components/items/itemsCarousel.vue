@@ -11,12 +11,10 @@ const currentIndex = ref(0);
 
 const nextHandler = () => {
   currentIndex.value = (currentIndex.value + 1) % itemDetail.value!.imageUrl.length;
-  console.log('currentIndex.value', currentIndex.value);
 };
 
 const prevHandler = () => {
   currentIndex.value = (currentIndex.value - 1 + itemDetail.value!.imageUrl.length) % itemDetail.value!.imageUrl.length;
-  console.log('currentIndex.value', currentIndex.value);
 };
 
 const isDragging = ref(false);
@@ -34,29 +32,19 @@ const startDrag = (event: MouseEvent) => {
   }
 };
 
-// const onDrag = (event: MouseEvent) => {
-//   if (!isDragging.value) return;
-
-//   dragDistance.value = event.clientX - startX.value;
-//   const newTranslateX = currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
-
-//   if (carousel.value) {
-//     carousel.value.style.transform = `translateX(${newTranslateX}%)`;
-//   }
-// };
-
 const onDrag = (event: MouseEvent) => {
   if (!isDragging.value) return;
 
   dragDistance.value = event.clientX - startX.value;
+  console.log('dragDistance.value', dragDistance.value);
 
-  // 현재 인덱스가 최종 이미지인지 확인
+  // 현재 인덱스로 마지막 이미지인지 확인
   if (currentIndex.value === 0 && dragDistance.value > 0) {
     // 첫 번째 이미지에서 왼쪽으로 드래그할 때
-    dragDistance.value = Math.min(dragDistance.value, 0); // 오른쪽으로 드래그를 제한
+    dragDistance.value = Math.min(dragDistance.value, 0); // 오른쪽으로 드래그를 못하게
   } else if (currentIndex.value === itemDetail.value!.imageUrl.length - 1 && dragDistance.value < 0) {
     // 마지막 이미지에서 오른쪽으로 드래그할 때
-    dragDistance.value = Math.max(dragDistance.value, 0); // 왼쪽으로 드래그를 제한
+    dragDistance.value = Math.max(dragDistance.value, 0); // 왼쪽으로 드래그를 못하게
   }
 
   const newTranslateX = currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
@@ -95,7 +83,7 @@ const endDrag = () => {
       :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
     >
       <!-- TODO: image id 추가 예정 -->
-      <div v-for="(image, index) in itemDetail.imageUrl" :key="index" class="flex-shrink-0 w-full">
+      <div v-for="image in itemDetail.imageUrl" :key="image" class="flex-shrink-0 w-full">
         <!-- TODO: image name 추가 예정 -->
         <img :src="image" class="w-full" draggable="false" :alt="image" />
       </div>

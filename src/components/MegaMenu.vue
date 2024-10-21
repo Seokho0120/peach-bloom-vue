@@ -123,42 +123,45 @@ watch(hoverIndex, () => {
 });
 
 const handleMouseLeave = () => {
-  hoverIndex.value = null; // link.name에서 마우스가 나가면 hoverIndex를 null로 설정
-};
-
-const keepHoverIndex = () => {
-  // 서브 메뉴에 마우스가 올려졌을 때 hoverIndex를 유지
-  // 아무 동작도 하지 않아서 hoverIndex를 변경하지 않음
+  hoverIndex.value = null; // link.name에서 마우스가 나가면 hoverIndex를 null
 };
 </script>
 
 <template>
-  <!-- <div>
-    <div class="w-full flex cursor-pointer">
-      <div
-        v-for="(link, index) in links"
-        :key="index"
-        class="relative"
-        @mouseenter="hoverIndex = index"
-        @mouseleave="handleMouseLeave"
-      >
+  <!-- TODO: for문 안에서 -->
+  <div>
+    <div class="flex gap-6 cursor-pointer">
+      <div v-for="(link, index) in links" :key="index" class="relative group" @mouseenter="hoverIndex = index">
         <h1 class="hover:text-blue-500">
           {{ link.name }}
         </h1>
 
-        <div v-if="hoverIndex" class="bg-red-400">
-          <div v-for="(test, index1) in links[hoverIndex].subLinks" :key="index1" class="flex flex-col">
-            {{ hoverIndex }}: {{ test.Head }}
+        <div
+          v-if="hoverIndex === index"
+          @mouseleave="handleMouseLeave"
+          class="absolute z-50 left-0 right-0 w-full hidden group-hover:block"
+        >
+          <div class="flex gap-10 p-5">
+            <div v-for="(test, index1) in link.subLinks" :key="index1" class="flex flex-col">
+              <h1 class="font-bold hover:text-blue-500">{{ test.Head }}</h1>
+              <div>
+                <div v-for="(test2, index2) in test.subLink" :key="index2">
+                  <RouterLink :to="test2.link" class="block hover:underline">
+                    {{ test2.name }}
+                  </RouterLink>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 
-  <!-- 하던거!! -->
-  <div>
+  <!-- TODO: links에서 마우스 벗어날때 null이 안됨-->
+  <!-- <div>
     <div class="w-full flex gap-2">
-      <div v-for="(link, index) in links" :key="index" class="" @mouseenter="hoverIndex = index">
+      <div v-for="(link, index) in links" :key="index" @mouseenter="hoverIndex = index">
         <h1 class="hover:text-blue-500 cursor-pointer h-full">
           {{ link.name }}
         </h1>
@@ -184,9 +187,9 @@ const keepHoverIndex = () => {
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <!-- 전체너비 -->
+  <!-- TODO: links에서 마우스 벗어날때 바로 null이 되기 때문에 subLinks가 닫힘-->
   <!-- <div>
     <div class="flex gap-6 cursor-pointer">
       <div
@@ -215,36 +218,6 @@ const keepHoverIndex = () => {
                 <RouterLink :to="test2.link" class="block hover:underline">
                   {{ test2.name }}
                 </RouterLink>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
-  <!-- for문 안에서 -->
-  <!-- <div>
-    <div class="flex gap-6 cursor-pointer">
-      <div v-for="(link, index) in links" :key="index" class="relative group" @mouseenter="hoverIndex = index">
-        <h1 class="hover:text-blue-500">
-          {{ link.name }}
-        </h1>
-
-        <div
-          class="absolute z-50 left-0 right-0 w-full bg-red-400 hidden group-hover:block"
-          v-if="hoverIndex === index"
-          @mouseleave="handleMouseLeave"
-        >
-          <div class="flex gap-10 p-5">
-            <div v-for="(test, index1) in link.subLinks" :key="index1" class="flex flex-col">
-              <h1 class="font-bold hover:text-blue-500">{{ test.Head }}</h1>
-              <div>
-                <div v-for="(test2, index2) in test.subLink" :key="index2">
-                  <RouterLink :to="test2.link" class="block hover:underline">
-                    {{ test2.name }}
-                  </RouterLink>
-                </div>
               </div>
             </div>
           </div>
