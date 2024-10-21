@@ -34,10 +34,31 @@ const startDrag = (event: MouseEvent) => {
   }
 };
 
+// const onDrag = (event: MouseEvent) => {
+//   if (!isDragging.value) return;
+
+//   dragDistance.value = event.clientX - startX.value;
+//   const newTranslateX = currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
+
+//   if (carousel.value) {
+//     carousel.value.style.transform = `translateX(${newTranslateX}%)`;
+//   }
+// };
+
 const onDrag = (event: MouseEvent) => {
   if (!isDragging.value) return;
 
   dragDistance.value = event.clientX - startX.value;
+
+  // 현재 인덱스가 최종 이미지인지 확인
+  if (currentIndex.value === 0 && dragDistance.value > 0) {
+    // 첫 번째 이미지에서 왼쪽으로 드래그할 때
+    dragDistance.value = Math.min(dragDistance.value, 0); // 오른쪽으로 드래그를 제한
+  } else if (currentIndex.value === itemDetail.value!.imageUrl.length - 1 && dragDistance.value < 0) {
+    // 마지막 이미지에서 오른쪽으로 드래그할 때
+    dragDistance.value = Math.max(dragDistance.value, 0); // 왼쪽으로 드래그를 제한
+  }
+
   const newTranslateX = currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
 
   if (carousel.value) {
