@@ -122,6 +122,7 @@ const itemDetailSchema = z.object({
   ingredients: z.string().optional(),
 });
 
+export type ItemDetailType = z.infer<typeof itemDetailSchema>;
 export async function getItemDetail(productId: string) {
   const itemListQuery = query(collection(db, 'items'), where('productId', '==', productId));
   const itemListSnapshot = await getDocs(itemListQuery);
