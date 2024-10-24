@@ -117,7 +117,7 @@ const endDrag = () => {
 
 <template>
   <div class="wrapper" ref="wrapper">
-    <i id="left" class="fa-solid fa-angle-left" @click="scrollLeft"></i>
+    <i id="left" class="fa-solid fa-angle-left" @click="scrollLeft">왼</i>
     <ul
       class="carousel"
       ref="carousel"
@@ -134,7 +134,7 @@ const endDrag = () => {
         <span>{{ item.role }}</span>
       </li>
     </ul>
-    <i id="right" class="fa-solid fa-angle-right" @click="scrollRight"></i>
+    <i id="right" class="fa-solid fa-angle-right" @click="scrollRight">오른</i>
   </div>
 </template>
 
@@ -147,7 +147,6 @@ interface CarouselItem {
   role: string;
 }
 
-// 이미지 경로를 가져오는 함수
 const getImage = (imageName: string) => {
   return new URL(`../../assets/testImages/${imageName}`, import.meta.url).href;
 };
@@ -185,7 +184,7 @@ export default {
     const dragging = (e: MouseEvent) => {
       if (!isDragging.value || !carousel.value) return;
       const x = e.pageX;
-      const walk = (x - startX.value) * 2; // Adjust the scroll speed
+      const walk = (x - startX.value) * 2;
       carousel.value.scrollLeft = startScrollLeft.value - walk;
     };
 
@@ -208,38 +207,11 @@ export default {
       }
     };
 
-    const infiniteScroll = () => {
-      if (!carousel.value) return;
-
-      if (carousel.value.scrollLeft === 0) {
-        carousel.value.classList.add('no-transition');
-        carousel.value.scrollLeft = carousel.value.scrollWidth - 2 * carousel.value.offsetWidth;
-        carousel.value.classList.remove('no-transition');
-      } else if (Math.ceil(carousel.value.scrollLeft) === carousel.value.scrollWidth - carousel.value.offsetWidth) {
-        carousel.value.classList.add('no-transition');
-        carousel.value.scrollLeft = carousel.value.offsetWidth;
-        carousel.value.classList.remove('no-transition');
-      }
-
-      clearTimeout(timeoutId!);
-      if (wrapper.value && !wrapper.value.matches(':hover')) autoPlay();
-    };
-
-    const autoPlay = () => {
-      if (window.innerWidth < 800) return; // Return if window is smaller than 800
-      // timeoutId = setTimeout(() => {
-      //   if (carousel.value) {
-      //     carousel.value.scrollLeft += firstCardWidth.value;
-      //   }
-      // }, 2500);
-    };
-
     onMounted(() => {
       if (carousel.value) {
         firstCardWidth.value = carousel.value.querySelector('.card')?.offsetWidth || 0;
         cardPerView.value = Math.round(carousel.value.offsetWidth / firstCardWidth.value);
 
-        // Insert copies of the last few cards to the beginning of the carousel for infinite scrolling
         const carouselChildren = [...carousel.value.children];
         carouselChildren
           .slice(-cardPerView.value)
@@ -248,30 +220,24 @@ export default {
             carousel.value.insertAdjacentHTML('afterbegin', card.outerHTML);
           });
 
-        // Insert copies of the first few cards to the end of the carousel for infinite scrolling
         carouselChildren.slice(0, cardPerView.value).forEach((card) => {
           carousel.value.insertAdjacentHTML('beforeend', card.outerHTML);
         });
 
-        // Scroll the carousel to hide duplicate cards
         carousel.value.classList.add('no-transition');
         carousel.value.scrollLeft = carousel.value.offsetWidth;
         carousel.value.classList.remove('no-transition');
       }
-      autoPlay();
     });
 
-    // Event listeners
     const addEventListeners = () => {
       if (carousel.value) {
-        carousel.value.addEventListener('scroll', infiniteScroll);
         carousel.value.addEventListener('mousedown', dragStart);
         carousel.value.addEventListener('mousemove', dragging);
         document.addEventListener('mouseup', dragStop);
       }
       if (wrapper.value) {
         wrapper.value.addEventListener('mouseenter', () => clearTimeout(timeoutId!));
-        wrapper.value.addEventListener('mouseleave', autoPlay);
       }
     };
 
@@ -310,7 +276,7 @@ body {
 
 .wrapper {
   max-width: 1100px;
-  width: 100%;
+  width: 60%;
   position: relative;
 }
 
