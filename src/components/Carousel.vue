@@ -8,7 +8,7 @@ const props = defineProps<{
 const { itemDetail } = toRefs(props);
 const filteredImageUrls = ref<{ link: string; id: number; name: string }[]>([]);
 
-// TODO: for문 설정을 위해 필터
+// 필터링된 이미지 URL 설정
 watch(
   itemDetail,
   () => {
