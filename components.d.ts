@@ -36,6 +36,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     ItemsCarousel: typeof import('./src/components/items/itemsCarousel.vue')['default']
     ItemsCarousel2: typeof import('./src/components/items/itemsCarousel2.vue')['default']
+    ItemsCarousel3: typeof import('./src/components/items/itemsCarousel3.vue')['default']
     ItemsDetailInfo: typeof import('./src/components/items/itemsDetailInfo.vue')['default']
     ItemsList: typeof import('./src/components/items/ItemsList.vue')['default']
     ItemsListCard: typeof import('./src/components/items/ItemsListCard.vue')['default']
