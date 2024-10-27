@@ -1,179 +1,151 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, toRefs } from 'vue';
+import { ref, toRefs, watch } from 'vue';
 import type { ItemDetailType } from '@/api/firestore';
 
 const props = defineProps<{
   itemDetail: ItemDetailType;
 }>();
 const { itemDetail } = toRefs(props);
+const filteredImageUrls = ref<{ link: string; id: number; name: string }[]>([]);
 
+// TODO: for문 설정을 위해 필터
+watch(
+  itemDetail,
+  () => {
+    filteredImageUrls.value = itemDetail.value.imageUrl.map((url, index) => {
+      const name = url.split('/').pop()?.split('.')[0] || '';
+
+      return {
+        link: url,
+        id: index,
+        name: name,
+      };
+    });
+  },
+  { immediate: true },
+);
+
+const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
-
-const nextHandler = () => {
-  currentIndex.value =
-    (currentIndex.value + 1) % itemDetail.value!.imageUrl.length;
-};
-
-const prevHandler = () => {
-  currentIndex.value =
-    (currentIndex.value - 1 + itemDetail.value!.imageUrl.length) %
-    itemDetail.value!.imageUrl.length;
-};
-
 const isDragging = ref(false);
 const startX = ref(0);
-const dragDistance = ref(0);
-const carousel = ref<HTMLElement | null>(null);
+const startTranslateX = ref(0);
 
-const startDrag = (event: MouseEvent) => {
-  isDragging.value = true;
-  startX.value = event.clientX;
-  dragDistance.value = 0;
-
-  if (carousel.value) {
-    carousel.value.style.transition = 'none'; // 애니메이션 중지
+function nextHandler() {
+  if (currentIndex.value < itemDetail.value.imageUrl.length - 1) {
+    currentIndex.value += 1;
+  } else {
+    currentIndex.value = 0;
   }
-};
+}
 
-const onDrag = (event: MouseEvent) => {
+function prevHandler() {
+  if (currentIndex.value > 0) {
+    currentIndex.value -= 1;
+  } else {
+    currentIndex.value = itemDetail.value.imageUrl.length - 1;
+  }
+}
+
+// 드래그 시작
+function dragStart(event: MouseEvent) {
+  if (carousel.value) {
+    isDragging.value = true;
+    startX.value = event.pageX;
+    startTranslateX.value = currentIndex.value * -100; // 현재 위치 저장
+  }
+}
+
+// 드래그 중
+function dragging(event: MouseEvent) {
+  if (!isDragging.value || !carousel.value) return;
+
+  const dragX = event.pageX;
+  const walk = ((dragX - startX.value) / window.innerWidth) * 100; // 드래그 거리 계산
+
+  carousel.value.style.transition = 'none'; // 드래그 중에는 애니메이션 비활성화
+  carousel.value.style.transform = `translateX(${startTranslateX.value + walk}%)`; // 이동
+}
+
+// 드래그 종료
+function dragStop(event: MouseEvent) {
   if (!isDragging.value) return;
 
-  dragDistance.value = event.clientX - startX.value;
-
-  // 현재 인덱스로 마지막 이미지인지 확인
-  if (currentIndex.value === 0 && dragDistance.value > 0) {
-    // 첫 번째 이미지에서 왼쪽으로 드래그할 때
-    dragDistance.value = Math.min(dragDistance.value, 0); // 오른쪽으로 드래그를 못하게
-  } else if (
-    currentIndex.value === itemDetail.value!.imageUrl.length - 1 &&
-    dragDistance.value < 0
-  ) {
-    // 마지막 이미지에서 오른쪽으로 드래그할 때
-    dragDistance.value = Math.max(dragDistance.value, 0); // 왼쪽으로 드래그를 못하게
-  }
-
-  const newTranslateX =
-    currentIndex.value * -100 + (dragDistance.value / window.innerWidth) * 100;
-
-  if (carousel.value) {
-    carousel.value.style.transform = `translateX(${newTranslateX}%)`;
-  }
-};
-
-const endDrag = () => {
-  isDragging.value = false;
-
-  const distance = dragDistance.value;
-  console.log('distance', distance);
+  const dragStandardDistance = 4; // 드래그 기준 거리
+  const dragX = event.pageX;
+  const walk = ((dragX - startX.value) / window.innerWidth) * 100; // 드래그 거리 계산
 
   // 드래그 거리 기준으로 이전/다음 이미지로 이동
-  if (distance > 50 && currentIndex.value > 0) {
-    currentIndex.value -= 1; // 왼쪽으로 드래그 시 이전 이미지로
-  } else if (
-    distance < -50 &&
+  if (
+    walk < -dragStandardDistance &&
     currentIndex.value < itemDetail.value.imageUrl.length - 1
   ) {
-    currentIndex.value += 1; // 오른쪽으로 드래그 시 다음 이미지로
+    nextHandler(); // 다음 이미지로 이동
+  } else if (walk > dragStandardDistance && currentIndex.value > 0) {
+    prevHandler(); // 이전 이미지로 이동
   }
 
-  // 애니메이션 재개
   if (carousel.value) {
-    carousel.value.style.transition = ''; // 애니메이션 재개
-    // 드래그 후 위치 재조정
-    carousel.value.style.transform = `translateX(-${currentIndex.value * 100}%)`;
+    carousel.value.style.transition = 'transform 0.4s ease';
+    carousel.value.style.transform = `translateX(${currentIndex.value * -100}%)`; // 최종 위치 설정
+    isDragging.value = false;
   }
+}
 
-  // 드래그 거리 초기화
-  dragDistance.value = 0;
-};
-
-// 전체 문서에서 mousemove 이벤트를 처리하여 드래그를 계속
-const handleMouseMove = (event: MouseEvent) => {
-  console.log('event', event);
-  console.log('isDragging.value', isDragging.value);
-
-  if (isDragging.value) {
-    onDrag(event);
-  }
-};
-
-// 마운트 시 이벤트 리스너 추가
-onMounted(() => {
-  window.addEventListener('mousemove', handleMouseMove);
-});
-
-// 언마운트 시 이벤트 리스너 제거
-onBeforeUnmount(() => {
-  window.removeEventListener('mousemove', handleMouseMove);
-});
-
-// const endDrag = () => {
-//   isDragging.value = false;
-//   const distance = dragDistance.value;
-//   console.log('distance', distance);
-
-//   if (distance > 10 && currentIndex.value > 0) {
-//     prevHandler(); // 왼쪽으로 드래그 시 이전 이미지로
-//   } else if (
-//     distance < -10 &&
-//     currentIndex.value < itemDetail.value!.imageUrl.length - 1
-//   ) {
-//     nextHandler(); // 오른쪽으로 드래그 시 다음 이미지로
-//   }
-
-//   if (carousel.value) {
-//     carousel.value.style.transition = ''; // 애니메이션 재개
-//   }
-// };
+function goToImage(index: number) {
+  currentIndex.value = index;
+}
 </script>
 
 <template>
-  <div
-    class="overflow-hidden relative flex-shrink-0 h-full"
-    @mousedown="startDrag"
-    @mousemove="onDrag"
-    @mouseup="endDrag"
-  >
-    <div
+  <div class="overflow-hidden relative flex-shrink-0 h-full">
+    <ul
       ref="carousel"
-      class="snap-mandatory scroll-smooth flex transition-transform duration-500 w-[564px]"
-      :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+      class="flex transition-transform duration-400 w-[564px]"
+      :style="{ transform: `translateX(${currentIndex * -100}%)` }"
+      @mousedown="dragStart"
+      @mouseup="dragStop"
+      @mouseleave="dragStop"
+      @mousemove="dragging"
     >
-      <!-- TODO: image id 추가 예정 -주석처리 -->
-      <div
-        v-for="image in itemDetail.imageUrl"
-        :key="image"
-        class="flex-shrink-0 w-full snap-start"
+      <li
+        v-for="(image, index) in filteredImageUrls"
+        :key="index"
+        class="flex-shrink-0 w-full"
       >
-        <!-- TODO: image name 추가 예정 -주석처리 -->
-        <img :src="image" class="w-full" draggable="false" :alt="image" />
-      </div>
-    </div>
+        <img
+          :src="image.link"
+          class="w-full"
+          :alt="image.name"
+          draggable="false"
+        />
+      </li>
+    </ul>
 
     <button
-      v-if="itemDetail.imageUrl.length > 1"
       @click="prevHandler"
-      :class="`absolute shadow-md left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60`"
+      :class="`absolute left-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
+      :disabled="currentIndex === 0"
     >
       <i class="pi pi-angle-left text-gray-800" />
     </button>
-
     <button
-      v-if="itemDetail.imageUrl.length > 1"
       @click="nextHandler"
-      class="absolute shadow-md right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60"
+      :class="`absolute right-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === itemDetail.imageUrl.length - 1 ? 'cursor-not-allowed' : ''}`"
+      :disabled="currentIndex === itemDetail.imageUrl.length - 1"
     >
       <i class="pi pi-angle-right text-gray-800" />
     </button>
 
     <ul
       v-if="itemDetail.imageUrl.length > 1"
-      class="absolute bottom-4 flex w-full justify-center gap-1"
+      class="absolute bottom-4 flex w-full justify-center gap-2"
     >
       <li
         v-for="(_, idx) in itemDetail?.imageUrl"
         :key="idx"
-        :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40'}`"
+        :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40 cursor-pointer'}`"
+        @click="goToImage(idx)"
       />
     </ul>
   </div>

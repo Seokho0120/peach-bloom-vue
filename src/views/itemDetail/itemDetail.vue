@@ -18,10 +18,7 @@ const { data: itemDetail, isLoading } = useGetItemDetail(productId);
       v-if="itemDetail"
       class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
     >
-      <!-- <ItemsCarousel :itemDetail="itemDetail" />
-      <ItemsCarousel2 /> -->
-      <ItemsCarousel3 :itemDetail="itemDetail" />
-
+      <ItemsCarousel :itemDetail="itemDetail" />
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>
 
