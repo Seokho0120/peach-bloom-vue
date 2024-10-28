@@ -9,6 +9,7 @@ export interface ImageItemsType {
 
 const props = defineProps<{
   imageItems: ImageItemsType[];
+  type?: string;
 }>();
 
 const { imageItems } = toRefs(props);
@@ -89,7 +90,7 @@ function goToImage(index: number) {
   <div class="overflow-hidden relative flex-shrink-0 h-full">
     <ul
       ref="carousel"
-      class="flex transition-transform duration-400 w-[564px]"
+      :class="`flex transition-transform duration-400 ${type !== 'main' ? 'w-[564px]' : ''} `"
       :style="{ transform: `translateX(${currentIndex * -100}%)` }"
       @mousedown="dragStart"
       @mouseup="dragStop"
@@ -99,13 +100,13 @@ function goToImage(index: number) {
       <li
         v-for="(image, index) in imageItems"
         :key="index"
-        class="flex-shrink-0 w-full"
+        class="flex-shrink-0 w-full h-full"
       >
         <img
           :src="image.link"
-          class="w-full"
           :alt="image.name"
           draggable="false"
+          class="w-full h-full object-cover"
         />
       </li>
     </ul>
