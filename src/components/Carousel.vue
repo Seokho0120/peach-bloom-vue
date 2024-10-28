@@ -1,29 +1,17 @@
 <script setup lang="ts">
-import { ref, toRefs, watch } from 'vue';
-import type { ItemDetailType } from '@/api/firestore';
+import { ref, toRefs } from 'vue';
+
+export interface ImageItemsType {
+  link: string;
+  id: number;
+  name: string;
+}
 
 const props = defineProps<{
-  itemDetail: ItemDetailType;
+  imageItems: ImageItemsType[];
 }>();
-const { itemDetail } = toRefs(props);
-const filteredImageUrls = ref<{ link: string; id: number; name: string }[]>([]);
 
-// 필터링된 이미지 URL 설정
-watch(
-  itemDetail,
-  () => {
-    filteredImageUrls.value = itemDetail.value.imageUrl.map((url, index) => {
-      const name = url.split('/').pop()?.split('.')[0] || '';
-
-      return {
-        link: url,
-        id: index,
-        name: name,
-      };
-    });
-  },
-  { immediate: true },
-);
+const { imageItems } = toRefs(props);
 
 const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
@@ -32,7 +20,7 @@ const startX = ref(0);
 const startTranslateX = ref(0);
 
 function nextHandler() {
-  if (currentIndex.value < itemDetail.value.imageUrl.length - 1) {
+  if (currentIndex.value < imageItems.value.length - 1) {
     currentIndex.value += 1;
   } else {
     currentIndex.value = 0;
@@ -43,7 +31,7 @@ function prevHandler() {
   if (currentIndex.value > 0) {
     currentIndex.value -= 1;
   } else {
-    currentIndex.value = itemDetail.value.imageUrl.length - 1;
+    currentIndex.value = imageItems.value.length - 1;
   }
 }
 
@@ -78,7 +66,7 @@ function dragStop(event: MouseEvent) {
   // 드래그 거리 기준으로 이전/다음 이미지로 이동
   if (
     walk < -dragStandardDistance &&
-    currentIndex.value < itemDetail.value.imageUrl.length - 1
+    currentIndex.value < imageItems.value.length - 1
   ) {
     nextHandler(); // 다음 이미지로 이동
   } else if (walk > dragStandardDistance && currentIndex.value > 0) {
@@ -109,7 +97,7 @@ function goToImage(index: number) {
       @mousemove="dragging"
     >
       <li
-        v-for="(image, index) in filteredImageUrls"
+        v-for="(image, index) in imageItems"
         :key="index"
         class="flex-shrink-0 w-full"
       >
@@ -131,18 +119,18 @@ function goToImage(index: number) {
     </button>
     <button
       @click="nextHandler"
-      :class="`absolute right-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === itemDetail.imageUrl.length - 1 ? 'cursor-not-allowed' : ''}`"
-      :disabled="currentIndex === itemDetail.imageUrl.length - 1"
+      :class="`absolute right-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
+      :disabled="currentIndex === imageItems.length - 1"
     >
       <i class="pi pi-angle-right text-gray-800" />
     </button>
 
     <ul
-      v-if="itemDetail.imageUrl.length > 1"
+      v-if="imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
     >
       <li
-        v-for="(_, idx) in itemDetail?.imageUrl"
+        v-for="(_, idx) in imageItems"
         :key="idx"
         :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40 cursor-pointer'}`"
         @click="goToImage(idx)"

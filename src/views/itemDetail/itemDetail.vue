@@ -3,15 +3,14 @@ import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGetItemDetail } from '@/composables/useItems';
 import ItemsDetailInfo from '@/components/items/itemsDetailInfo.vue';
+import type { ImageItemsType } from '@/components/Carousel.vue';
 
 const route = useRoute();
 const productId = computed(() => route.params.id.toString());
 
-// TODO: itemDetail.value.imageUrl -> imageUrls 복수형으로 수정 예정
+const filteredImageUrls = ref<ImageItemsType[]>([]);
 const { data: itemDetail, isLoading } = useGetItemDetail(productId);
-const filteredImageUrls = ref<{ link: string; id: number; name: string }[]>([]);
 
-// 필터링된 이미지 URL 설정
 watch(
   itemDetail,
   (newVal) => {
@@ -38,8 +37,7 @@ watch(
       v-if="itemDetail"
       class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
     >
-      <!-- <Carousel :filteredImageUrls="filteredImageUrls" /> -->
-      <Carousel :itemDetail="itemDetail" />
+      <Carousel :imageItems="filteredImageUrls" />
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>
 
