@@ -113,14 +113,14 @@ function goToImage(index: number) {
 
     <button
       @click="prevHandler"
-      :class="`absolute left-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
+      :class="`absolute left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
       :disabled="currentIndex === 0"
     >
       <i class="pi pi-angle-left text-gray-800" />
     </button>
     <button
       @click="nextHandler"
-      :class="`absolute right-4 top-1/2 transform -translate-y-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
+      :class="`absolute right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
       :disabled="currentIndex === imageItems.length - 1"
     >
       <i class="pi pi-angle-right text-gray-800" />
