@@ -9,7 +9,6 @@ export interface ImageItemsType {
 
 const props = defineProps<{
   imageItems: ImageItemsType[];
-  type?: string;
 }>();
 
 const { imageItems } = toRefs(props);
@@ -46,6 +45,7 @@ function dragStart(event: MouseEvent) {
 }
 
 // 드래그 중
+// dragging은 단순히 마우스 클릭해서 움직이는것만 참여하는 함수임
 function dragging(event: MouseEvent) {
   if (!isDragging.value || !carousel.value) return;
 
@@ -60,7 +60,7 @@ function dragging(event: MouseEvent) {
 function dragStop(event: MouseEvent) {
   if (!isDragging.value) return;
 
-  const dragStandardDistance = 4; // 드래그 기준 거리
+  const dragStandardDistance = 4; // 드래그 기준 거리, 현재 %로 계산됨
   const dragX = event.pageX;
   const walk = ((dragX - startX.value) / window.innerWidth) * 100; // 드래그 거리 계산
 
@@ -75,7 +75,8 @@ function dragStop(event: MouseEvent) {
   }
 
   if (carousel.value) {
-    carousel.value.style.transition = 'transform 0.4s ease';
+    carousel.value.style.transition = 'transform 0.4s ease'; // 이미지 드래그할때 여러 애니메이션을 줄 수 있음 일반적으로 ease
+    // 드래그 종료 시 최종 위치를 정해줘야 그 이미지를 볼 수 있기 떄문에
     carousel.value.style.transform = `translateX(${currentIndex.value * -100}%)`; // 최종 위치 설정
     isDragging.value = false;
   }
@@ -84,13 +85,15 @@ function dragStop(event: MouseEvent) {
 function goToImage(index: number) {
   currentIndex.value = index;
 }
+// translateX가 캐러셀의 핵심 기능이며
+// -음수일때 왼 -> 오, +양수일때 오 -> 왼
 </script>
 
 <template>
   <div class="overflow-hidden relative flex-shrink-0 h-full">
     <ul
       ref="carousel"
-      :class="`flex transition-transform duration-400 ${type !== 'main' ? 'w-[564px]' : ''} `"
+      class="flex transition-transform duration-400"
       :style="{ transform: `translateX(${currentIndex * -100}%)` }"
       @mousedown="dragStart"
       @mouseup="dragStop"

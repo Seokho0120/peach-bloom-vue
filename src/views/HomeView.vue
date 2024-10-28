@@ -33,6 +33,6 @@ watchEffect(() => {
 <template>
   <MainSnb />
   <div style="width: 100%; height: 680px">
-    <Carousel :imageItems="images" type="main" />
+    <Carousel :imageItems="images" />
   </div>
 </template>

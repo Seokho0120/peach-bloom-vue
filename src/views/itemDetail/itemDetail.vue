@@ -37,7 +37,9 @@ watch(
       v-if="itemDetail"
       class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
     >
-      <Carousel :imageItems="filteredImageUrls" />
+      <div>
+        <Carousel :imageItems="filteredImageUrls" />
+      </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>
 
