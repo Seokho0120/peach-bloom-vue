@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs } from 'vue';
+import { onBeforeUnmount, onMounted, ref, toRefs } from 'vue';
 
 export interface ImageItemsType {
   link: string;
@@ -9,15 +9,20 @@ export interface ImageItemsType {
 
 const props = defineProps<{
   imageItems: ImageItemsType[];
+  autoPlay?: boolean; // 자동 슬라이드 기능 추가
+  interval?: number; // 자동 슬라이드 간격
 }>();
 
 const { imageItems } = toRefs(props);
+const autoPlay = ref(props.autoPlay ?? false);
+const interval = ref(props.interval ?? 3000);
 
 const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
 const isDragging = ref(false);
 const startX = ref(0);
 const startTranslateX = ref(0);
+let autoSlideInterval: ReturnType<typeof setInterval>;
 
 function nextHandler() {
   if (currentIndex.value < imageItems.value.length - 1) {
@@ -85,8 +90,27 @@ function dragStop(event: MouseEvent) {
 function goToImage(index: number) {
   currentIndex.value = index;
 }
-// translateX가 캐러셀의 핵심 기능이며
-// -음수일때 왼 -> 오, +양수일때 오 -> 왼
+
+// 자동 슬라이드
+function startAutoSlide() {
+  if (autoPlay.value) {
+    autoSlideInterval = setInterval(() => {
+      nextHandler();
+    }, interval.value);
+  }
+}
+
+function stopAutoSlide() {
+  clearInterval(autoSlideInterval);
+}
+
+onMounted(() => {
+  startAutoSlide();
+});
+
+onBeforeUnmount(() => {
+  stopAutoSlide();
+});
 </script>
 
 <template>

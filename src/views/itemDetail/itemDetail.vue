@@ -38,7 +38,11 @@ watch(
       class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
     >
       <div>
-        <Carousel :imageItems="filteredImageUrls" />
+        <Carousel
+          :imageItems="filteredImageUrls"
+          :interval="3000"
+          :autoPlay="true"
+        />
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>
