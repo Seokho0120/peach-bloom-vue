@@ -40,8 +40,11 @@ watch(
       <div>
         <Carousel
           :imageItems="filteredImageUrls"
-          :interval="3000"
-          :autoPlay="true"
+          :autoPlay="{
+            enabled: true,
+            interval: 5000,
+          }"
+          :pagination="true"
         />
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />

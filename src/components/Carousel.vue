@@ -9,13 +9,16 @@ export interface ImageItemsType {
 
 const props = defineProps<{
   imageItems: ImageItemsType[];
-  autoPlay?: boolean; // 자동 슬라이드 기능 추가
-  interval?: number; // 자동 슬라이드 간격
+  autoPlay?: {
+    enabled: boolean;
+    interval: number;
+  };
+  pagination?: boolean;
 }>();
 
 const { imageItems } = toRefs(props);
-const autoPlay = ref(props.autoPlay ?? false);
-const interval = ref(props.interval ?? 3000);
+const autoPlay = ref(props.autoPlay?.enabled ?? false);
+const interval = ref(props.autoPlay?.interval ?? 3000);
 
 const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
@@ -154,7 +157,7 @@ onBeforeUnmount(() => {
     </button>
 
     <ul
-      v-if="imageItems.length > 1"
+      v-if="pagination && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
     >
       <li
