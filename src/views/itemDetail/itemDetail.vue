@@ -39,7 +39,12 @@ watch(
     >
       <div>
         <div class="w-[564px] h-[564px]">
-          <Carousel :imageItems="filteredImageUrls" />
+          <Carousel
+            :imageItems="filteredImageUrls"
+            :scrollbar="{
+              enabled: true,
+            }"
+          />
         </div>
 
         <!-- <div class="w-[564px] h-[564px]">

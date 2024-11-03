@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, toRefs } from 'vue';
+import { onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue';
 
 export interface ImageItemsType {
   link: string;
@@ -19,11 +19,15 @@ const props = defineProps<{
   };
   showPrevButton?: boolean;
   showNextButton?: boolean;
+  scrollbar?: {
+    enabled: boolean; // 스크롤바 활성화 여부
+  };
 }>();
 
 const { imageItems } = toRefs(props);
 const autoPlay = ref(props.autoPlay?.enabled ?? false);
 const interval = ref(props.autoPlay?.interval ?? 3000);
+const showScrollbar = ref(false); // 스크롤바 표시 여부
 
 const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
@@ -35,6 +39,8 @@ let autoSlideInterval: ReturnType<typeof setInterval>;
 function nextHandler() {
   if (currentIndex.value < imageItems.value.length - 1) {
     currentIndex.value += 1;
+
+    showScrollbar.value = true; // 이미지 이동 시 스크롤바 표시
   } else {
     currentIndex.value = 0;
   }
@@ -43,6 +49,8 @@ function nextHandler() {
 function prevHandler() {
   if (currentIndex.value > 0) {
     currentIndex.value -= 1;
+
+    showScrollbar.value = true; // 이미지 이동 시 스크롤바 표시
   } else {
     currentIndex.value = imageItems.value.length - 1;
   }
@@ -97,6 +105,7 @@ function dragStop(event: MouseEvent) {
 
 function goToImage(index: number) {
   currentIndex.value = index;
+  showScrollbar.value = true; // 이미지 이동 시 스크롤바 표시
 }
 
 // 자동 슬라이드
@@ -107,6 +116,13 @@ function startAutoSlide() {
     }, interval.value);
   }
 }
+
+// 이미지가 이동할 때 스크롤바 숨기기
+watch(currentIndex, () => {
+  setTimeout(() => {
+    showScrollbar.value = false; // 잠시 후 스크롤바 숨김
+  }, 4000); // 2초 후에 숨김
+});
 
 function stopAutoSlide() {
   clearInterval(autoSlideInterval);
@@ -180,5 +196,18 @@ onBeforeUnmount(() => {
         @click="goToImage(idx)"
       />
     </ul>
+
+    <div
+      v-if="props.scrollbar?.enabled"
+      class="absolute bottom-0 left-0 right-0 h-1 bg-gray-300 transition-opacity duration-300"
+      :class="{ 'opacity-100': showScrollbar, 'opacity-0': !showScrollbar }"
+    >
+      <div
+        :style="{
+          width: `${((currentIndex + 1) / props.imageItems.length) * 100}%`,
+        }"
+        class="h-full bg-white transition-all duration-300"
+      />
+    </div>
   </div>
 </template>
