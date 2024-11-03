@@ -117,12 +117,11 @@ function startAutoSlide() {
   }
 }
 
-// 이미지가 이동할 때 스크롤바 숨기기
-watch(currentIndex, () => {
-  setTimeout(() => {
-    showScrollbar.value = false; // 잠시 후 스크롤바 숨김
-  }, 4000); // 2초 후에 숨김
-});
+// watch(currentIndex, () => {
+//   setTimeout(() => {
+//     showScrollbar.value = false;
+//   }, 4000);
+// });
 
 function stopAutoSlide() {
   clearInterval(autoSlideInterval);
@@ -191,7 +190,7 @@ onBeforeUnmount(() => {
             ? 'opacity-100 scale-125' // 현재 인덱스 점: 크기 증가
             : idx === currentIndex - 1 || idx === currentIndex + 1
               ? 'opacity-40 scale-100' // 이전, 다음 인덱스 점: 중간 크기
-              : 'opacity-40 scale-75' // 나머지 점: 작게
+              : 'opacity-30 scale-75' // 나머지 점: 작게
         } transition-all duration-300 cursor-pointer`"
         @click="goToImage(idx)"
       />
@@ -199,14 +198,14 @@ onBeforeUnmount(() => {
 
     <div
       v-if="props.scrollbar?.enabled"
-      class="absolute bottom-0 left-0 right-0 h-1 bg-gray-300 transition-opacity duration-300"
+      class="absolute bottom-0 left-0 right-0 h-1 bg-gray-400 transition-opacity duration-300"
       :class="{ 'opacity-100': showScrollbar, 'opacity-0': !showScrollbar }"
     >
       <div
         :style="{
           width: `${((currentIndex + 1) / props.imageItems.length) * 100}%`,
         }"
-        class="h-full bg-white transition-all duration-300"
+        class="h-full bg-gray-200 transition-all duration-300"
       />
     </div>
   </div>
