@@ -17,7 +17,8 @@ const props = defineProps<{
     enabled: boolean;
     dynamicBullets?: boolean;
   };
-  // pagination?: boolean;
+  showPrevButton?: boolean;
+  showNextButton?: boolean;
 }>();
 
 const { imageItems } = toRefs(props);
@@ -121,7 +122,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="w-[564px] h-[564px] overflow-hidden relative flex-shrink-0">
+  <div class="overflow-hidden relative flex-shrink-0">
     <ul
       ref="carousel"
       class="flex transition-transform duration-400"
@@ -146,6 +147,7 @@ onBeforeUnmount(() => {
     </ul>
 
     <button
+      v-if="showPrevButton"
       @click="prevHandler"
       :class="`absolute left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
       :disabled="currentIndex === 0"
@@ -153,6 +155,7 @@ onBeforeUnmount(() => {
       <i class="pi pi-angle-left text-gray-800" />
     </button>
     <button
+      v-if="showNextButton"
       @click="nextHandler"
       :class="`absolute right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
       :disabled="currentIndex === imageItems.length - 1"

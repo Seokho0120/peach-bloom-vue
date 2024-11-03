@@ -38,17 +38,25 @@ watch(
       class="w-full max-w-[81.25rem] min-w-[56.25rem] mx-auto flex px-12 py-5 gap-10"
     >
       <div>
-        <Carousel
-          :imageItems="filteredImageUrls"
-          :autoPlay="{
-            enabled: true,
-            interval: 5000,
-          }"
-          :pagination="{
-            enabled: true,
-            dynamicBullets: true,
-          }"
-        />
+        <div class="w-[564px] h-[564px]">
+          <Carousel :imageItems="filteredImageUrls" />
+        </div>
+
+        <!-- <div class="w-[564px] h-[564px]">
+          <Carousel
+            :imageItems="filteredImageUrls"
+            :autoPlay="{
+              enabled: true,
+              interval: 5000,
+            }"
+            :pagination="{
+              enabled: true,
+              dynamicBullets: true,
+            }"
+            :showPrevButton="true"
+            :showNextButton="true"
+          />
+        </div> -->
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>
