@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="overflow-hidden relative flex-shrink-0 h-full">
+  <div class="w-[564px] h-[564px] overflow-hidden relative flex-shrink-0">
     <ul
       ref="carousel"
       class="flex transition-transform duration-400"
