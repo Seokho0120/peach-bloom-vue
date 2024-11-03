@@ -13,7 +13,11 @@ const props = defineProps<{
     enabled: boolean;
     interval: number;
   };
-  pagination?: boolean;
+  pagination?: {
+    enabled: boolean;
+    dynamicBullets?: boolean;
+  };
+  // pagination?: boolean;
 }>();
 
 const { imageItems } = toRefs(props);
@@ -157,13 +161,19 @@ onBeforeUnmount(() => {
     </button>
 
     <ul
-      v-if="pagination && imageItems.length > 1"
+      v-if="pagination?.enabled && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
     >
       <li
         v-for="(_, idx) in imageItems"
         :key="idx"
-        :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${idx === currentIndex ? 'opacity-100' : 'opacity-40 cursor-pointer'}`"
+        :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${
+          idx === currentIndex
+            ? 'opacity-100 scale-125' // 현재 인덱스 점: 크기 증가
+            : idx === currentIndex - 1 || idx === currentIndex + 1
+              ? 'opacity-40 scale-100' // 이전, 다음 인덱스 점: 중간 크기
+              : 'opacity-40 scale-75' // 나머지 점: 작게
+        } transition-all duration-300 cursor-pointer`"
         @click="goToImage(idx)"
       />
     </ul>

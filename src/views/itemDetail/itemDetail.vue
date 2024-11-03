@@ -44,7 +44,10 @@ watch(
             enabled: true,
             interval: 5000,
           }"
-          :pagination="true"
+          :pagination="{
+            enabled: true,
+            dynamicBullets: true,
+          }"
         />
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
