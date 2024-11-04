@@ -39,24 +39,22 @@ watch(
     >
       <div>
         <div class="w-[564px] h-[564px]">
-          <Carousel :imageItems="filteredImageUrls" scrollbar />
-        </div>
-
-        <!-- <div class="w-[564px] h-[564px]">
           <Carousel
             :imageItems="filteredImageUrls"
-            :autoPlay="{
-              enabled: true,
-              interval: 5000,
-            }"
             :pagination="{
-              enabled: true,
               dynamicBullets: true,
             }"
-            :showPrevButton="true"
-            :showNextButton="true"
           />
-        </div> -->
+
+          <!-- <Carousel
+            :imageItems="filteredImageUrls"
+            scrollbar
+            showPrevButton
+            showNextButton
+            :autoPlay="4000"
+            pagination
+          /> -->
+        </div>
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
     </div>

@@ -11,22 +11,14 @@ const props = defineProps<{
   imageItems: ImageItemsType[];
   showPrevButton?: boolean;
   showNextButton?: boolean;
-  pagination?: {
-    enabled: boolean;
-    dynamicBullets?: boolean;
-  };
+  pagination?: boolean | { dynamicBullets?: boolean };
   scrollbar?: boolean;
-  autoPlay?: {
-    enabled: boolean;
-    interval: number;
-  };
+  autoPlay?: number;
 }>();
 
-const { imageItems, scrollbar } = toRefs(props);
-const autoPlay = ref(props.autoPlay?.enabled ?? false);
-const interval = ref(props.autoPlay?.interval ?? 3000);
-const showScrollbar = computed(() => scrollbar.value ?? false);
+const { imageItems, scrollbar, autoPlay, pagination } = toRefs(props);
 
+const showScrollbar = computed(() => scrollbar.value ?? false);
 const carousel = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
 const isDragging = ref(false);
@@ -60,7 +52,6 @@ function dragStart(event: MouseEvent) {
 }
 
 // 드래그 중
-// dragging은 단순히 마우스 클릭해서 움직이는것만 참여하는 함수임
 function dragging(event: MouseEvent) {
   if (!isDragging.value || !carousel.value) return;
 
@@ -101,25 +92,26 @@ function goToImage(index: number) {
   currentIndex.value = index;
 }
 
-// 자동 슬라이드
-function startAutoSlide() {
+const startAutoPlay = () => {
   if (autoPlay.value) {
     autoSlideInterval = setInterval(() => {
-      nextHandler();
-    }, interval.value);
+      currentIndex.value = (currentIndex.value + 1) % imageItems.value.length;
+    }, autoPlay.value);
   }
-}
+};
 
-function stopAutoSlide() {
-  clearInterval(autoSlideInterval);
-}
+const stopAutoPlay = () => {
+  if (autoSlideInterval) {
+    clearInterval(autoSlideInterval);
+  }
+};
 
 onMounted(() => {
-  startAutoSlide();
+  startAutoPlay();
 });
 
 onBeforeUnmount(() => {
-  stopAutoSlide();
+  stopAutoPlay();
 });
 </script>
 
@@ -166,18 +158,25 @@ onBeforeUnmount(() => {
     </button>
 
     <ul
-      v-if="pagination?.enabled && imageItems.length > 1"
+      v-if="pagination && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
     >
+      <!-- TODO: 스타일 로직 따로 관리 필요 -->
       <li
         v-for="(_, idx) in imageItems"
         :key="idx"
         :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${
-          idx === currentIndex
-            ? 'opacity-100 scale-125' // 현재 인덱스 점: 크기 증가
-            : idx === currentIndex - 1 || idx === currentIndex + 1
-              ? 'opacity-40 scale-100' // 이전, 다음 인덱스 점: 중간 크기
-              : 'opacity-30 scale-75' // 나머지 점: 작게
+          typeof pagination === 'object' && pagination.dynamicBullets // TODO: 조건을 다른 방식으로 가능할지 알아보기
+            ? idx === currentIndex // dynamicBullets: opacity, scale
+              ? 'opacity-100 scale-125'
+              : idx === currentIndex - 1 || idx === currentIndex + 1
+                ? 'opacity-70 scale-100'
+                : 'opacity-30 scale-75'
+            : idx === currentIndex // 기본스타일: opacity
+              ? 'opacity-100'
+              : idx === currentIndex - 1 || idx === currentIndex + 1
+                ? 'opacity-40'
+                : 'opacity-30'
         } transition-all duration-300 cursor-pointer`"
         @click="goToImage(idx)"
       />
