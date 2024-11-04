@@ -24,7 +24,7 @@ const currentIndex = ref(0);
 const isDragging = ref(false);
 const startX = ref(0);
 const startTranslateX = ref(0);
-let autoSlideInterval: ReturnType<typeof setInterval>;
+// let autoSlideInterval: ReturnType<typeof setInterval>;
 
 function nextHandler() {
   if (currentIndex.value < imageItems.value.length - 1) {
@@ -92,31 +92,38 @@ function goToImage(index: number) {
   currentIndex.value = index;
 }
 
+// TODO: autoPlay 시작, 멈춤 함수가 필요할지 검토 필요, 현재는 자동 재생만 가능
 const startAutoPlay = () => {
   if (autoPlay.value) {
-    autoSlideInterval = setInterval(() => {
-      currentIndex.value = (currentIndex.value + 1) % imageItems.value.length;
+    setInterval(() => {
+      nextHandler();
     }, autoPlay.value);
+
+    // autoSlideInterval = setInterval(() => {
+    //   nextHandler();
+    // }, autoPlay.value);
   }
 };
 
-const stopAutoPlay = () => {
-  if (autoSlideInterval) {
-    clearInterval(autoSlideInterval);
-  }
-};
+// const stopAutoPlay = () => {
+//   if (autoSlideInterval) {
+//     clearInterval(autoSlideInterval);
+//   }
+// };
 
 onMounted(() => {
   startAutoPlay();
 });
 
-onBeforeUnmount(() => {
-  stopAutoPlay();
-});
+// onBeforeUnmount(() => {
+//   stopAutoPlay();
+// });
 </script>
 
 <template>
   <div class="overflow-hidden relative flex-shrink-0">
+    <!-- <button @click="startAutoPlay()">start</button>
+    <button @click="stopAutoPlay()">stop</button> -->
     <ul
       ref="carousel"
       class="flex transition-transform duration-400"

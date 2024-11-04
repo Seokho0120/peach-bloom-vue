@@ -41,19 +41,12 @@ watch(
         <div class="w-[564px] h-[564px]">
           <Carousel
             :imageItems="filteredImageUrls"
-            :pagination="{
-              dynamicBullets: true,
-            }"
-          />
-
-          <!-- <Carousel
-            :imageItems="filteredImageUrls"
-            scrollbar
             showPrevButton
             showNextButton
-            :autoPlay="4000"
             pagination
-          /> -->
+            scrollbar
+            :autoPlay="1000"
+          />
         </div>
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
