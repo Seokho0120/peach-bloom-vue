@@ -7,14 +7,17 @@ export interface ImageItemsType {
   name: string;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   imageItems: ImageItemsType[];
   showPrevButton?: boolean;
   showNextButton?: boolean;
   pagination?: boolean | { dynamicBullets?: boolean };
   scrollbar?: boolean;
-  autoPlay?: number;
-}>();
+  autoPlay?: boolean;
+  autoPlayDuration?: number;
+}>(), {
+  autoPlayDuration: 3000,
+});
 
 const { imageItems, scrollbar, autoPlay, pagination } = toRefs(props);
 
@@ -62,6 +65,8 @@ function dragging(event: MouseEvent) {
   carousel.value.style.transform = `translateX(${startTranslateX.value + walk}%)`; // 이동
 }
 
+const autoPlayInterval = ref<number|null>(null);
+
 // 드래그 종료
 function dragStop(event: MouseEvent) {
   if (!isDragging.value) return;
@@ -92,12 +97,13 @@ function goToImage(index: number) {
   currentIndex.value = index;
 }
 
+
 // TODO: autoPlay 시작, 멈춤 함수가 필요할지 검토 필요, 현재는 자동 재생만 가능
 const startAutoPlay = () => {
   if (autoPlay.value) {
-    setInterval(() => {
+    autoPlayInterval.value = setInterval(() => {
       nextHandler();
-    }, autoPlay.value);
+    }, props.autoPlayDuration);
 
     // autoSlideInterval = setInterval(() => {
     //   nextHandler();
@@ -105,15 +111,25 @@ const startAutoPlay = () => {
   }
 };
 
+watch(autoPlay, (newVal) => {
+  if (newVal) {
+    startAutoPlay();
+  } else {
+    if (autoPlayInterval.value) {
+      clearInterval(autoPlayInterval.value);
+    }
+  }
+}, { immediate: true });
+
 // const stopAutoPlay = () => {
 //   if (autoSlideInterval) {
 //     clearInterval(autoSlideInterval);
 //   }
 // };
 
-onMounted(() => {
-  startAutoPlay();
-});
+// onMounted(() => {
+//   startAutoPlay();
+// });
 
 // onBeforeUnmount(() => {
 //   stopAutoPlay();
@@ -147,22 +163,35 @@ onMounted(() => {
       </li>
     </ul>
 
-    <button
-      v-if="showPrevButton"
-      @click="prevHandler"
-      :class="`absolute left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
-      :disabled="currentIndex === 0"
+    <slot 
+      name="prev-btn" 
+      :goToPrev="prevHandler"
+      :defaultClass="'absolute left-4 top-1/2'"
     >
-      <i class="pi pi-angle-left text-gray-800" />
-    </button>
-    <button
-      v-if="showNextButton"
-      @click="nextHandler"
-      :class="`absolute right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
-      :disabled="currentIndex === imageItems.length - 1"
+      <button
+        v-if="showPrevButton"
+        @click="prevHandler"
+        :class="`absolute left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
+        :disabled="currentIndex === 0"
+      >
+        <i class="pi pi-angle-left text-gray-800" />
+      </button>
+    </slot>
+
+    <slot 
+      name="next-btn" 
+      :goToNext="nextHandler"
+      :defaultClass="'absolute right-4 top-1/2'"
     >
-      <i class="pi pi-angle-right text-gray-800" />
-    </button>
+      <button
+        v-if="showNextButton"
+        @click="nextHandler"
+        :class="`absolute right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
+        :disabled="currentIndex === imageItems.length - 1"
+      >
+        <i class="pi pi-angle-right text-gray-800" />
+      </button>
+    </slot>
 
     <ul
       v-if="pagination && imageItems.length > 1"
