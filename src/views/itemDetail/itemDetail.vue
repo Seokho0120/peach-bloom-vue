@@ -44,9 +44,16 @@ watch(
             showPrevButton
             showNextButton
             pagination
-            scrollbar
-            autoPlay
           />
+
+          <!-- <MyCarousel
+            :imageItems="filteredImageUrls"
+            showPrevButton
+            showNextButton
+            :pagination="{
+              dynamicBullets: true,
+            }"
+          /> -->
         </div>
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />

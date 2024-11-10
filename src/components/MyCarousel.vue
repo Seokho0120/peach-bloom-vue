@@ -121,6 +121,28 @@ watch(
   },
   { immediate: true },
 );
+
+function getPaginationClass(idx: number) {
+  const isDynamicBullets =
+    typeof pagination.value === 'object' && pagination.value.dynamicBullets;
+  const isActive = idx === currentIndex.value;
+  const isNextOrPrev =
+    idx === currentIndex.value - 1 || idx === currentIndex.value + 1;
+
+  if (isDynamicBullets) {
+    return isActive
+      ? 'opacity-100 scale-125' // 현재 idx
+      : isNextOrPrev
+        ? 'opacity-70 scale-100' // 현재 idx 앞뒤
+        : 'opacity-30 scale-75'; // 나머지 idx
+  } else {
+    return isActive
+      ? 'opacity-100'
+      : isNextOrPrev
+        ? 'opacity-40'
+        : 'opacity-30';
+  }
+}
 </script>
 
 <template>
@@ -184,23 +206,11 @@ watch(
       v-if="pagination && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
     >
-      <!-- TODO: 스타일 로직 따로 관리 필요 -->
       <li
         v-for="(_, idx) in imageItems"
         :key="idx"
-        :class="`h-[0.5rem] w-[0.5rem] rounded-full bg-white ${
-          typeof pagination === 'object' && pagination.dynamicBullets // TODO: 조건을 다른 방식으로 가능할지 알아보기
-            ? idx === currentIndex // dynamicBullets: opacity, scale
-              ? 'opacity-100 scale-125'
-              : idx === currentIndex - 1 || idx === currentIndex + 1
-                ? 'opacity-70 scale-100'
-                : 'opacity-30 scale-75'
-            : idx === currentIndex // 기본스타일: opacity
-              ? 'opacity-100'
-              : idx === currentIndex - 1 || idx === currentIndex + 1
-                ? 'opacity-40'
-                : 'opacity-30'
-        } transition-all duration-300 cursor-pointer`"
+        :class="`${getPaginationClass(idx)} h-[0.5rem] w-[0.5rem] rounded-full 
+        bg-white transition-all duration-300 cursor-pointer`"
         @click="goToImage(idx)"
       />
     </ul>
