@@ -16,6 +16,7 @@ const props = withDefaults(
     scrollbar?: boolean;
     autoPlay?: boolean;
     autoPlayDuration?: number;
+    effectFade?: boolean;
   }>(),
   {
     autoPlayDuration: 3000,
@@ -143,6 +144,13 @@ function getPaginationClass(idx: number) {
         : 'opacity-30';
   }
 }
+
+function effectFadeStyle(index: number) {
+  return {
+    opacity: currentIndex.value === index ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
+  };
+}
 </script>
 
 <template>
@@ -160,6 +168,7 @@ function getPaginationClass(idx: number) {
         v-for="(image, index) in imageItems"
         :key="index"
         class="flex-shrink-0 w-full h-full"
+        :style="effectFade && effectFadeStyle(index)"
       >
         <img
           :src="image.link"
@@ -202,6 +211,7 @@ function getPaginationClass(idx: number) {
       </button>
     </slot>
 
+    <!-- 기존꺼 -->
     <ul
       v-if="pagination && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"

@@ -44,6 +44,7 @@ watch(
             showPrevButton
             showNextButton
             pagination
+            effectFade
           />
 
           <!-- <MyCarousel
