@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue';
+import { computed, onMounted, ref, toRefs, watch } from 'vue';
 
 export interface ImageItemsType {
   link: string;
@@ -18,6 +18,12 @@ const props = withDefaults(
     autoPlayDuration?: number;
     effectFade?: boolean;
     keyboardControl?: boolean;
+    parallax?: boolean;
+    contents?: {
+      title: string;
+      subTitle: string;
+      content: string;
+    }[];
   }>(),
   {
     autoPlayDuration: 3000,
@@ -168,6 +174,19 @@ onMounted(() => {
     carouselRef.value.focus(); // 자동 포커스
   }
 });
+
+const getParallaxStyle = (index: number, offset: number) => {
+  const progress = currentIndex.value - index;
+  // console.log('progress', progress);
+  // console.log('offset', offset);
+  const translateY = offset * progress;
+  // console.log('translateY', translateY);
+
+  return {
+    transform: `translateX(${translateY}px)`,
+    transition: 'transform 0.6s ease',
+  };
+};
 </script>
 
 <template>
@@ -189,12 +208,41 @@ onMounted(() => {
         class="flex-shrink-0 w-full h-full"
         :style="effectFade && effectFadeStyle(index)"
       >
-        <img
-          :src="image.link"
-          :alt="image.name"
-          draggable="false"
-          class="w-full h-full object-cover"
-        />
+        <div v-if="props.contents" class="relative">
+          <h1
+            class="absolute top-5 left-5 text-xl font-bold"
+            :style="getParallaxStyle(index, -300)"
+          >
+            {{ props.contents[index]?.title }}
+          </h1>
+          <h2
+            class="absolute top-20 left-5 text-lg"
+            :style="getParallaxStyle(index, -200)"
+          >
+            {{ props.contents[index]?.subTitle }}
+          </h2>
+          <div
+            class="absolute top-32 left-5 text-sm"
+            :style="getParallaxStyle(index, -100)"
+          >
+            {{ props.contents[index]?.content }}
+          </div>
+          <img
+            :src="image.link"
+            :alt="image.name"
+            draggable="false"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <div v-else>
+          <img
+            :src="image.link"
+            :alt="image.name"
+            draggable="false"
+            class="w-full h-full object-cover"
+          />
+        </div>
       </li>
     </ul>
 

@@ -44,18 +44,29 @@ watch(
             showPrevButton
             showNextButton
             pagination
-            effectFade
             keyboardControl
+            parallax
+            effectFade
+            :contents="[
+              {
+                title: 'Title 1',
+                subTitle: 'Subtitle 1',
+                content:
+                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum mattis velit, sit amet faucibus felis iaculis nec. Nulla laoreetjusto vitae porttitor porttitor. Suspendisse in sem justo. Integerlaoreet magna nec elit suscipit, ac laoreet nibh euismod. Aliquamhendrerit lorem at elit facilisis rutrum. Ut at ullamcorper velit. Nullaligula nisi, imperdiet ut lacinia nec, tincidunt ut libero. Aeneanfeugiat non eros quis feugiat.',
+              },
+              {
+                title: 'Title 2',
+                subTitle: 'Subtitle 2',
+                content:
+                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum mattis velit, sit amet faucibus felis iaculis nec. Nulla laoreetjusto vitae porttitor porttitor. Suspendisse in sem justo. Integerlaoreet magna nec elit suscipit, ac laoreet nibh euismod. Aliquamhendrerit lorem at elit facilisis rutrum. Ut at ullamcorper velit. Nullaligula nisi, imperdiet ut lacinia nec, tincidunt ut libero. Aeneanfeugiat non eros quis feugiat.',
+              },
+              {
+                title: 'Title 3',
+                subTitle: 'Subtitle 3',
+                content: 'Content 3',
+              },
+            ]"
           />
-
-          <!-- <MyCarousel
-            :imageItems="filteredImageUrls"
-            showPrevButton
-            showNextButton
-            :pagination="{
-              dynamicBullets: true,
-            }"
-          /> -->
         </div>
       </div>
       <ItemsDetailInfo :itemDetail="itemDetail" />
