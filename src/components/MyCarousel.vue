@@ -27,7 +27,7 @@ const props = withDefaults(
 const { imageItems, scrollbar, autoPlay, pagination } = toRefs(props);
 
 const showScrollbar = computed(() => scrollbar.value ?? false);
-const carousel = ref<HTMLElement | null>(null);
+const carouselRef = ref<HTMLElement | null>(null);
 const currentIndex = ref(0);
 const isDragging = ref(false);
 const startX = ref(0);
@@ -51,7 +51,7 @@ function prevHandler() {
 
 // 드래그 시작
 function dragStart(event: MouseEvent) {
-  if (carousel.value) {
+  if (carouselRef.value) {
     isDragging.value = true;
     startX.value = event.pageX;
     startTranslateX.value = currentIndex.value * -100; // 현재 위치 저장
@@ -60,13 +60,13 @@ function dragStart(event: MouseEvent) {
 
 // 드래그 중
 function dragging(event: MouseEvent) {
-  if (!isDragging.value || !carousel.value) return;
+  if (!isDragging.value || !carouselRef.value) return;
 
   const dragX = event.pageX;
   const walk = ((dragX - startX.value) / window.innerWidth) * 100; // 드래그 거리 계산
 
-  carousel.value.style.transition = 'none'; // 드래그 중에는 애니메이션 비활성화
-  carousel.value.style.transform = `translateX(${startTranslateX.value + walk}%)`; // 이동
+  carouselRef.value.style.transition = 'none'; // 드래그 중에는 애니메이션 비활성화
+  carouselRef.value.style.transform = `translateX(${startTranslateX.value + walk}%)`; // 이동
 }
 
 const autoPlayInterval = ref<number | null>(null);
@@ -89,10 +89,10 @@ function dragStop(event: MouseEvent) {
     prevHandler(); // 이전 이미지로 이동
   }
 
-  if (carousel.value) {
-    carousel.value.style.transition = 'transform 0.4s ease'; // 이미지 드래그할때 여러 애니메이션을 줄 수 있음 일반적으로 ease
+  if (carouselRef.value) {
+    carouselRef.value.style.transition = 'transform 0.4s ease'; // 이미지 드래그할때 여러 애니메이션을 줄 수 있음 일반적으로 ease
     // 드래그 종료 시 최종 위치를 정해줘야 그 이미지를 볼 수 있기 떄문에
-    carousel.value.style.transform = `translateX(${currentIndex.value * -100}%)`; // 최종 위치 설정
+    carouselRef.value.style.transform = `translateX(${currentIndex.value * -100}%)`; // 최종 위치 설정
     isDragging.value = false;
   }
 }
@@ -102,13 +102,13 @@ function goToImage(index: number) {
 }
 
 // TODO: autoPlay 시작, 멈춤 함수가 필요할지 검토 필요, 현재는 자동 재생만 가능
-const startAutoPlay = () => {
+function startAutoPlay() {
   if (autoPlay.value) {
     autoPlayInterval.value = setInterval(() => {
       nextHandler();
     }, props.autoPlayDuration);
   }
-};
+}
 
 watch(
   autoPlay,
@@ -146,7 +146,14 @@ function getPaginationClass(idx: number) {
   }
 }
 
-const handleKeyDown = (event: KeyboardEvent) => {
+function effectFadeStyle(index: number) {
+  return {
+    opacity: currentIndex.value === index ? 1 : 0,
+    transition: 'opacity 0.8s ease-in-out',
+  };
+}
+
+function handleKeyDown(event: KeyboardEvent) {
   if (props.keyboardControl) {
     if (event.key === 'ArrowRight') {
       nextHandler();
@@ -154,20 +161,19 @@ const handleKeyDown = (event: KeyboardEvent) => {
       prevHandler();
     }
   }
-};
-
-function effectFadeStyle(index: number) {
-  return {
-    opacity: currentIndex.value === index ? 1 : 0,
-    transition: 'opacity 0.8s ease-in-out',
-  };
 }
+
+onMounted(() => {
+  if (carouselRef.value) {
+    carouselRef.value.focus(); // 자동 포커스
+  }
+});
 </script>
 
 <template>
   <div class="overflow-hidden relative flex-shrink-0">
     <ul
-      ref="carousel"
+      ref="carouselRef"
       class="flex transition-transform duration-400"
       :style="{ transform: `translateX(${currentIndex * -100}%)` }"
       @mousedown="dragStart"
@@ -224,7 +230,6 @@ function effectFadeStyle(index: number) {
       </button>
     </slot>
 
-    <!-- 기존꺼 -->
     <ul
       v-if="pagination && imageItems.length > 1"
       class="absolute bottom-4 flex w-full justify-center gap-2"
@@ -252,3 +257,9 @@ function effectFadeStyle(index: number) {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+ul:focus {
+  outline: none;
+}
+</style>
