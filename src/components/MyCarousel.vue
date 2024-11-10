@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue';
+import { computed, ref, toRefs, watch } from 'vue';
 
 export interface ImageItemsType {
   link: string;
@@ -30,7 +30,6 @@ const currentIndex = ref(0);
 const isDragging = ref(false);
 const startX = ref(0);
 const startTranslateX = ref(0);
-// let autoSlideInterval: ReturnType<typeof setInterval>;
 
 function nextHandler() {
   if (currentIndex.value < imageItems.value.length - 1) {
@@ -106,10 +105,6 @@ const startAutoPlay = () => {
     autoPlayInterval.value = setInterval(() => {
       nextHandler();
     }, props.autoPlayDuration);
-
-    // autoSlideInterval = setInterval(() => {
-    //   nextHandler();
-    // }, autoPlay.value);
   }
 };
 
@@ -126,26 +121,10 @@ watch(
   },
   { immediate: true },
 );
-
-// const stopAutoPlay = () => {
-//   if (autoSlideInterval) {
-//     clearInterval(autoSlideInterval);
-//   }
-// };
-
-// onMounted(() => {
-//   startAutoPlay();
-// });
-
-// onBeforeUnmount(() => {
-//   stopAutoPlay();
-// });
 </script>
 
 <template>
   <div class="overflow-hidden relative flex-shrink-0">
-    <!-- <button @click="startAutoPlay()">start</button>
-    <button @click="stopAutoPlay()">stop</button> -->
     <ul
       ref="carousel"
       class="flex transition-transform duration-400"
@@ -176,6 +155,7 @@ watch(
     >
       <button
         v-if="showPrevButton"
+        type="button"
         @click="prevHandler"
         :class="`absolute left-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === 0 ? 'cursor-not-allowed' : ''}`"
         :disabled="currentIndex === 0"
@@ -191,6 +171,7 @@ watch(
     >
       <button
         v-if="showNextButton"
+        type="button"
         @click="nextHandler"
         :class="`absolute right-4 top-1/2 h-[1.8rem] w-[1.8rem] flex items-center justify-center rounded-full bg-white opacity-40 hover:opacity-60 ${currentIndex === imageItems.length - 1 ? 'cursor-not-allowed' : ''}`"
         :disabled="currentIndex === imageItems.length - 1"
