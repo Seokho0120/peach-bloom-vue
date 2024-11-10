@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import Carousel from '@/components/Carousel.vue';
 import type { ItemsListType } from '@/types/items.types';
 import { useGetMainList } from '@/composables/useItems';
 
@@ -33,6 +32,6 @@ watchEffect(() => {
 <template>
   <MainSnb />
   <div style="width: 100%; height: 680px">
-    <Carousel :imageItems="images" />
+    <MyCarousel :imageItems="images" autoPlay />
   </div>
 </template>

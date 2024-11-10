@@ -7,17 +7,20 @@ export interface ImageItemsType {
   name: string;
 }
 
-const props = withDefaults(defineProps<{
-  imageItems: ImageItemsType[];
-  showPrevButton?: boolean;
-  showNextButton?: boolean;
-  pagination?: boolean | { dynamicBullets?: boolean };
-  scrollbar?: boolean;
-  autoPlay?: boolean;
-  autoPlayDuration?: number;
-}>(), {
-  autoPlayDuration: 3000,
-});
+const props = withDefaults(
+  defineProps<{
+    imageItems: ImageItemsType[];
+    showPrevButton?: boolean;
+    showNextButton?: boolean;
+    pagination?: boolean | { dynamicBullets?: boolean };
+    scrollbar?: boolean;
+    autoPlay?: boolean;
+    autoPlayDuration?: number;
+  }>(),
+  {
+    autoPlayDuration: 3000,
+  },
+);
 
 const { imageItems, scrollbar, autoPlay, pagination } = toRefs(props);
 
@@ -65,7 +68,7 @@ function dragging(event: MouseEvent) {
   carousel.value.style.transform = `translateX(${startTranslateX.value + walk}%)`; // 이동
 }
 
-const autoPlayInterval = ref<number|null>(null);
+const autoPlayInterval = ref<number | null>(null);
 
 // 드래그 종료
 function dragStop(event: MouseEvent) {
@@ -97,7 +100,6 @@ function goToImage(index: number) {
   currentIndex.value = index;
 }
 
-
 // TODO: autoPlay 시작, 멈춤 함수가 필요할지 검토 필요, 현재는 자동 재생만 가능
 const startAutoPlay = () => {
   if (autoPlay.value) {
@@ -111,15 +113,19 @@ const startAutoPlay = () => {
   }
 };
 
-watch(autoPlay, (newVal) => {
-  if (newVal) {
-    startAutoPlay();
-  } else {
-    if (autoPlayInterval.value) {
-      clearInterval(autoPlayInterval.value);
+watch(
+  autoPlay,
+  (newVal) => {
+    if (newVal) {
+      startAutoPlay();
+    } else {
+      if (autoPlayInterval.value) {
+        clearInterval(autoPlayInterval.value);
+      }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true },
+);
 
 // const stopAutoPlay = () => {
 //   if (autoSlideInterval) {
@@ -163,8 +169,8 @@ watch(autoPlay, (newVal) => {
       </li>
     </ul>
 
-    <slot 
-      name="prev-btn" 
+    <slot
+      name="prev-btn"
       :goToPrev="prevHandler"
       :defaultClass="'absolute left-4 top-1/2'"
     >
@@ -178,8 +184,8 @@ watch(autoPlay, (newVal) => {
       </button>
     </slot>
 
-    <slot 
-      name="next-btn" 
+    <slot
+      name="next-btn"
       :goToNext="nextHandler"
       :defaultClass="'absolute right-4 top-1/2'"
     >
