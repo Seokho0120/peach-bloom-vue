@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, toRefs, watch } from 'vue';
 
 export interface ImageItemsType {
   link: string;
@@ -17,6 +17,7 @@ const props = withDefaults(
     autoPlay?: boolean;
     autoPlayDuration?: number;
     effectFade?: boolean;
+    keyboardControl?: boolean;
   }>(),
   {
     autoPlayDuration: 3000,
@@ -145,6 +146,16 @@ function getPaginationClass(idx: number) {
   }
 }
 
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (props.keyboardControl) {
+    if (event.key === 'ArrowRight') {
+      nextHandler();
+    } else if (event.key === 'ArrowLeft') {
+      prevHandler();
+    }
+  }
+};
+
 function effectFadeStyle(index: number) {
   return {
     opacity: currentIndex.value === index ? 1 : 0,
@@ -163,6 +174,8 @@ function effectFadeStyle(index: number) {
       @mouseup="dragStop"
       @mouseleave="dragStop"
       @mousemove="dragging"
+      @keydown="handleKeyDown"
+      tabindex="0"
     >
       <li
         v-for="(image, index) in imageItems"
