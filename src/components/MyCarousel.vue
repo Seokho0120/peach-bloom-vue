@@ -116,19 +116,14 @@ function startAutoPlay() {
   }
 }
 
-watch(
-  autoPlay,
-  (newVal) => {
-    if (newVal) {
-      startAutoPlay();
-    } else {
-      if (autoPlayInterval.value) {
-        clearInterval(autoPlayInterval.value);
-      }
-    }
-  },
-  { immediate: true },
-);
+watch(autoPlay, (newVal) => {
+  if (!newVal && autoPlayInterval.value) {
+    clearInterval(autoPlayInterval.value);
+    return
+  }
+
+  startAutoPlay();
+},{ immediate: true });
 
 function getPaginationClass(idx: number) {
   const isDynamicBullets =
@@ -172,7 +167,7 @@ onMounted(() => {
   }
 });
 
-const getParallaxStyle = (index: number, offset: number) => {
+function getParallaxStyle(index: number, offset: number) {
   const progress = currentIndex.value - index;
   const translateXValue = offset * progress;
 
