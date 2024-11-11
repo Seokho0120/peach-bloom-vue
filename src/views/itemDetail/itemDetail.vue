@@ -47,6 +47,7 @@ watch(
             keyboardControl
             parallax
             effectFade
+            lazy
             :contents="[
               {
                 title: 'Title 1',

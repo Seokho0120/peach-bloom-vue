@@ -24,6 +24,7 @@ const props = withDefaults(
       subTitle: string;
       content: string;
     }[];
+    lazy?: boolean;
   }>(),
   {
     autoPlayDuration: 3000,
@@ -155,7 +156,7 @@ function getPaginationClass(idx: number) {
 function effectFadeStyle(index: number) {
   return {
     opacity: currentIndex.value === index ? 1 : 0,
-    transition: 'opacity 0.8s ease-in-out',
+    transition: `0.8s ease-in-out`,
   };
 }
 
@@ -177,10 +178,7 @@ onMounted(() => {
 
 const getParallaxStyle = (index: number, offset: number) => {
   const progress = currentIndex.value - index;
-  // console.log('progress', progress);
-  // console.log('offset', offset);
   const translateY = offset * progress;
-  // console.log('translateY', translateY);
 
   return {
     transform: `translateX(${translateY}px)`,
@@ -227,6 +225,7 @@ const getParallaxStyle = (index: number, offset: number) => {
           >
             {{ props.contents[index]?.content }}
           </div>
+
           <img
             :src="image.link"
             :alt="image.name"
@@ -309,5 +308,10 @@ const getParallaxStyle = (index: number, offset: number) => {
 <style lang="scss" scoped>
 ul:focus {
   outline: none;
+}
+
+.blur-load {
+  background-size: cover;
+  background-position: center;
 }
 </style>
