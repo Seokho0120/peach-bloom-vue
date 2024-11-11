@@ -108,7 +108,6 @@ function goToImage(index: number) {
   currentIndex.value = index;
 }
 
-// TODO: autoPlay 시작, 멈춤 함수가 필요할지 검토 필요, 현재는 자동 재생만 가능
 function startAutoPlay() {
   if (autoPlay.value) {
     autoPlayInterval.value = setInterval(() => {
@@ -175,10 +174,10 @@ onMounted(() => {
 
 const getParallaxStyle = (index: number, offset: number) => {
   const progress = currentIndex.value - index;
-  const translateY = offset * progress;
+  const translateXValue = offset * progress;
 
   return {
-    transform: `translateX(${translateY}px)`,
+    transform: `translateX(${translateXValue}px)`,
     transition: 'transform 0.6s ease',
   };
 };
