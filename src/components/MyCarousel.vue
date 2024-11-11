@@ -154,10 +154,7 @@ function getPaginationClass(idx: number) {
 }
 
 function effectFadeStyle(index: number) {
-  return {
-    opacity: currentIndex.value === index ? 1 : 0,
-    transition: `0.8s ease-in-out`,
-  };
+  return `${currentIndex.value === index ? 'opacity-100 transition-opacity duration-1000 ease-in-out' : 'opacity-0'}`;
 }
 
 function handleKeyDown(event: KeyboardEvent) {
@@ -203,8 +200,7 @@ const getParallaxStyle = (index: number, offset: number) => {
       <li
         v-for="(image, index) in imageItems"
         :key="index"
-        class="flex-shrink-0 w-full h-full"
-        :style="effectFade && effectFadeStyle(index)"
+        :class="`flex-shrink-0 w-full h-full ${effectFade && effectFadeStyle(index)}`"
       >
         <div v-if="props.contents" class="relative">
           <h1
